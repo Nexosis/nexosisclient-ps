@@ -1,0 +1,15 @@
+PSTOPIC
+    about_PSNexosisClient
+
+SHORT DESCRIPTION
+    PSNexosisClient allows you to work with the Nexosis API through PowerShell functions
+
+LONG DESCRIPTION
+    PSNexosisClient allows you to work with the Nexosis API through PowerShell functions
+
+    You can find API documentation here:
+        http://docs.nexosis.com
+
+DETAILED DESCRIPTION
+    This is a module that allows querying Nexosis API endpoints to TODO.
+    

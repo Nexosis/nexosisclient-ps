@@ -1,0 +1,43 @@
+{
+  "columns": {
+    "timestamp": {
+      "dataType": "date",
+      "role": "timestamp"
+    },
+    "sales": {
+      "dataType": "numeric",
+      "role": "target"
+    },
+    "transactions": {
+      "dataType": "numeric",
+      "role": "none"
+    }
+  },
+  "data": [
+    {
+      "timestamp": "2013-01-01T00:00:00+00:00",
+      "sales": "1500.56",
+      "transactions": "195.0"
+    },
+    {
+      "timestamp": "2013-01-02T00:00:00+00:00",
+      "sales": "4078.52",
+      "transactions": "696.0"
+    },
+    {
+      "timestamp": "2013-01-03T00:00:00+00:00",
+      "sales": "4545.69",
+      "transactions": "743.0"
+    },
+    {
+      "timestamp": "2013-01-04T00:00:00+00:00",
+      "sales": "4872.63",
+      "transactions": "797.0"
+    },
+    {
+      "timestamp": "2013-01-05T00:00:00+00:00",
+      "sales": "2420.81",
+      "transactions": "367.0"
+    }
+  ]
+}
