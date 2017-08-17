@@ -10,9 +10,7 @@ environment:
 # Allow WMF5 (i.e. PowerShellGallery functionality)
 os: WMF 5
 
-build: 
-- ps: >-
-    Invoke-Build Build
+build: false
 
 install:
 - ps: >-
@@ -23,12 +21,14 @@ install:
     Install-Module -Name Pester -Force
 
     Install-Module -Name PSScriptAnalyzer -Force
-    
+
 before_test:
 - ps: >-
     pushd PSNexosisClient
 
     Invoke-Build Clean
+    
+    Invoke-Build Build
 
     Invoke-Build Analyze
 
