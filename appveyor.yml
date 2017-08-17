@@ -15,12 +15,17 @@ build: false
 install:
 - ps: >-
     Install-Module -Name InvokeBuild -Force
+
     Install-Module -Name Pester -Force
+
     Install-Module -Name PSScriptAnalyzer -Force
 
 test_script:
 - ps: >-
     pushd PSNexosisClient
+
     Invoke-Build Analyze
+
     Invoke-Build RunUnitTests
+    
     popd
