@@ -2,7 +2,7 @@ $ProjectRoot=$PSScriptRoot
 $Artifacts = Join-Path $PSScriptRoot "Artifacts"
 $BuildNumber = [int][double]::Parse((Get-Date -UFormat %s))
 
-# Clean Artifacts Directory
+# Synopsis: Clean Artifacts Directory
 task Clean BeforeClean, {
     if(Test-Path -Path $Artifacts)
     {
@@ -19,28 +19,26 @@ task Clean BeforeClean, {
     Pop-Location
 }, AfterClean
 
-# Executes before the Clean task
+# Synopsis: Executes before the Clean task
 task BeforeClean {}
-
-# Executes after the Clean task
+# Synopsis: Executes after the Clean task
 task AfterClean {}
-
-# Executes before the Analyze task
+# Synopsis: Executes before the Analyze task
 task BeforeAnalyze {}
-
-# Executes after the Analyze task
+# Synopsis: Executes after the Analyze task
 task AfterAnalyze {}
-
+#  Synopsis: Executes before the Build task
 task BeforeBuild {}
+#  Synopsis: Executes after the Build task
 task AfterBuild {}
-
+# Synopsis: Executes the Build task by simply loading the Powershell Module which will ONLY trigger syntax errors
 task Build BeforeBuild, {
     Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
     Import-Module "$PSScriptRoot\PSNexosisClient"
     Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 }, AfterBuild
 
-# Lint Code with PSScriptAnalyzer
+# Synopsis: Lint Code with PSScriptAnalyzer
 task Analyze BeforeAnalyze, {
     $scriptAnalyzerParams = @{
         Path=(Join-Path $PSScriptRoot "\PSNexosisClient\Public\")
@@ -59,7 +57,7 @@ task Analyze BeforeAnalyze, {
     }
 }, AfterAnalyze
 
-# Install Build Dependencies
+# Synopsis: Install Build Dependencies
 task InstallDependencies {
     # Can't run an Invoke-Build Task without Invoke-Build.
     Install-Module -Name InvokeBuild -Force
@@ -67,7 +65,7 @@ task InstallDependencies {
     Install-Module -Name PSScriptAnalyzer -Force
 }
 
-# Test the project with Pester. Publish Test and Coverage Reports
+# Synopsis: Test the project with Pester. Publish Test and Coverage Reports
 task RunAllTests {
    $invokePesterParams = @{
         CodeCoverage=(Join-Path (Join-Path "$PSScriptRoot\PSNexosisClient" "Public") "*.ps1")
@@ -142,6 +140,7 @@ task ConfirmTestsPassed {
 
 # TODO: Build and test en-US help
 # Helps.ps1 https://www.nuget.org/packages/Helps
+#  Synopsis: TODO: Not complete- Build and test en-US Help
 task HelpEn {
 	$null = mkdir en-US -Force
 
@@ -154,7 +153,7 @@ task HelpEn {
 	Test-Helps Helps-Help.ps1
 }
 
-# TODO: View help using the $Culture
+#  Synopsis: TODO: Not complete- View help using the $Culture
 task View {
 	$file = "$env:TEMP\help.txt"
 	[System.Threading.Thread]::CurrentThread.CurrentUICulture = $Culture

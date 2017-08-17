@@ -1,0 +1,31 @@
+version: 1.0.{build}
+image: WMF 5
+
+environment:
+  NEXOSIS_API_KEY:
+    secure: Vu9ZUtpEcQ/EoKx71vLot16ynFoMm0Tta7rR2FHUJlUEula3TAlnL0cl8BLubSvo
+  NEXOSIS_BASE_TEST_URL: https://api.uat.nexosisdev.com/v1
+
+
+# Allow WMF5 (i.e. PowerShellGallery functionality)
+os: WMF 5
+
+# Skip on updates to the readme.
+# We can force this by adding [skip ci] or [ci skip] anywhere in commit message 
+skip_commits:
+message: /updated readme.*|update readme.*s/
+
+build: false
+
+install:
+- ps: >-
+    Install-Module -Name InvokeBuild -Force
+    Install-Module -Name Pester -Force
+    Install-Module -Name PSScriptAnalyzer -Force
+
+test_script:
+- ps: >-
+    pushd PSNexosisClient
+    Invoke-Build Analyze
+    Invoke-Build RunUnitTests
+    popd
