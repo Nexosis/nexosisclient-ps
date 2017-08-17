@@ -1,8 +1,7 @@
-$Verbose = @{}
 # For build automation to enable verbose
-if($ENV:NCBranchName -notlike "master" -or $env:NCCommitMessage -match "!verbose")
+if($env:APPVEYOR_REPO_COMMIT_MESSAGE -match "!verbose")
 {
-	$Verbose.add("Verbose",$True)
+	$VerbosePreference = "continue"
 }
 
 Remove-Module PSNexosisClient -ErrorAction SilentlyContinue

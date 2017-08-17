@@ -1,8 +1,7 @@
-$Verbose = @{}
 # For build automation to enable verbose
-if($ENV:NCBranchName -notlike "master" -or $env:NCCommitMessage -match "!verbose")
+if($env:APPVEYOR_REPO_COMMIT_MESSAGE -match "!verbose")
 {
-	$Verbose.add("Verbose",$True)
+	$VerbosePreference = "continue"
 }
 
 Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
@@ -77,9 +76,9 @@ Describe "Get-Session" {
 		}
 
 		It "gets session by dataset name and requested before and after dates including paging defaults" {
-            Get-Session -dataSetName 'salesdata' -requestedAfterDate 2017-01-01T00:00:00Z -requestedBeforeDate 2017-01-20T00:00:00Z 
+            Get-Session -dataSetName 'salesdata' -requestedAfterDate 2017-01-01 -requestedBeforeDate 2017-01-20 
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions?dataSetName=salesdata&requestedAfterDate=12%2f31%2f2016+19%3a00%3a00&requestedBeforeDate=01%2f19%2f2017+19%3a00%3a00"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions?dataSetName=salesdata&requestedAfterDate=01%2f01%2f2017+00%3a00%3a00&requestedBeforeDate=01%2f20%2f2017+00%3a00%3a00"
 			} 
 		}
 		
