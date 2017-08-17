@@ -1,10 +1,8 @@
-$Verbose = @{}
 # For build automation to enable verbose
 if($env:APPVEYOR_REPO_COMMIT_MESSAGE -match "!verbose")
 {
 	$VerbosePreference = "continue"
 }
-
 
 Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
