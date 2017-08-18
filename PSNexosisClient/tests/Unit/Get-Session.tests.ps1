@@ -90,11 +90,11 @@ Describe "Get-Session" {
 		}
 
 		It "should throw error with invalid pagesize" {
-			{Get-Session -dataSetName 'salesdata' -page 1 -pageSize 1001} | should throw "Parameter '-pageSize' must be an integer between 0 and $($TestVars.MaxPageSize)."
+			{Get-Session -dataSetName 'salesdata' -page 1 -pageSize 1001} | should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
 		}
 
 		It "should throw error with invalid page" {
-			{Get-Session -dataSetName 'salesdata' -page 1001 -pageSize 100} | should throw "Parameter '-page' must be an integer between 0 and $($TestVars.MaxPageSize)."
+			{Get-Session -dataSetName 'salesdata' -page -1 -pageSize 100} | should throw "Parameter '-page' must be an integer greater than 0."
 		}
 
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 

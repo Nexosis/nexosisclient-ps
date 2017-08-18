@@ -49,13 +49,12 @@ Function Get-Import {
 		[int]$pageSize=$script:PSNexosisVars.DefaultPageSize
 	)
 	process {
-
-		if (($page -ge $script:MaxPageSize) -or ($page -lt 0)) {
-            throw "Parameter '-page' must be an integer between 0 and $script:MaxPageSize."
+		if ($page -lt 0) {
+            throw "Parameter '-page' must be an integer greater than 0."
         }
 
-        if (($pageSize -ge $script:MaxPageSize) -or ($pageSize -lt 0)) {
-            throw "Parameter '-pageSize' must be an integer between 0 and $script:MaxPageSize."
+        if (($pageSize -gt ($script:MaxPageSize)) -or ($pageSize -lt 1)) {
+            throw "Parameter '-pageSize' must be an integer between 1 and $script:MaxPageSize."
         }
 		
     	$params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)

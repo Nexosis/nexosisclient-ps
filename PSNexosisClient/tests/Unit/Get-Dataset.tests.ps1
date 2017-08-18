@@ -63,11 +63,11 @@ Describe "Get-Dataset" {
         }
 
 		It "throws error when page parameter is invalid" {
-			{ Get-Dataset -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer between 0 and $($TestVars.MaxPageSize)."
+			{ Get-Dataset -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
 		}
 
 		It "throws error when pageSize parameter is invalid" {
-			{ Get-Dataset -partialName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 0 and $($TestVars.MaxPageSize)."
+			{ Get-Dataset -partialName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
 		}
 
 		It "gets datasets with page and pagesize" {

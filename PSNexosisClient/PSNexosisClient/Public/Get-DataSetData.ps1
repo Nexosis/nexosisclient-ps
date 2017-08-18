@@ -1,10 +1,11 @@
 Function Get-DataSetData {
 <# 
  .Synopsis
-  Reads the data in a particular dataset and returns it as a PSCustomObject or CSV format.
+  Reads the data in a particular dataset and returns it or CSV format.
 
  .Description
-  Returns all of the data stored in a dataset
+  Returns all of the data stored in a dataset. If the DataSet does not exist or an error occurs, it will return 
+  an object containing the REST Status Code along with Error details.
 
  .Parameter DataSetName
   Name of the dataset for which to retrieve data
@@ -31,9 +32,13 @@ Function Get-DataSetData {
   # Read the data in the dataset named 'salesdata'
   Get-DataSetData -dataSetName 'salesdata'   
  
+  .Example 
+  # Return the data from dataset Location-A
+  (Get-DataSetData -dataSetName 'Location-A').Data
+  
   .Example
-  # Get the data in the dataset named 'alpha.persitent' starting at page and include 1000 records between the provided start date and enddate.
-  Get-DataSetData -dataSetName 'alpha.persistent' -page 0 -pageSize 1000 -startDate '2017-02-25T00:00:00+00:00' -endDate '2017-03-25T00:00:00+00:00'
+  # Get the data in the dataset named 'salesdata' starting at page and include 1000 records between the provided start date and enddate.
+  Get-DataSetData -dataSetName 'salesdata' -page 0 -pageSize 1000 -startDate 2017-02-25 -endDate 2017-03-25
 
  .Example
   # Read up to 1000 records in from dataset Sales Data
@@ -70,12 +75,12 @@ Function Get-DataSetData {
 			throw "Argument '-DataSetName' cannot be null or empty."
 		}
 
-	    if (($page -ge $script:MaxPageSize) -or ($page -lt 0)) {
-            throw "Parameter '-page' must be an integer between 0 and $script:MaxPageSize."
+		if ($page -lt 0) {
+            throw "Parameter '-page' must be an integer greater than 0."
         }
 
-        if (($pageSize -ge $script:MaxPageSize) -or ($pageSize -lt 0)) {
-            throw "Parameter '-pageSize' must be an integer between 0 and $script:MaxPageSize."
+		if (($pageSize -gt ($script:MaxPageSize)) -or ($pageSize -lt 1)) {
+            throw "Parameter '-pageSize' must be an integer between 1 and $script:MaxPageSize."
         }
 		
 		if ($null -ne $startDate ) { 

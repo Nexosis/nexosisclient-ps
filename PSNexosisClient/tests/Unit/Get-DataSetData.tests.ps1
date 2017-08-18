@@ -29,7 +29,7 @@ Describe "Get-DatasetData" {
         } -Verifiable
         
         It "gets datasetdata by dataset name with paging" {
-            Get-DataSetData -dataSetName 'salesdata' -page 1 -pageSize 999
+            Get-DataSetData -dataSetName 'salesdata' -page 1 -pageSize 1000
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
         }
 
@@ -39,7 +39,7 @@ Describe "Get-DatasetData" {
 		
 		It "calls with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?page=1&pageSize=999"
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?page=1&pageSize=1000"
 			} 
 		}
 
@@ -48,11 +48,11 @@ Describe "Get-DatasetData" {
 		}
 
 		It "throws error when page parameter is invalid" {
-			{ Get-DatasetData -dataSetName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer between 0 and $($TestVars.MaxPageSize)."
+			{ Get-DatasetData -dataSetName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
 		}
 
 		It "throws error when pageSize parameter is invalid" {
-			{ Get-DatasetData -dataSetName	 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 0 and $($TestVars.MaxPageSize)."
+			{ Get-DatasetData -dataSetName	 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
 		}
 
         It "calls with the proper HTTP verb" {
