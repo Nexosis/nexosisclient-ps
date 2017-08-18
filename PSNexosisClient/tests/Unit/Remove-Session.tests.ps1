@@ -72,9 +72,9 @@ Describe "Remove-Session" {
 		}
 
 		It "removes session by sessionid name and dates" {
-            Remove-Session -dataSetName 'testName' -sessionType 'impact' -requestedBeforeDate 2017-01-01T00:00:00Z -requestedAfterDate 2017-01-20T00:00:00Z -force 
+            Remove-Session -dataSetName 'testName' -sessionType 'impact' -requestedBeforeDate 2017-01-01 -requestedAfterDate 2017-01-20 -force 
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions?sessionType=impact&dataSetName=testName&requestedAfterDate=01%2f19%2f2017+19%3a00%3a00&requestedBeforeDate=12%2f31%2f2016+19%3a00%3a00"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions?sessionType=impact&dataSetName=testName&requestedAfterDate=01%2f20%2f2017+00%3a00%3a00&requestedBeforeDate=01%2f01%2f2017+00%3a00%3a00"
 			} 
         }
 
