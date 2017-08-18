@@ -71,8 +71,10 @@ Describe "New-DataSet" {
         }
 		
 		It "calls with the correct body" {
+			# Converting from string to json and back seems to remove 
+			# any extra whitespace, formatting, etc. so they compare acutal contents.
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Body -eq $testBody
+				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($testBody | ConvertFrom-Json | ConvertTo-Json)
 			}
         }
 

@@ -57,6 +57,8 @@ Describe "Import-DataSetFromS3" {
 		}
 
 		It "calls with correct JSON body" {
+			# Converting from string to json and back seems to remove 
+			# any extra whitespace, formatting, etc. so they compare acutal contents.
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($jsonPostBody | ConvertFrom-Json | ConvertTo-Json)
 			}
