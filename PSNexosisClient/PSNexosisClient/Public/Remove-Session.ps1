@@ -25,7 +25,8 @@ Function Remove-Session {
   Limits data removed to those on or before the specified date, formatted as a date-time in ISO8601.
 
  .Example
-
+  # Remove all sessions with the given event name and dataset name
+  Remove-Session -dataSetName 'salesdata' -eventName '50percentoff'
 #>[CmdletBinding(SupportsShouldProcess=$true)] 
 	Param(
         [Parameter(ValueFromPipeline=$True, Mandatory=$false)]

@@ -20,13 +20,16 @@ Function Get-DataSetData {
   Zero-based page number of results to retrieve.
 
  .Parameter PageSize
-  Count of datasets to retrieve in each page (max 1000).
+  Count of Data rows to retrieve in each page (default 100, max 1000).
  
  .Parameter Include 
  Limits results to the specified columns
 
  .Parameter UseCsv
  Returns a CSV of the dataset instead of JSON.
+
+  .Link
+  http://docs.nexosis.com/clients/powershell
 
  .Example
   # Read the data in the dataset named 'salesdata'
@@ -45,12 +48,16 @@ Function Get-DataSetData {
   Get-DataSetData -dataSetName 'salesdata' -page 0 -pageSize 1000 
 
  .Example
+  # Return the data from dataset named `new-data` and only include columns timestamp and sales.
+  (Get-DataSetData -dataSetName 'new-data' -include timestamp,sales).data
+
+ .Example
   # Read the data in the dataset named 'salesdata' and convert it to JSON at a dept of 4
   Get-DataSetData -dataSetName 'salesdata' | ConvertTo-Json -Depth 4
 
  .Example
-  # Returns data in DataSet name 'Location-A' in CSV format.
-  Get-DataSetData -dataSetName 'Location-A' -ReturnCsv
+  # Returns data in DataSet name 'salesdata' in CSV format, including only two columns.
+  Get-DataSetData -dataSetName 'salesdata' -include timestamp,sales -ReturnCsv
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]

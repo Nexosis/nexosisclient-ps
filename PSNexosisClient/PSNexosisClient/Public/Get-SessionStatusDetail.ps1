@@ -1,17 +1,17 @@
 Function Get-SessionStatusDetail {
 <# 
  .Synopsis
-  The response to this endpoint adds a nexosis-session-status HTTP response header indicating the completion status of the session.
+  Retrieves the Details of the session status including the current status.
 
  .Description
-  The response to this endpoint adds a nexosis-session-status HTTP response header indicating the completion status of the session.
+  
 
  .Parameter SessionId
   A Session identifier (UUID) of the session to retrieve
 
  .Example
-  #
-  Get-SessionStatus -SessionID 015da45b-2ee7-4a63-b6c7-2f3798ea70a2   
+  # Get additional detail about the status of a session
+  Get-SessionStatusDetail -SessionID 015da45b-2ee7-4a63-b6c7-2f3798ea70a2
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]

@@ -22,16 +22,19 @@ Function Get-Session {
   Zero-based page number of results to retrieve.
 
  .Parameter PageSize
-  Count of datasets to retrieve in each page (max 1000).
+  Count of Sessions records to retrieve in each page (default 100, max 1000).
 
  .Example
-  
+  # Get all the sessions for all datasets
+  Get-Session
 
  .Example
-  
+  # Retrieve all sessions for a given dataset named 'salesdata'
+  Get-Session -dataSetName 'salesdata'
 
  .Example
-  
+ # Retrieve all sessions that were created after 8-15-2017 for dataset named 'salesdata'
+  Get-Session -dataSetName 'salesdata' -requestedAfterDate 8-15-2017
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]

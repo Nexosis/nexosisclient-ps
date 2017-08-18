@@ -23,8 +23,8 @@ Function Import-DataSetFromS3 {
   Metadata about each column in the dataset
 
  .Example
-  
- .Example
+  # Import a CSV into the data set name 'salesdata' located in S3 given the S3 Bucket path and region.
+ Import-DataSetFromS3 -dataSetName 'salesdata' -S3BucketName 'nexosis-sample-data' -S3BucketPath 'LocationA.csv' -S3Region 'us-east-1'
   
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(

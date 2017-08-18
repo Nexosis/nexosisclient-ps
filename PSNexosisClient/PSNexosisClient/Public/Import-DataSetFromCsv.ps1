@@ -15,7 +15,8 @@ Function Import-DataSetFromCsv {
  The path on disk to a CSV File (CRLF line endings only).
 
  .Example 
-
+  # Submit a dataset using the contents of the specified CSV File.
+  Import-DataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "C:\path\to\sample.csv"
   
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(

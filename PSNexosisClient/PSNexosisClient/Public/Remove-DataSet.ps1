@@ -41,8 +41,8 @@ Function Remove-DataSet {
   Remove-DataSet -dataSetName 'salesdata' -cascadeOption CascadeSession
 
  .Example
-  # Remove 
-  Remove-DataSet -dataSetName 'salesdata' -startDate '2017-02-25T00:00:00+00:00' -endDate '2017-03-25T00:00:00+00:00'
+  # Remove data within the dataset between start and end date, and force (no prompt)
+  Remove-DataSet -dataSetName 'salesdata' -startDate '2017-02-25T00:00:00+00:00' -endDate '2017-03-25T00:00:00+00:00' -force
 
   .Example
   # Get all datasets that match the partial name 'PSTest' and deletes them.

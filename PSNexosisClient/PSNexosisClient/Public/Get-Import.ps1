@@ -25,15 +25,15 @@ Function Get-Import {
   
  .Example
   # Get first page and one result of imports for dataset named 'SalesData' 
-  Get-Import -dateSetName 'SalesData' -page 0 -pageSize 1
+  Get-Import -dateSetName 'SalesData' -page 0 -pageSize 20
 
  .Example
   # Get all imports requested after the date 2017-07-25 UTC
-  Get-Import -requestedAfterDate 2017-07-25T00:00:00Z 
+  Get-Import -requestedAfterDate 2017-07-25+00:00
 
  .Example
   # Get all datasets that match the partial name 'Location' and Get all associated Imports
-  ((Get-DataSet -partialName 'Location').items | Foreach { $_.DataSetName } | Get-Import).items
+  ((Get-DataSet -partialName 'Location') | Foreach { $_.DataSetName } | Get-Import)
   
 #>[CmdletBinding()]
 	Param(

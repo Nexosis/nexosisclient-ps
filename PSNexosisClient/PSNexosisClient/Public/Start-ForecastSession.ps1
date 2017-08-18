@@ -43,9 +43,9 @@ Function Start-ForecastSession {
    costs will include the estimated cost that the request would have incurred.  
 
  .Example
-  
- .Example
-  
+  # Start a Daily Forecast session on the dataset 'salesdata' and set the target column to forecast to
+  'sales' - forecast between the range of 01-06-2013 to 01-13-2013
+  Start-ForecastSession -dataSetName 'salesdata' -targetColumn 'sales' -startDate 2013-01-06 -endDate 2013-01-13 -resultInterval Day -columnsMetadata $columns
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]

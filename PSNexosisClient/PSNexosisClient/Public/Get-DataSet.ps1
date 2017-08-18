@@ -13,7 +13,10 @@ Function Get-DataSet {
   Zero-based page number of results to retrieve.
 
  .Parameter PageSize
-  Count of datasets to retrieve in each page (max 1000).
+  Count of datasets to retrieve in each page (default 100, max 1000).
+
+ .Link
+  http://docs.nexosis.com/clients/powershell
 
  .Example
   # Get a list of datasets that have the world 'sales' in the dataset name

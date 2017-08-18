@@ -14,8 +14,8 @@ Function Get-SessionStatus {
   Get-SessionStatus -SessionID 015da45b-2ee7-4a63-b6c7-2f3798ea70a2
 
  .Example
- # Get all the sessions and retrieve their status
- (Get-Session).items | foreach { "SessionId: " + $_.SessionID + " Status: " + (Get-SessionStatus $_.SessionId) }
+ # For each retrieved session for dataset named 'salesdata', get the current status
+ (Get-Session -dataSetName salesdata) | foreach { "SessionId: " + $_.SessionID + " Status: " + (Get-SessionStatus $_.SessionId) }
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]

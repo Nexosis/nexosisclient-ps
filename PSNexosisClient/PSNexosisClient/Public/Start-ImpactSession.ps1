@@ -46,9 +46,9 @@ Function Start-ImpactSession {
    costs will include the estimated cost that the request would have incurred.  
 
  .Example
-  
- .Example
-  #TODO
+ # Start a new Impact Session using the dataset 'salesdata' and give it the event name 'promo-impact'. Build a daily forcast on target
+ column 'sales' between the dates of 01-03-2013 through 01-04-2013
+ Start-ImpactSession -dataSetName 'salesdata' -eventName 'promo-impact' -targetColumn 'sales' -startDate 2013-01-03 -endDate 2013-01-04 -resultInterval Day
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]

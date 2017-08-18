@@ -17,6 +17,12 @@ Function Get-SessionResult {
   A Session identifier (UUID) of the session results to retrieve.
 
  .Example
+  # Retrieve session data for sesion with the given session ID
+  Get-SessionResult -sessionId 015df24f-7f43-4efe-b8ba-1e28d67eb3fa
+
+ .Example
+  # Return just the session result data for the given session ID.
+  (Get-SessionResult -SessionId 015df24f-7f43-4efe-b8ba-1e28d67eb3fa).data
 
 #>[CmdletBinding()]
 	Param(
