@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-SessionStatusDetail" {
+Describe "Get-SessionStatusDetail" -Tag 'Integration' {
 	Context "integration tests" {
 		Set-StrictMode -Version latest
 		

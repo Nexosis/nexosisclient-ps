@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Get-AccountBalance" {
+Describe "Get-AccountBalance" -Tag 'Integration' {
 	Context "integration tests" {
 		Set-StrictMode -Version latest		
 
