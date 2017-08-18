@@ -42,7 +42,7 @@ Describe "Import-DataSetFromS3" {
 
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
 			param($Uri, $Method, $Headers, $ContentType, $Body)
-			Write-Output $Body
+				Write-Verbose $Body
 		} -Verifiable
 
 		It "mock is called once" {
@@ -58,7 +58,7 @@ Describe "Import-DataSetFromS3" {
 
 		It "calls with correct JSON body" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Body -eq $jsonPostBody
+				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($jsonPostBody | ConvertFrom-Json | ConvertTo-Json)
 			}
 		}
 
