@@ -42,6 +42,7 @@ Describe "Import-DataSetFromS3" {
 
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
 			param($Uri, $Method, $Headers, $ContentType, $Body)
+			Write-Output $Body
 		} -Verifiable
 
 		It "mock is called once" {
