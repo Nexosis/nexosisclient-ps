@@ -64,9 +64,9 @@ Describe "Remove-Dataset" {
 		}
 
 		It "removes datasetdata by dataset name and dates" {
-            Remove-DataSet -dataSetName 'salesdata' -startDate 2017-01-01T00:00:00Z -endDate 2017-01-20T00:00:00Z -force
+            Remove-DataSet -dataSetName 'salesdata' -startDate 2017-01-01 -endDate 2017-01-20 -force
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?dataSetName=salesdata&startDate=12%2f31%2f2016+19%3a00%3a00&endDate=01%2f19%2f2017+19%3a00%3a00"
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?dataSetName=salesdata&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00"
 			} 
         }
 

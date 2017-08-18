@@ -28,7 +28,7 @@ Describe "Start-ForeacastSession" {
         } -Verifiable
 		
 		It "starts forecast session with all parameters" {
-			Start-ForecastSession -dataSetName 'name' -targetColumn 'sales' -startDate 2017-01-01T00:00:00Z -endDate 2017-01-20T00:00:00Z -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
+			Start-ForecastSession -dataSetName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -38,7 +38,7 @@ Describe "Start-ForeacastSession" {
 		
 		It "calls the correct URI" {		
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSetName=name&targetColumn=sales&startDate=12%2f31%2f2016+19%3a00%3a00&endDate=01%2f19%2f2017+19%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSetName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
 			} 		
 		}
 
