@@ -1,6 +1,7 @@
 $ProjectRoot=$PSScriptRoot
 $Artifacts = Join-Path $PSScriptRoot "Artifacts"
 $BuildNumber = [int][double]::Parse((Get-Date -UFormat %s))
+$PercentCompliance = 90
 
 # Synopsis: Clean Artifacts Directory
 task Clean BeforeClean, {
@@ -124,17 +125,16 @@ task RunUnitTests {
 
 # Synopsis: Throws and error if any tests do not pass for CI usage
 task ConfirmTestsPassed {
-    # Fail Build after reports are created, this allows CI to publish test results before failing
-    [xml] $xml = Get-Content (Join-Path $Artifacts "TestResults.xml")
-    $numberFails = $xml."test-results".failures
+    # Fail Build after reports are created, this allows CI to publish test results before failing    
+    $json = Get-Content (Join-Path $Artifacts "PesterResults.json") | ConvertFrom-Json
+    $numberFails = (($json.TestResult | where Result -eq 'failed') | Measure-Object).Count
     assert($numberFails -eq 0) ('Failed "{0}" unit tests.' -f $numberFails)
 
     # Fail Build if Coverage is under requirement
-    $json = Get-Content (Join-Path $Artifacts "PesterResults.json") | ConvertFrom-Json
     $overallCoverage = [Math]::Floor(($json.CodeCoverage.NumberOfCommandsExecuted /
                                       $json.CodeCoverage.NumberOfCommandsAnalyzed) * 100)
     assert($OverallCoverage -gt $PercentCompliance) 
-        ('A Code Coverage of "{0}" does not meet the build requirement of "{1}"' -f $overallCoverage,
+        ('Current Code Coverage: {0}%. Build requirement for build to pass: {1}%.' -f $overallCoverage,
          $PercentCompliance)
 }
 

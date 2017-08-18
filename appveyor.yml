@@ -38,8 +38,8 @@ test_script:
 - ps: >-
     pushd PSNexosisClient
 
-    $returlVal = Invoke-Build RunUnitTests
+    Invoke-Build RunUnitTests
 
+    Invoke-Build ConfirmTestsPassed
+    
     popd
-
-    exit ( [int]( -not $returnVal[3] -match 'Succeeded' ) )
