@@ -2,15 +2,20 @@
 
 Nexosis API Client for PowerShell
 
+This software is provided as a way to include Nexosis API functionality from your PowerShell command line.
+
+You can read about the Nexosis API at https://developers.nexosis.com
+
+Pull requests are welcome
+
 [![Build status](https://ci.appveyor.com/api/projects/status/h739j05wvgg1g7o1?svg=true)](https://ci.appveyor.com/project/Nexosis/nexosisclient-ps)
 
 ## Examples of library usage
 
-
 List of all commands
 
 ```powershell
-PS > ((Get-Module PSNexosisClient).ExportedCommands).Keys
+PS C:\> ((Get-Module PSNexosisClient).ExportedCommands).Keys
 
 Get-AccountBalance
 Get-DataSet
@@ -34,7 +39,7 @@ Start-ImpactSession
 To get basic help on commands in the PSNexosisClient, type:
 
 ```powershell
-get-help Get-DataSet
+PS C:\> get-help Get-DataSet
 ```
 
 and that will return
@@ -67,7 +72,7 @@ REMARKS
 
 To just get examples, run:
 ```powershell
-PS > get-help Get-DataSet -Examples
+PS C:\> get-help Get-DataSet -Examples
 ```
 
 which will return all the examples only:
@@ -94,7 +99,7 @@ SYNOPSIS
 To get the full details of Help documents on a particular Module in the PSNexosisClient module, type:
 
 ```powershell 
-PS > help New-DataSet
+PS C:\> help New-DataSet
 ```
 
 Help Documentation contains more detailed explanation:
@@ -178,18 +183,13 @@ REMARKS
 ## Some Examples
 Get all datasets
 ```powershell
-Get-Dataset -partialName 'PSTest'
-```
-
-Get all the datasets that match the partial name 'Location' and list all the S3 Imports.
-```powershell
-((Get-DataSet -partialName 'Location') | Foreach { $_.DataSetName } | Get-Import) | Where type -eq 's3' | Format-Table -Property @('status', 'datasetname', 'requestedDate')
+PS C:\> Get-Dataset -partialName 'salesdata'
 ```
 
 Commands can be chained together. The following example will retrieve all datasets whose data set name matches 'Location' - and will return the status of all the S3 imports:
 
 ```powershell
- ((Get-DataSet -partialName 'Location') | Foreach { $_.DataSetName } | Get-Import) | Where type -eq 's3' | Format-Table -Property @('datasetname', 'requestedDate', 'status')
+ PS C:\> ((Get-DataSet -partialName 'Location') | Foreach { $_.DataSetName } | Get-Import) | Where type -eq 's3' | Format-Table -Property @('datasetname', 'requestedDate', 'status')
 ```
 
 Here's example output:
