@@ -66,7 +66,7 @@ Function Start-ImpactSession {
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string]$callbackUrl,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        $columnsMetadata=@{},
+        $columnMetadata=@{},
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [switch]$isEstimate
     )
@@ -106,7 +106,7 @@ Function Start-ImpactSession {
             
       if ($pscmdlet.ShouldProcess($dataSourceName)) {
         if ($isEstimate) {
-          $response = Invoke-Http -method Post -path "sessions/impact" -Body ($columnsMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json' -needHeaders
+          $response = Invoke-Http -method Post -path "sessions/impact" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json' -needHeaders
           
           if (($null -ne $response.Headers) -and ($response.Headers.ContainsKey('Nexosis-Request-Cost'))) {
             # Add additional field called 'costEstimate' to the object
@@ -119,7 +119,7 @@ Function Start-ImpactSession {
             $response
           }
         } else {
-            Invoke-Http -method Post -path "sessions/impact" -Body ($columnsMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json'
+            Invoke-Http -method Post -path "sessions/impact" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json'
         }
       }
     }

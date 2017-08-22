@@ -80,7 +80,7 @@ Describe "Start-ForecastSession" -Tag 'Integration' {
 			# Create new dataset
 			New-DataSet -dataSetName $dataSetName -data $data -columnMetaData $columns
 			
-			$sessionResult = Start-ForecastSession -dataSetName $dataSetName -targetColumn 'sales' -startDate 2013-01-06T00:00:00+00:00 -endDate 2013-01-13T00:00:00+00:00 -resultInterval Day -columnsMetadata $columns
+			$sessionResult = Start-ForecastSession -dataSetName $dataSetName -targetColumn 'sales' -startDate 2013-01-06T00:00:00+00:00 -endDate 2013-01-13T00:00:00+00:00 -resultInterval Day -columnMetadata $columns
 			
             # Status code only exists in error sta
             [bool]($sessionResult.PSobject.Properties.name -match "StatusCode") | should be $false

@@ -25,7 +25,7 @@ Describe "New-DataSet" {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		
-		BeforeEach {
+		BeforeAll {
 			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version
 			$TestVars = @{
 				ApiKey       = $Env:NEXOSIS_API_KEY

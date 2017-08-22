@@ -81,7 +81,7 @@ Describe "Start-ImpactSession" -Tag 'Integration' {
 			# Create new dataset
 			New-DataSet -dataSetName $dataSetName -data $data -columnMetaData $columns
 			
-			$sessionResult = Start-ImpactSession -dataSetName $dataSetName -eventName 'integrationTest' -targetColumn 'sales' -startDate 2013-01-03 -endDate 2013-01-04 -resultInterval Day -columnsMetadata $columns
+			$sessionResult = Start-ImpactSession -dataSetName $dataSetName -eventName 'integrationTest' -targetColumn 'sales' -startDate 2013-01-03 -endDate 2013-01-04 -resultInterval Day -columnMetadata $columns
 			
 			# Status code only exists in error state
 			Write-Verbose $sessionResult
@@ -161,7 +161,7 @@ Describe "Start-ImpactSession" -Tag 'Integration' {
 			# Create new dataset
 			New-DataSet -dataSetName $dataSetName -data $data -columnMetaData $columns
 			
-			$sessionResult = Start-ImpactSession -dataSetName $dataSetName -eventName 'integrationTest' -targetColumn 'sales' -startDate 2013-01-03 -endDate 2013-01-04 -resultInterval Day -columnsMetadata $columns -isEstimate
+			$sessionResult = Start-ImpactSession -dataSetName $dataSetName -eventName 'integrationTest' -targetColumn 'sales' -startDate 2013-01-03 -endDate 2013-01-04 -resultInterval Day -columnMetadata $columns -isEstimate
 			
 			# Status code only exists in error state
 			Write-Verbose $sessionResult

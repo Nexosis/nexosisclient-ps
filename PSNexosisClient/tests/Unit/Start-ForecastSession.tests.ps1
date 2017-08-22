@@ -13,7 +13,7 @@ Describe "Start-ForeacastSession" {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		
-		BeforeEach {
+		BeforeAll {
 			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version
 			$TestVars = @{
 				ApiKey       = $Env:NEXOSIS_API_KEY
@@ -40,6 +40,10 @@ Describe "Start-ForeacastSession" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
 			} 		
+		}
+
+		It "throws if columnMetaData paramter is not an array of hashes" {
+			{ Start-ForecastSession -dataSourceName 'notnull' -startDate 01-01-2017 -endDate 01-20-2017 -columnMetaData "string" }  | should Throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."
 		}
 
 		It "throws exception when dataSourceName is null or empty" {
@@ -89,7 +93,7 @@ Describe "Start-ForeacastSession" {
 				}
 			}
 
-			Start-ForecastSession -dataSourceName 'Location-A' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnsMetadata $columns 
+			Start-ForecastSession -dataSourceName 'Location-A' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $columns 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$body -eq ($columns	| ConvertTo-Json)
 			}			

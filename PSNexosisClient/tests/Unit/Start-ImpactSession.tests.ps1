@@ -13,7 +13,7 @@ Describe "Start-ImpactSession" {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		
-		BeforeEach {
+		BeforeAll {
 			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version
 			$TestVars = @{
 				ApiKey       = $Env:NEXOSIS_API_KEY
@@ -23,20 +23,17 @@ Describe "Start-ImpactSession" {
 			}
 		}
 
+	
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $Body, $needHeaders) 
-			if ($needHeaders) {
-				$json = 
-@"
-{
-	"Transfer-Encoding":  "chunked",
-	"Nexosis-Request-Cost":  "0.01 USD",
-	"Nexosis-Account-Balance":  "107.58 USD",
-	"Content-Type":  "application/json; charset=utf-8",
-	"Date":  "Wed, 16 Aug 2017 21:08:29 GMT"
-}
-"@
+			param($Uri, $Method, $Headers, $Body, $needHeaders)
+			
+			$response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content = "{ }"
 			}
+			$response
+			
         } -Verifiable
 		
 		It "starts an impact session with all parameters - no estimate" {
@@ -91,6 +88,25 @@ Describe "Start-ImpactSession" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/impact?dataSourceName=name&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&resultInterval=Day"
 			}	
+		}
+		
+		# Mock that includes Nexosis-Request-Cost Header
+		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
+			param($Uri, $Method, $Headers, $Body, $needHeaders)
+			
+			$response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content = "{ }"
+			}
+			$response.Headers.Add("Nexosis-Request-Cost","0.01 USD")
+			$response
+			
+		} -Verifiable
+		
+		It "contains cost estimate" {
+			$response = Start-ImpactSession -dataSourceName 'name' -eventName '50percentoff' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -isEstimate
+			$response.CostEstimate | Should be "0.01 USD"
 		}
 	}
 }

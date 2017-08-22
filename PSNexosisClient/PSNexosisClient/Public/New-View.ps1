@@ -15,7 +15,7 @@ Function New-View {
      .Parameter RightDataSetName
      Name of the dataset to join to
     
-     .Parameter columnsMetaData
+     .Parameter columnMetadata
      A hashtable containing metadata that describes the columns for the view (overriding the source dataset columns metadata), such as data types and imputation and aggragation strategies.
     
      .Example
