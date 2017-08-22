@@ -1,25 +1,25 @@
 Function Start-ImpactSession {
 <# 
  .Synopsis
-  Start an impact session for a submitted dataset using the Target Column, 
+  Start an impact session for a data source using the Target Column, 
   Columns Meta-data, and a date range to determine the impact.
 
  .Description
   Impact sessions are used to determine the impact of a particular event on a
-  dataset. For example, a sale at a restaurant may impact daily sales or customer
-  counts. To create an impact session, specify the dataset for which to determine
+  data source . For example, a sale at a restaurant may impact daily sales or customer
+  counts. To create an impact session, specify the data source for which to determine
   impact, as well as the start and end dates of the impactful event. The Nexosis 
   API will execute a series of machine learning algorithms to determine the impact 
-  of the event on the dataset.
+  of the event on the data source.
   
   Both the start and end dates for the impact session must always be on or before
-  the timeStamp of the last record in your dataSet.
+  the timeStamp of the last record in your data source.
  
-  .Parameter dataSetName
-   Name of the dataset to forecast
+  .Parameter dataSourceName
+   Name of the data source (view, dataset, etc) to forecast
 
   .Parameter targetColumn
-   Column in the specified dataset to forecast
+   Column in the specified data source  to forecast
 
   .Parameter eventName 
    Name of the event for which to determine impact
@@ -46,13 +46,13 @@ Function Start-ImpactSession {
    costs will include the estimated cost that the request would have incurred.  
 
  .Example
- # Start a new Impact Session using the dataset 'salesdata' and give it the event name 'promo-impact'. Build a daily forcast on target
+ # Start a new Impact Session using the data source 'salesdata' and give it the event name 'promo-impact'. Build a daily forcast on target
  column 'sales' between the dates of 01-03-2013 through 01-04-2013
- Start-ImpactSession -dataSetName 'salesdata' -eventName 'promo-impact' -targetColumn 'sales' -startDate 2013-01-03 -endDate 2013-01-04 -resultInterval Day
+ Start-ImpactSession -dataSourceName 'salesdata' -eventName 'promo-impact' -targetColumn 'sales' -startDate 2013-01-03 -endDate 2013-01-04 -resultInterval Day
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
-        [string]$dataSetName,
+        [string]$dataSourceName,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string]$targetColumn,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
@@ -73,11 +73,11 @@ Function Start-ImpactSession {
     process {
       $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
 
-      if ($dataSetName.Trim().Length -eq 0) { 
-        throw "Argument '-DataSetName' cannot be null or empty."
+      if ($dataSourceName.Trim().Length -eq 0) { 
+        throw "Argument '-DataSourceName' cannot be null or empty."
       }
       
-      $params['dataSetName'] = $dataSetName
+      $params['dataSourceName'] = $dataSourceName
 
       if ($targetColumn.Trim().Length > 0) {
         $params['targetColumn'] = $targetColumn
@@ -104,7 +104,7 @@ Function Start-ImpactSession {
       
       $params['resultInterval'] = $resultInterval.toString()
             
-      if ($pscmdlet.ShouldProcess($dataSetName)) {
+      if ($pscmdlet.ShouldProcess($dataSourceName)) {
         if ($isEstimate) {
           $response = Invoke-Http -method Post -path "sessions/impact" -Body ($columnsMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json' -needHeaders
           

@@ -1,25 +1,25 @@
 Function Start-ForecastSession {
 <# 
  .Synopsis
-  Start a forecast session for a submitted dataset using the Target Column, 
+  Start a forecast session for a submitted data source using the Target Column, 
   Columns Meta-data, and a range to forecast.
 
  .Description
-  Forecast sessions are used to predict future values for a dataset. To create a
-  forecast session, specify the dataset to forecast, as well as the start and end
+  Forecast sessions are used to predict future values for a data source. To create a
+  forecast session, specify the data source to forecast, as well as the start and end
   dates of the forecast period. The Nexosis API will execute a series of machine
-  learning algorithms to approximate future values for the dataset.
+  learning algorithms to approximate future values for the data source.
 
   The forecast start date should be on the same day as (or before) the last date
-  in the dataset. If there is a gap between your forecast start date and the date 
+  in the data source. If there is a gap between your forecast start date and the date 
   of the last record in your data set, the Nexosis API will behave as if there is 
   no gap.   
 
-  .Parameter dataSetName
-   Name of the dataset to forecast
+  .Parameter dataSourceName
+   Name of the data source (view, dataset, etc) to forecast
 
   .Parameter targetColumn
-   Column in the specified dataset to forecast
+   Column in the specified data source to forecast
 
   .Parameter startDate
    First date to forecast date-time formatted as date-time in ISO8601.
@@ -43,13 +43,13 @@ Function Start-ForecastSession {
    costs will include the estimated cost that the request would have incurred.  
 
  .Example
-  # Start a Daily Forecast session on the dataset 'salesdata' and set the target column to forecast to
+  # Start a Daily Forecast session on the data source 'salesdata' and set the target column to forecast to
   'sales' - forecast between the range of 01-06-2013 to 01-13-2013
-  Start-ForecastSession -dataSetName 'salesdata' -targetColumn 'sales' -startDate 2013-01-06 -endDate 2013-01-13 -resultInterval Day -columnsMetadata $columns
+  Start-ForecastSession -dataSourceName 'salesdata' -targetColumn 'sales' -startDate 2013-01-06 -endDate 2013-01-13 -resultInterval Day -columnsMetadata $columns
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
-        [string]$dataSetName,
+        [string]$dataSourceName,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string]$targetColumn,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
@@ -66,8 +66,8 @@ Function Start-ForecastSession {
         [switch]$isEstimate
     )
     process {
-        if (($dataSetName -eq $null ) -or ($dataSetName.Trim().Length -eq 0)) { 
-            throw "Argument '-DataSetName' cannot be null or empty."
+        if (($dataSourceName -eq $null ) -or ($dataSourceName.Trim().Length -eq 0)) { 
+            throw "Argument '-DataSourceName' cannot be null or empty."
         }
 
         if ($columnsMetadata -isnot [Hashtable])
@@ -76,7 +76,7 @@ Function Start-ForecastSession {
         }
         $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
         
-        $params['dataSetName'] = $dataSetName
+        $params['dataSourceName'] = $dataSourceName
         
         if ($targetColumn -ne $null){
             $params['targetColumn'] = $targetColumn
@@ -99,7 +99,7 @@ Function Start-ForecastSession {
 
         $params['resultInterval'] = $resultInterval.toString()
 
-        if ($pscmdlet.ShouldProcess($dataSetName)) {
+        if ($pscmdlet.ShouldProcess($dataSourceName)) {
             Invoke-Http -method Post -path "sessions/forecast" -Body ($columnsMetadata | ConvertTo-Json -depth 6) -params $params
         }
     }   

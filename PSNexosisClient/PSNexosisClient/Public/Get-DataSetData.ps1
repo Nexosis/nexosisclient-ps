@@ -1,7 +1,7 @@
 Function Get-DataSetData {
 <# 
  .Synopsis
-  Reads the data in a particular dataset and returns it or CSV format.
+  Reads the data in a particular dataset and returns it as an object or in CSV format.
 
  .Description
   Returns all of the data stored in a dataset. If the DataSet does not exist or an error occurs, it will return 
@@ -40,7 +40,7 @@ Function Get-DataSetData {
   (Get-DataSetData -dataSetName 'Location-A').Data
   
   .Example
-  # Get the data in the dataset named 'salesdata' starting at page and include 1000 records between the provided start date and enddate.
+  # Get the data in the dataset named 'salesdata' starting at page 0 and include 1000 records between the provided start date and enddate.
   Get-DataSetData -dataSetName 'salesdata' -page 0 -pageSize 1000 -startDate 2017-02-25 -endDate 2017-03-25
 
  .Example

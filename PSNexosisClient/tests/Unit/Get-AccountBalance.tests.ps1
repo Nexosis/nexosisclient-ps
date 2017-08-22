@@ -25,12 +25,20 @@ Describe "Get-AccountBalance" {
 
     	Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
 			param($Uri, $Method, $Headers, $ContentType)
-			# do code, return stuff.
+			# Build mock response object
+			$response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+			}
+			$response.Headers.Add("Nexosis-Account-Balance","200 USD")
+			
+			$response
         } -Verifiable
         
 		It "gets account balance" {
-			Get-AccountBalance
+			$value = Get-AccountBalance
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
+			$value | should be "200 USD"
 		}
         
 		It "uses the mock" {
@@ -43,19 +51,13 @@ Describe "Get-AccountBalance" {
 			} 
 		}
 
-        It "calls with the proper HTTP verb" {
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
-			}
-        }
-
-         It "calls with the proper content-type" {
+        It "calls with the proper content-type" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$ContentType -eq 'application/json'
 			}
         }
 
-        	It "has proper HTTP headers" {
+        It "has proper HTTP headers" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				(
 					($Headers.Contains("accept")) -and 
@@ -66,6 +68,23 @@ Describe "Get-AccountBalance" {
 					($Headers.Get_Item("User-Agent") -eq $TestVars.UserAgent)
 				)
 			}
+		}
+
+		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
+			param($Uri, $Method, $Headers, $ContentType)
+			# Build mock response object, with Error
+			$response =  New-Object PSObject -Property @{
+				StatusCode="500"
+				Headers=@{}
+			}
+			
+			$response
+		} -Verifiable
+		
+		It "gets response object when error condition" {
+			$value = Get-AccountBalance
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
+			$value.StatusCode | should be "500"
 		}
 	}
 }

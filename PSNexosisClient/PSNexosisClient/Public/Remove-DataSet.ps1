@@ -46,7 +46,7 @@ Function Remove-DataSet {
 
   .Example
   # Get all datasets that match the partial name 'PSTest' and deletes them.
-  (Get-DataSet -partialName 'PSTest').items | foreach { $_.DataSetName } | Remove-DataSet
+  (Get-DataSet -partialName 'PSTest') | foreach { $_.DataSetName } | Remove-DataSet
 #>[CmdletBinding(SupportsShouldProcess=$true)] 
 	Param(
 		[Parameter(ValueFromPipeline=$True, Mandatory=$true)]
@@ -64,9 +64,6 @@ Function Remove-DataSet {
 		
 		if (($dataSetName -eq $null ) -or ($dataSetName.Trim().Length -eq 0)) { 
 			throw "Argument '-DataSetName' cannot be null or empty."
-		}
-		else {
-			$params['dataSetName'] = "$dataSetName"
 		}
 
 		if ($startDate -ne $null) { 

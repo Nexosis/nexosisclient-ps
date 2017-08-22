@@ -28,7 +28,7 @@ Describe "Start-ForeacastSession" {
         } -Verifiable
 		
 		It "starts forecast session with all parameters" {
-			Start-ForecastSession -dataSetName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
+			Start-ForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -38,12 +38,12 @@ Describe "Start-ForeacastSession" {
 		
 		It "calls the correct URI" {		
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSetName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
 			} 		
 		}
 
-		It "throws exception when dataSetName is null or empty" {
-			{ Start-ForecastSession -dataSetName '       ' -startDate 01-01-2017 -endDate 01-20-2017 } | Should throw "Argument '-DataSetName' cannot be null or empty."
+		It "throws exception when dataSourceName is null or empty" {
+			{ Start-ForecastSession -dataSourceName '       ' -startDate 01-01-2017 -endDate 01-20-2017 } | Should throw "Argument '-DataSourceName' cannot be null or empty."
 		}
 
 		It "calls with the proper HTTP verb" {
@@ -89,7 +89,7 @@ Describe "Start-ForeacastSession" {
 				}
 			}
 
-			Start-ForecastSession -dataSetName 'Location-A' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnsMetadata $columns 
+			Start-ForecastSession -dataSourceName 'Location-A' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnsMetadata $columns 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$body -eq ($columns	| ConvertTo-Json)
 			}			

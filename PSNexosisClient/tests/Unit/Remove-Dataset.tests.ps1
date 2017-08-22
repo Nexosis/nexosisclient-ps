@@ -37,7 +37,7 @@ Describe "Remove-Dataset" {
 
 		It "calls delete with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/data/test?dataSetName=test&cascade=session"
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/test?cascade=session"
 			} 
 		}
 
@@ -66,9 +66,8 @@ Describe "Remove-Dataset" {
 		It "removes datasetdata by dataset name and dates" {
             Remove-DataSet -dataSetName 'salesdata' -startDate 2017-01-01 -endDate 2017-01-20 -force
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?dataSetName=salesdata&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00"
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00"
 			} 
         }
-
 	}
 }

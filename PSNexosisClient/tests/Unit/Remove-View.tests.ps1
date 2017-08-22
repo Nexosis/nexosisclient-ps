@@ -8,11 +8,14 @@ Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-
-Describe "Get-SessionStatus" {
-	Context "unit tests" {
+Describe "Remove-View" {
+	Context "Unit tests" {
 		Set-StrictMode -Version latest
-	
+		
+		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
+			param($Uri, $Method, $Headers)
+		} -Verifiable
+
 		BeforeEach {
 			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version
 			$TestVars = @{
@@ -22,48 +25,27 @@ Describe "Get-SessionStatus" {
 				MaxPageSize  = "1000"
 			}
 		}
-		
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			
-			$response =  New-Object PSObject -Property @{
-				StatusCode="200"
-				Headers=@{}
-			}
-			$response.Headers.Add("Nexosis-Session-Status","Started")
-			$response
-        } -Verifiable
-		
-		$sessionId = [guid]::NewGuid()
 
-         It "gets session status" {
-			$status = Get-SessionStatus -sessionId $sessionId
+		It "deletes View by name" {
+			Remove-View -viewName 'test' -cascadeOption CascadeSessions -force
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
-			$status | should be "Started"
 		}
 
 		It "uses the mock" {
 			Assert-VerifiableMocks
 		}
 
-			It "calls with the proper URI" {
+		It "calls delete with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/$sessionId"
+				$Uri -eq "$($TestVars.ApiEndPoint)/views/test?cascade=session"
 			} 
 		}
 
-        It "calls with the proper HTTP verb" {
+		It "calls with the proper HTTP verb" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Head
+				$method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Delete
 			}
         }
-
-         It "calls with the proper content-type" {
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$ContentType -eq 'application/json'
-			}
-        }
-
 		It "has proper HTTP headers" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				(
@@ -77,21 +59,8 @@ Describe "Get-SessionStatus" {
 			}
 		}
 
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			# Build mock response object, with Error
-			$response =  New-Object PSObject -Property @{
-				StatusCode="500"
-				Headers=@{}
-			}
-			
-			$response
-		} -Verifiable
-		
-		It "gets response object when error condition" {
-			$value = Get-SessionStatus -sessionId $sessionId
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
-			$value.StatusCode | should be "500"
+		It "throws exception with viewName is invalid" {
+			{ Remove-View -viewName '      ' } | Should throw "Argument '-ViewName' cannot be null or empty."
 		}
-    }
+	}
 }

@@ -6,8 +6,8 @@ Function Get-Session {
  .Description
   Gets the list of sessions that have been created for the company associated with your account.
 
- .Parameter DataSetName
-  Limits sessions to those for a particular dataset
+ .Parameter DataSourceName
+  Limits sessions to those for a particular data source.
 
  .Parameter EventName
   Limits impact sessions to those for a particular event
@@ -25,20 +25,20 @@ Function Get-Session {
   Count of Sessions records to retrieve in each page (default 100, max 1000).
 
  .Example
-  # Get all the sessions for all datasets
+  # Get all the sessions for all datasources (Views, DataSets, etc.)
   Get-Session
 
  .Example
-  # Retrieve all sessions for a given dataset named 'salesdata'
-  Get-Session -dataSetName 'salesdata'
+  # Retrieve all sessions for a given data source named 'salesdata'
+  Get-Session -dataSourceName 'salesdata'
 
  .Example
- # Retrieve all sessions that were created after 8-15-2017 for dataset named 'salesdata'
-  Get-Session -dataSetName 'salesdata' -requestedAfterDate 8-15-2017
+ # Retrieve all sessions that were created after 8-15-2017 for data source named 'salesdata'
+  Get-Session -dataSourceName 'salesdata' -requestedAfterDate 8-15-2017
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
-        [string]$dataSetName,
+        [string]$dataSourceName,
 		[Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
 		[DateTime]$requestedAfterDate,
 		[Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -59,8 +59,8 @@ Function Get-Session {
 
         $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
 
-        if (($dataSetName -ne $null) -or ($dataSetName.Trim().Length -gt 0)) {
-            $params['dataSetName'] = $dataSetName
+        if (($dataSourceName -ne $null) -or ($dataSourceName.Trim().Length -gt 0)) {
+            $params['dataSourceName'] = $dataSourceName
         }
 
         if ($page -ne 0) {
