@@ -109,13 +109,13 @@ Function Get-DataSetData {
 		foreach ($val in  $include) {
 			$params.Add('include', $val)
 		}
-		
-		if ($ReturnCsv) {
-			$response = Invoke-Http -method Get -path "data/$dataSetName" -params $params -acceptHeader "text/csv"
-		} else {
-			$response = Invoke-Http -method Get -path "data/$dataSetName" -params $params
-		}
-		    
+    
+        if ($ReturnCsv) {
+            $response = Invoke-Http -method Get -path "data/$dataSetName" -params $params -acceptHeader "text/csv"
+        } else {
+            $response = Invoke-Http -method Get -path "data/$dataSetName" -params $params
+        }
+
         $hasResponseCode = $null -ne $response.StatusCode
         
         if ($hasResponseCode -eq $true) {

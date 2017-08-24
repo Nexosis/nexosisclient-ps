@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Get-View" {
+Describe "Get-View" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest		
 

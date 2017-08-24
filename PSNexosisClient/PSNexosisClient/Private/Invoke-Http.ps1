@@ -54,10 +54,10 @@ function Invoke-Http {
 				# return results
 				$httpResults
 			} elseif ($acceptHeader -eq 'application/json') {
-				# Return PSCustomObject from JSON
+				# Return object from JSON
 				$httpResults.Content | ConvertFrom-Json
 			} elseif ($acceptHeader -eq 'text/csv') {
-				# Return raw output (csv)
+				# Return raw csv
 				$httpResults.Content
 			} else {
                 # Just return unformatted HTTP body / content
@@ -72,24 +72,24 @@ function Invoke-Http {
 		if ($_.Exception.Response -ne $null) {
 			Write-Verbose  "StatusCode: $($_.Exception.Response.StatusCode.value__)"
 			Write-Verbose  "StatusDescription: $($_.Exception.Response.StatusDescription)" 
-			if ($_.Exception.Response.Method -ne 'HEAD') {
+			
+            if ($_.Exception.Response.Method -ne 'HEAD') {
                 $result = $_.Exception.Response.GetResponseStream()
 			    $reader = New-Object System.IO.StreamReader($result)
 			    $reader.BaseStream.Position = 0
-			    $reader.DiscardBufferedData()	
-                ($reader.ReadToEnd() | ConvertFrom-Json)
+				$reader.DiscardBufferedData()
+				# Capture JSON Error message from respose stream
+				$responseJsonError = ($reader.ReadToEnd() | ConvertFrom-Json)
+				
+				$nexosisException = [NexosisClientException]::new($responseJsonError.message, [PSObject]$responseJsonError)
+				throw $nexosisException 
             } else {
-                @{
-                    StatusCode = [int]$_.Exception.Response.StatusCode
-                    ErrorResponse = @{
-                        StatusCode = [int]$_.Exception.Response.StatusCode
-                        Message = $_.Exception.Response.StatusDescription
-                    }
-                }
+				$nexosisException = [NexosisClientException]::new($_.Exception.Response.StatusDescription, [int]$_.Exception.Response.StatusCode)
+				throw $nexosisException
             }
 		} else {
-			Write-Verbose "Unexpected Error: $($_.Exception)"
-			$_.Exception
+			$nexosisException = [NexosisClientException]::new($_.Exception.message, $_.Exception)
+			throw $nexosisException
 		}
 	}
 }

@@ -8,7 +8,7 @@ Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Remove-View" {
+Describe "Remove-View" -Tag 'Unit' {
 	Context "Unit tests" {
 		Set-StrictMode -Version latest
 		

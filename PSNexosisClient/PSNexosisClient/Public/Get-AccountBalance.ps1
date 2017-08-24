@@ -21,7 +21,7 @@ Function Get-AccountBalance {
         if (($hasResponseCode -eq $true) -and ($response.StatusCode -eq 200)) {
             $response.Headers['Nexosis-Account-Balance']
         } else {
-            return $response
+           $response
         }
     }
 }

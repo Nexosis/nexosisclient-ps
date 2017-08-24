@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Get-AccountBalance" {
+Describe "Get-AccountBalance" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest		
 
@@ -68,23 +68,6 @@ Describe "Get-AccountBalance" {
 					($Headers.Get_Item("User-Agent") -eq $TestVars.UserAgent)
 				)
 			}
-		}
-
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			# Build mock response object, with Error
-			$response =  New-Object PSObject -Property @{
-				StatusCode="500"
-				Headers=@{}
-			}
-			
-			$response
-		} -Verifiable
-		
-		It "gets response object when error condition" {
-			$value = Get-AccountBalance
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
-			$value.StatusCode | should be "500"
 		}
 	}
 }

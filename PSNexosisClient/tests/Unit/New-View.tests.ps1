@@ -16,7 +16,6 @@ $testJoins = @(
         columnOptions= @{
 			mehColumnName=@{
 				alias="columnAlias"
-				joinInterval="Day"
 			}
         }
     }, 
@@ -25,11 +24,9 @@ $testJoins = @(
         columnOptions=@{
 			columnNameA=@{
 				alias="columnAliasA"
-				joinInterval="Day"
 			}
 			columnNameB=@{
 				alias="columnAliasB"
-				joinInterval="Day"
 			}
 		}
     }
@@ -38,43 +35,96 @@ $testJoins = @(
 # body that should output from the test object above
 $testBody = @"
 {
-    "columns": {
-
-    },
     "dataSetName": "dataSetName",
     "joins": [{
             "columnOptions": {
                 "mehColumnName": {
-                    "joinInterval": "Day",
                     "alias": "columnAlias"
                 }
             },
             "joins": null,
             "dataSet": {
-                "dataSetName": null
+                "name": null
             }
         },
         {
             "columnOptions": {
                 "columnNameB": {
-                    "joinInterval": "Day",
                     "alias": "columnAliasB"
                 },
                 "columnNameA": {
-                    "joinInterval": "Day",
                     "alias": "columnAliasA"
                 }
             },
             "joins": null,
             "dataSet": {
-                "dataSetName": null
+                "name": null
             }
         }
     ]
 }
 "@
 
-Describe "New-View" {
+
+$testBodyWithColumnsMetaData = @"
+{
+    "columns": {
+        "sales": {
+            "imputation": "zeroes",
+            "aggregation": "sum",
+            "dataType": "numeric",
+            "role": "target"
+        },
+        "timestamp": {
+            "imputation": "zeroes",
+            "aggregation": "sum",
+            "dataType": "date",
+            "role": "timestamp"
+        },
+        "isPromo": {
+            "imputation": "zeroes",
+            "aggregation": "sum",
+            "dataType": "numeric",
+            "role": "feature"
+        },
+        "transactions": {
+            "imputation": "zeroes",
+            "aggregation": "sum",
+            "dataType": "numeric",
+            "role": "none"
+        }
+    },
+    "dataSetName": "dataSetName",
+    "joins": [{
+            "columnOptions": {
+                "mehColumnName": {
+                    "alias": "columnAlias"
+                }
+            },
+            "joins": null,
+            "dataSet": {
+                "name": null
+            }
+        },
+        {
+            "columnOptions": {
+                "columnNameB": {
+                    "alias": "columnAliasB"
+                },
+                "columnNameA": {
+                    "alias": "columnAliasA"
+                }
+            },
+            "joins": null,
+            "dataSet": {
+                "name": null
+            }
+        }
+    ]
+}
+"@
+
+Describe "New-View" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		
@@ -120,8 +170,8 @@ Describe "New-View" {
 			{ New-View -viewName 'notnull' -dataSetName "dataSetName" -joins @() } | Should throw "Parameter '-joins' must contain at least one join."
 		}
 
-		It "puts new view, join and metadata with name" {
-			New-View -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins -columnMetaData @{}
+		It "puts new view, join with name" {
+			New-View -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -135,13 +185,47 @@ Describe "New-View" {
 			# Converting from string to json and back seems to remove 
 			# any extra whitespace, formatting, etc. so they compare acutal contents.
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 5) -eq ($testBody | ConvertFrom-Json | ConvertTo-Json -Depth 5)
+				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 6) -eq ($testBody | ConvertFrom-Json | ConvertTo-Json -Depth 6)
 			}
         }
 
 		It "calls with the proper HTTP verb" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Put
+			}
+		}
+
+		It "puts new view, join and metadata with name" {
+			$columnsMetaData = @{
+				isPromo =  @{
+								dataType = "numeric"
+								role =  "feature"
+								imputation =  "zeroes"
+								aggregation =  "sum"
+							}
+				timestamp =  @{
+								  dataType =  "date"
+								  role =  "timestamp"
+								  imputation =  "zeroes"
+								  aggregation =  "sum"
+							  }
+				sales =  @{
+							  dataType =  "numeric"
+							  role = "target"
+							  imputation =  "zeroes"
+							  aggregation =  "sum"
+						  }
+				transactions =  @{
+									 dataType =  "numeric"
+									 role =  "none"
+									 imputation =  "zeroes"
+									 aggregation =  "sum"
+								 }
+			}
+			
+			New-View -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins -columnMetaData $columnsMetaData
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 6) -eq ($testBodyWithColumnsMetaData | ConvertFrom-Json | ConvertTo-Json -Depth 6)
 			}
 		}
 	}

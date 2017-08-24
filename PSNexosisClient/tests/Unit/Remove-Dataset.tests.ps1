@@ -8,7 +8,7 @@ Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Remove-Dataset" {
+Describe "Remove-Dataset" -Tag 'Unit' {
 	Context "Unit tests" {
 		Set-StrictMode -Version latest
 		

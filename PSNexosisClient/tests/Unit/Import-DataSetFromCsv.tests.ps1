@@ -10,7 +10,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 $PSVersion = $PSVersionTable.PSVersion.Major
 $scriptRoot = $PSScriptRoot
 
-Describe "Import-DataSetFromCsv" {
+Describe "Import-DataSetFromCsv" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 

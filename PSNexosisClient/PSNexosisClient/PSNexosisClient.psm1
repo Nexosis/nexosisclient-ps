@@ -41,12 +41,39 @@ Enum ResultInterval
     Year
 }
 
-# Setup a hashtable of configurable variables
+# Setup a hashtable of configurable variables with Defaults
 $script:PSNexosisVars = new-object PSObject -Property @{
 	ApiKey  = $Env:NEXOSIS_API_KEY
 	ApiBaseUrl = $BaseUrl
     DefaultPageSize=100
 }
+
+Add-Type -TypeDefinition @"
+using System;
+using System.Management.Automation;
+using System.Collections.Generic;
+using System.Net;
+
+public class NexosisClientException : Exception
+{
+    public NexosisClientException(string message, Exception inner) : base(message, inner) { }
+
+    public NexosisClientException(string message, HttpStatusCode statusCode) : base(message)
+    {
+        StatusCode = statusCode;
+        ErrorResponse = null;
+    }
+
+    public NexosisClientException(string message, PSObject response) : base(message)
+    {
+        StatusCode = (HttpStatusCode)response.Properties["StatusCode"].Value;
+        ErrorResponse = response;
+    }
+
+    public HttpStatusCode StatusCode { get; set; }
+    public PSObject ErrorResponse { get; set; }
+}
+"@
 
 # Export all public functions
 Export-ModuleMember -Function $Public.Basename

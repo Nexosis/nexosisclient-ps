@@ -12,11 +12,12 @@ $PSVersion = $PSVersionTable.PSVersion.Major
 Describe "New-View" -Tag 'Integration' {
 	Context "Integration Tests" {
 		Set-StrictMode -Version latest
-         # generate a unique dataset name
-        $script:dataSetName = "PSTest-Data-" + -join ((65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_})
-        $script:joinDataSetName = "PSTest-JoinData-" + -join ((65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_})
-
+        
         BeforeAll {
+            # generate a unique dataset name
+            $script:dataSetName = "PSTest-Data-" + -join ((65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_})
+            $script:joinDataSetName = "PSTest-JoinData-" + -join ((65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_})
+    
             # Create Test DataSet to create view off of
             $columns = @{
                 timestamp = @{
@@ -103,38 +104,48 @@ Describe "New-View" -Tag 'Integration' {
                     isPromo = "0"
                 }
             )
-
+            # create two new datasets to make a view
             New-DataSet -dataSetName $script:dataSetName -data $data -columnMetaData $columns
             New-DataSet -dataSetName $script:joinDataSetName -data $eventData -columnMetaData $eventColumns
         }
-        
-        AfterAll {
-            # Remove created datasets
-            Remove-Dataset -dataSetName $script:dataSetName -force
-            Remove-Dataset -dataSetName $script:joinDataSetName -force     
-        }
-
-		It "creates and deletes a new view" {			
+   
+		It "creates a new view" {			
 			# generate a unique dataset name
-			$viewName = "PSTest-View-" + -join ((65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_})
+			$script:viewName = "PSTest-View-" + -join ((65..90) + (97..122) | Get-Random -Count 5 | % {[char]$_})
                     
             $joins = @(
                 @{
                     dataSetName=$script:joinDataSetName
-                    
                     columnOptions = @{
                         isPromo=@{
                             alias="promo"
-                            joinInterval="Day"
                         }
                     }
                 }
             )
             
 			# Create new dataset
-			New-View -viewName $viewName -dataSetName $script:dataSetName -joins $joins -columnMetaData $columns | ConvertTo-Json -Depth 4 | Should Be ($jsonCreateAnswer -replace "\[\[dataSetName\]\]", $dataSetName)
-			# Remove it
-			Remove-View -viewName $viewName -force
-		}
+            $viewResponse = New-View -viewName $script:viewName -dataSetName $script:dataSetName -joins $joins 
+            
+            { $viewResponse.StatusCode -eq 200 } | should be $true
+            $viewResponse.viewName | should be $script:viewName
+            $viewResponse.dataSetName | should be $script:dataSetName
+            $viewResponse.joins[0].dataSet.name | should be $script:joinDataSetName
+            $viewResponse.joins[0].columnOptions.isPromo | should not be $null
+        }
+             
+        It "removes a view" {
+           # {Remove-View -viewName $script:viewName -force}  | should not throw
+        }
+
+        It "Should attempt to delete a missing view and get an error" {
+            {Remove-View -viewName 'view123456' -force}  |  should throw "Item of type view with identifier view123456 was not found"
+        }
+	
+        AfterAll {
+            # Remove created datasets
+            #Remove-Dataset -dataSetName $script:dataSetName -force
+            #Remove-Dataset -dataSetName $script:joinDataSetName -force     
+        }
 	}
 }

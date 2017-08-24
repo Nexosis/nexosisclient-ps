@@ -22,7 +22,7 @@ $jsonPostBody = @"
 }
 "@
 
-Describe "Import-DataSetFromS3" {
+Describe "Import-DataSetFromS3" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 

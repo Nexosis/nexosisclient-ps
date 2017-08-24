@@ -21,7 +21,6 @@ Get-AccountBalance
 Get-DataSet
 Get-DataSetData
 Get-Import
-Get-ImportDetail
 Get-PSNexosisConfig
 Get-Session
 Get-SessionResult

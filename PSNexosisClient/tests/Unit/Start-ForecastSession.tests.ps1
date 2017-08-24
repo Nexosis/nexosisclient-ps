@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Start-ForeacastSession" {
+Describe "Start-ForeacastSession" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		

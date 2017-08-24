@@ -21,7 +21,7 @@ $testBody = @"
 }
 "@
 
-Describe "New-DataSet" {
+Describe "New-DataSet" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		

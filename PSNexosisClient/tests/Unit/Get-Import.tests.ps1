@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-Import" {
+Describe "Get-Import" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest
 		
@@ -75,6 +75,21 @@ Describe "Get-Import" {
 			}
 		}
 
+		It "gets import by import id" {
+			Get-Import -importId "015d7a16-8b2b-4c9c-865d-9a400e01a291"
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
+		}
+
+		It "calls with the proper URI for specifying ImportId" {
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/imports/015d7a16-8b2b-4c9c-865d-9a400e01a291"
+			} 
+        }
+		
+        It "throws when importID is null" {
+			{ Get-Import -importId [GUID]$null } | should Throw 'Cannot process argument transformation on parameter 'importId'. Cannot convert value "[GUID]" to type "System.Guid". Error: "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)."'
+		}
+		
 		It "gets imports by dataset name and requested before and after dates including paging defaults" {
             Get-Import -dataSetName 'salesdata' -requestedAfterDate 2017-01-01 -requestedBeforeDate 2017-01-20 
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {

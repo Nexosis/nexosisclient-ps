@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Remove-Session" {
+Describe "Remove-Session" -Tag 'Unit' {
 	Context "Unit tests" {
 		Set-StrictMode -Version latest
 		

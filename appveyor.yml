@@ -2,6 +2,8 @@ version: 1.1.{build}
 image: WMF 5
 
 environment:
+ NugetApiKey:
+    secure: ZVnyY36pyop4d/d/NqbJh9NDjouFQpPxX8BcIjO+Zv7zhn8kaTbS7soALfJ0MKSD
   NEXOSIS_API_KEY:
     secure: Vu9ZUtpEcQ/EoKx71vLot16ynFoMm0Tta7rR2FHUJlUEula3TAlnL0cl8BLubSvo
   NEXOSIS_BASE_TEST_URL: https://api.uat.nexosisdev.com/v1

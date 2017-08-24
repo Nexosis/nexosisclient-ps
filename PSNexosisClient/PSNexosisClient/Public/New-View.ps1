@@ -49,16 +49,23 @@ Function New-View {
                 throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."	
             }
     
-            $viewDefinition = @{
-                dataSetName = $dataSetName
-                columns = $columnMetaData
-                joins = @()
+            if ($columnMetaData -eq $null) {
+                $viewDefinition = @{
+                    dataSetName = $dataSetName
+                    joins = @()
+                }
+            } else {
+                $viewDefinition = @{
+                    dataSetName = $dataSetName
+                    columns = $columnMetaData
+                    joins = @()
+                }
             }
 
             foreach ($join in $joins) {
                 $joinToAdd = @{
                     dataSet=@{
-                        dataSetName = $join["dataSetName"]
+                        name = $join["dataSetName"]
                     }
                     columnOptions=$join["columnOptions"]
                     joins=$null
