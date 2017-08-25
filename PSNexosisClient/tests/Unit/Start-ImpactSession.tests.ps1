@@ -79,6 +79,29 @@ Describe "Start-ImpactSession" -Tag 'Unit' {
 			}
 		}
 		
+		It "has proper HTTP body" {
+			$columns = @{
+				columns = @{
+					timeStamp = @{
+						dataType = "date"
+						role = "timestamp"
+					}
+					sales = @{
+						dataType = "numeric"
+						role = "target"
+					}
+					transactions=  @{
+						dataType = "numeric"
+						role = "none"
+					}
+				}
+			}
+
+			Start-ImpactSession -dataSourceName 'Location-A' -eventName 'unitTest' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $columns 
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
+				$body -eq ($columns	| ConvertTo-Json)
+			}
+		}
 		It "starts an impact session with all parameters" {
 			Start-ImpactSession -dataSourceName 'name' -eventName '50percentoff' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
