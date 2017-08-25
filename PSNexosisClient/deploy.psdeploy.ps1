@@ -21,7 +21,7 @@
 if(
     $env:BHPSModulePath -and
     $env:BHBuildSystem -ne 'Unknown' -and
-    #$env:BHBranchName -eq "master" -and
+    $env:BHBranchName -eq "master" -and
     $env:BHCommitMessage -match '!deploy'
 )
 {
@@ -45,18 +45,18 @@ else
 }
 
 # Publish to AppVeyor if we're in AppVeyor
-#if(
-#    $env:BHPSModulePath -and
-#    $env:BHBuildSystem -eq 'AppVeyor'
-#   )
-#{
-#    Deploy DeveloperBuild {
-#        By AppVeyorModule {
-#            FromSource $ENV:BHPSModulePath
-#            To AppVeyor
-#            WithOptions @{
-#                Version = $env:APPVEYOR_BUILD_VERSION
-#            }
-#        }
-#    } -Verbose
-#}
+if(
+    $env:BHPSModulePath -and
+    $env:BHBuildSystem -eq 'AppVeyor'
+   )
+{
+    Deploy DeveloperBuild {
+        By AppVeyorModule {
+            FromSource $ENV:BHPSModulePath
+            To AppVeyor
+            WithOptions @{
+                Version = $env:APPVEYOR_BUILD_VERSION
+            }
+        }
+    } -Verbose
+}
