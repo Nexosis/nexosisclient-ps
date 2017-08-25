@@ -36,7 +36,7 @@ Describe "Get-AccountBalance" -Tag 'Unit' {
 		It "gets account balance" {
 			$value = Get-AccountBalance
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
-			$value | should be "200 USDAAA"
+			$value | should be "200 USD"
 		}
         
 		It "uses the mock" {
