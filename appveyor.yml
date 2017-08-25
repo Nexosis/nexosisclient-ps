@@ -49,6 +49,6 @@ test_script:
 
     Set-BuildEnvironment
 
-    Invoke-PSDeploy -Path .\Deploy.psdeploy.ps1 -Confirm
+    Invoke-PSDeploy -Path .\Deploy.psdeploy.ps1 -Force 
     
     popd
