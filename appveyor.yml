@@ -47,7 +47,7 @@ test_script:
 
     Invoke-Build ConfirmTestsPassed
 
-    Set-BuildVariable
+    Set-BuildEnvironment
 
     Invoke-PSDeploy -Path .
     
