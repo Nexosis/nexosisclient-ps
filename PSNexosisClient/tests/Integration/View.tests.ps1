@@ -135,7 +135,7 @@ Describe "New-View" -Tag 'Integration' {
         }
              
         It "removes a view" {
-           # {Remove-View -viewName $script:viewName -force}  | should not throw
+            {Remove-View -viewName $script:viewName -force}  | should not throw
         }
 
         It "Should attempt to delete a missing view and get an error" {
@@ -144,8 +144,8 @@ Describe "New-View" -Tag 'Integration' {
 	
         AfterAll {
             # Remove created datasets
-            #Remove-Dataset -dataSetName $script:dataSetName -force
-            #Remove-Dataset -dataSetName $script:joinDataSetName -force     
+            Remove-Dataset -dataSetName $script:dataSetName -force
+            Remove-Dataset -dataSetName $script:joinDataSetName -force     
         }
 	}
 }

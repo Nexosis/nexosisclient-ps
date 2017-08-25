@@ -12,14 +12,54 @@ Function New-View {
      .Parameter DataSetName
      Name of the dataset to add data.
 
-     .Parameter RightDataSetName
-     Name of the dataset to join to
-    
-     .Parameter columnMetadata
-     A hashtable containing metadata that describes the columns for the view (overriding the source dataset columns metadata), such as data types and imputation and aggragation strategies.
-    
-     .Example
+     .Parameter Joins
+     A data structure containing the Join Definition for how to join another DataSet with the dataset specified in Joins.
 
+        @(
+            @{
+                name="rightDataSetName"
+                columnOptions= @{
+                    columnNameToIncludeInJoin=@{
+                        alias="columnAlias"
+                    }
+                }
+            }
+        )
+
+     .Parameter columnMetadata
+     An optional data structure containing metadata describing the columns for a view. By default, a view will inherit 
+     the metadata from the source DataSets that construct it. If the Columns Metadata is set on a view directly, it
+     will overriding the source datasets columns metadata on the view alone.
+    
+  .Link
+     http://docs.nexosis.com/clients/powershell
+
+  .Link
+     http://docs.nexosis.com/guides/views
+
+     .Example
+     # The Following is an example join definition that joins dataset 'SalesData' with dataset 'promoData' on the
+     # 'timestamp' column. All columns from both datasets will be joined together. ColumnOptions are optional and
+     # are only used to renamed (alias) a column or to specify what time interval to join on for a timestamp data 
+     # type. 
+
+    $joins = @(
+                @{
+                    dataSetName="promoData"
+                    columnOptions = @{
+                        timestamp=@{
+                            joinInterval="Day"
+                            alias="promoDate"
+                        }
+                        isPromo=@{
+                            alias="promo"
+                        }
+                    }
+                }
+            )
+
+    New-View -viewName 'SalesWithPromosView' -dataSetName "salesData" -joins $joins 
+    
     #>[CmdletBinding(SupportsShouldProcess=$true)]
         Param(
             [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
@@ -31,7 +71,7 @@ Function New-View {
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
             $columnMetaData
         )
-        process {   
+        process {
             if ($viewName.Trim().Length -eq 0) { 
                 throw "Argument '-viewName' cannot be null or empty."
             }
@@ -49,7 +89,7 @@ Function New-View {
                 throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."	
             }
     
-            if ($columnMetaData -eq $null) {
+            if ($null -eq $columnMetaData) {
                 $viewDefinition = @{
                     dataSetName = $dataSetName
                     joins = @()

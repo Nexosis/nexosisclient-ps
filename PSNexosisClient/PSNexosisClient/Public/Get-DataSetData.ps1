@@ -104,6 +104,8 @@ Function Get-DataSetData {
 
 		if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
             $params['pageSize'] = $pageSize
+        }  elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
+            $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
         }
 
 		foreach ($val in  $include) {
@@ -111,17 +113,9 @@ Function Get-DataSetData {
 		}
     
         if ($ReturnCsv) {
-            $response = Invoke-Http -method Get -path "data/$dataSetName" -params $params -acceptHeader "text/csv"
+            Invoke-Http -method Get -path "data/$dataSetName" -params $params -acceptHeader "text/csv"
         } else {
-            $response = Invoke-Http -method Get -path "data/$dataSetName" -params $params
-        }
-
-        $hasResponseCode = $null -ne $response.StatusCode
-        
-        if ($hasResponseCode -eq $true) {
-            $response
-        } else {
-            $response
+            Invoke-Http -method Get -path "data/$dataSetName" -params $params
         }
 	}
 }

@@ -24,8 +24,18 @@ Describe "Get-DatasetData" -Tag 'Unit' {
         }
 		
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-            Write-Verbose $uri
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content=''
+			}
+			if($Headers['accept'] -eq 'application/json') {
+				$response.Content = "{ }"
+			} elseif ($Headers['accept'] -eq 'text/csv') {
+				$response.Content = "A,B,C,D`r`n1,2,3,4`r`n"
+			}
+			$response
         } -Verifiable
         
         It "gets datasetdata by dataset name with paging" {
@@ -103,16 +113,5 @@ Describe "Get-DatasetData" -Tag 'Unit' {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data/Location-A?include=sales&include=transactions"
 			}
 		}
-
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			# do code, return stuff.
-			Return @{ StatusCode = 404 }
-		} -Verifiable
-
-		It "should have StatusCode" {
-			$result = Get-DatasetData -DataSetName 'test'
-			$result.StatusCode | should be 404
-		}
-    }
+	}
 }

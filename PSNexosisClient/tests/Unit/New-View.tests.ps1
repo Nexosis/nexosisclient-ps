@@ -14,7 +14,7 @@ $testJoins = @(
     @{
         name="rightDataSet1"
         columnOptions= @{
-			mehColumnName=@{
+			theColumnName=@{
 				alias="columnAlias"
 			}
         }
@@ -38,7 +38,7 @@ $testBody = @"
     "dataSetName": "dataSetName",
     "joins": [{
             "columnOptions": {
-                "mehColumnName": {
+                "theColumnName": {
                     "alias": "columnAlias"
                 }
             },
@@ -97,7 +97,7 @@ $testBodyWithColumnsMetaData = @"
     "dataSetName": "dataSetName",
     "joins": [{
             "columnOptions": {
-                "mehColumnName": {
+                "theColumnName": {
                     "alias": "columnAlias"
                 }
             },
@@ -139,8 +139,19 @@ Describe "New-View" -Tag 'Unit' {
 		}
 
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-            param($Uri, $Method, $Headers, $Body) 
-		} -Verifiable
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content=''
+			}
+			if($Headers['accept'] -eq 'application/json') {
+				$response.Content = "{ }"
+			} elseif ($Headers['accept'] -eq 'text/csv') {
+				$response.Content = "A,B,C,D`r`n1,2,3,4`r`n"
+			}
+			$response
+        } -Verifiable
 
 		It "throws if ViewName is null or empty" {
 			{ New-View -viewName '' -dataSetName "dataSetName" -joins $testJoins }  | should Throw "Cannot bind argument to parameter 'viewName' because it is an empty string."
@@ -195,7 +206,7 @@ Describe "New-View" -Tag 'Unit' {
 			}
 		}
 
-		It "puts new view, join and metadata with name" {
+		It "puts new view with metadata" {
 			$columnsMetaData = @{
 				isPromo =  @{
 								dataType = "numeric"
@@ -225,7 +236,7 @@ Describe "New-View" -Tag 'Unit' {
 			
 			New-View -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins -columnMetaData $columnsMetaData
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
-				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 6) -eq ($testBodyWithColumnsMetaData | ConvertFrom-Json | ConvertTo-Json -Depth 6)
+				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 5) -eq ($testBodyWithColumnsMetaData | ConvertFrom-Json | ConvertTo-Json -Depth 5)
 			}
 		}
 	}

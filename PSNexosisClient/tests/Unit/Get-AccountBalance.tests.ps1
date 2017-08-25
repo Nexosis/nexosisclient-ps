@@ -23,18 +23,16 @@ Describe "Get-AccountBalance" -Tag 'Unit' {
             }
         }
 
-    	Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			# Build mock response object
-			$response =  New-Object PSObject -Property @{
+		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
 				StatusCode="200"
 				Headers=@{}
 			}
 			$response.Headers.Add("Nexosis-Account-Balance","200 USD")
-			
 			$response
         } -Verifiable
-        
+	
 		It "gets account balance" {
 			$value = Get-AccountBalance
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
@@ -47,7 +45,7 @@ Describe "Get-AccountBalance" -Tag 'Unit' {
         
 		It "calls with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/data"
+				$Uri -eq "$($TestVars.ApiEndPoint)/data?page=0&pageSize=1"
 			} 
 		}
 

@@ -104,23 +104,14 @@ Function Start-ImpactSession {
       
       $params['resultInterval'] = $resultInterval.toString()
             
-      if ($pscmdlet.ShouldProcess($dataSourceName)) {
-        if ($isEstimate) {
+      if ($pscmdlet.ShouldProcess($dataSourceName)) {       
           $response = Invoke-Http -method Post -path "sessions/impact" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json' -needHeaders
-          
-          if (($null -ne $response.Headers) -and ($response.Headers.ContainsKey('Nexosis-Request-Cost'))) {
-            # Add additional field called 'costEstimate' to the object
-            $responseObj = $response.Content | ConvertFrom-Json
+          $responseObj = $response.Content | ConvertFrom-Json
+          if ($response.Headers.ContainsKey('Nexosis-Request-Cost')) {
+            # Add additional field called 'costEstimate' to the return object
             $responseObj | Add-Member -name "costEstimate" -value $response.Headers['Nexosis-Request-Cost'] -MemberType NoteProperty
-            $responseObj
-          } elseif ($null -ne $response.Content) {
-            $response.Content | ConvertFrom-Json
-          } else {
-            $response
           }
-        } else {
-            Invoke-Http -method Post -path "sessions/impact" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json'
+          $responseObj
         }
-      }
     }
 }

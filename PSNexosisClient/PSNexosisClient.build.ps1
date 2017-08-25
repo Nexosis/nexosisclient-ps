@@ -100,7 +100,7 @@ task RunIntegrationTests {
 
     # Publish Test Results as NUnitXml
     $testResults = Invoke-Pester -PassThru @invokePesterParams
-    Write-Output $testresults
+    
     # Save Test Results as JSON
     $testresults | ConvertTo-Json -Depth 6 | Set-Content  (Join-Path $Artifacts "PesterResults.json")
 

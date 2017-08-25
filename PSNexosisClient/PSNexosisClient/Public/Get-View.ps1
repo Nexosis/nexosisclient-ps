@@ -72,16 +72,11 @@ Function Get-View {
     
             if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
                 $params['pageSize'] = $pageSize
+            } elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
+                $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
             }
     
-            $response = Invoke-Http -method Get -path 'views' -params $params
-            
-            $hasResponseCode = $null -ne $response.StatusCode
-            
-            if ($hasResponseCode -eq $true) {
-                $response
-            } else {
-                $response.items
-            }
+    
+            Invoke-Http -method Get -path 'views' -params $params
         }
     }

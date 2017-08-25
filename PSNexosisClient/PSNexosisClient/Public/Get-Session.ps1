@@ -68,6 +68,8 @@ Function Get-Session {
         }
         if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
             $params['pageSize'] = $pageSize
+        } elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
+            $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
         }
 
         if ($requestedAfterDate -ne $null) { 
@@ -78,13 +80,6 @@ Function Get-Session {
         }
         
         $response = Invoke-Http -method Get -path 'sessions' -params $params
-        $hasResponseCode = $null -ne $response.StatusCode
-        
-        if ($hasResponseCode -eq $true) {
-            $response
-        } else {
-            $response.items
-        }
-
+        $response.items
     }
 }

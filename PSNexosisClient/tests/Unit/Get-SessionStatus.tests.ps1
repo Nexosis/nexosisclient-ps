@@ -24,9 +24,8 @@ Describe "Get-SessionStatus" -Tag 'Unit' {
 		}
 		
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			
-			$response =  New-Object PSObject -Property @{
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
 				StatusCode="200"
 				Headers=@{}
 			}
@@ -75,23 +74,6 @@ Describe "Get-SessionStatus" -Tag 'Unit' {
 					($Headers.Get_Item("User-Agent") -eq $TestVars.UserAgent)
 				)
 			}
-		}
-
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			# Build mock response object, with Error
-			$response =  New-Object PSObject -Property @{
-				StatusCode="500"
-				Headers=@{}
-			}
-			
-			$response
-		} -Verifiable
-		
-		It "gets response object when error condition" {
-			$value = Get-SessionStatus -sessionId $sessionId
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
-			$value.StatusCode | should be "500"
 		}
     }
 }

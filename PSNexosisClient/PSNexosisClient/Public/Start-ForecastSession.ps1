@@ -100,7 +100,16 @@ Function Start-ForecastSession {
         $params['resultInterval'] = $resultInterval.toString()
 
         if ($pscmdlet.ShouldProcess($dataSourceName)) {
-            Invoke-Http -method Post -path "sessions/forecast" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params
+
+            if ($pscmdlet.ShouldProcess($dataSourceName)) {       
+                $response = Invoke-Http -method Post -path "sessions/forecast" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -needHeaders
+                $responseObj = $response.Content | ConvertFrom-Json
+                if ($response.Headers.ContainsKey('Nexosis-Request-Cost')) {
+                  # Add additional field called 'costEstimate' to the return object
+                  $responseObj | Add-Member -name "costEstimate" -value $response.Headers['Nexosis-Request-Cost'] -MemberType NoteProperty
+                }
+                $responseObj
+              }
         }
     }   
 }

@@ -50,30 +50,33 @@ function Invoke-Http {
 				# return the results so calls can work with headers, etc.
 				$httpResults
 			} elseif ($needHeaders -eq $true) {
-				# Need headers (Get-AccountBalance, etc)
-				# return results
+				# Need headers (Get-AccountBalance, etc), return entire HttpRequest object
+				# Callers need to handle checking statuscode and handling Headers and Content
 				$httpResults
 			} elseif ($acceptHeader -eq 'application/json') {
-				# Return object from JSON
+				# Return HTTP Content from JSON
 				$httpResults.Content | ConvertFrom-Json
 			} elseif ($acceptHeader -eq 'text/csv') {
-				# Return raw csv
+				# Return Content as Raw since it comes back as CSV.
 				$httpResults.Content
 			} else {
-                # Just return unformatted HTTP body / content
+                # Just return raw HTTP body / content
 				$httpResults.Content
 			}
 		} else {
             # if it's not 200-299 status code and not an exception (400-599), just return the WebRequest object
-            $httpResults
+            assert($true, "Unexpected condition - Invoke-WebRequest had a status code between 200-299 but did not throw an exception. NExosis API should not throw 300's.")
         }
 	} Catch {
-		# TODO - return a NexosisClientException Object 
 		if ($_.Exception.Response -ne $null) {
 			Write-Verbose  "StatusCode: $($_.Exception.Response.StatusCode.value__)"
 			Write-Verbose  "StatusDescription: $($_.Exception.Response.StatusDescription)" 
 			
-            if ($_.Exception.Response.Method -ne 'HEAD') {
+			# If it's an HTTP HEAD request, there's no body to capture the error details from.
+            if ($_.Exception.Response.Method -eq 'HEAD') {
+				$nexosisException = [NexosisClientException]::new($_.Exception.Response.StatusDescription, [int]$_.Exception.Response.StatusCode)
+				throw $nexosisException
+            } else {
                 $result = $_.Exception.Response.GetResponseStream()
 			    $reader = New-Object System.IO.StreamReader($result)
 			    $reader.BaseStream.Position = 0
@@ -83,11 +86,9 @@ function Invoke-Http {
 				
 				$nexosisException = [NexosisClientException]::new($responseJsonError.message, [PSObject]$responseJsonError)
 				throw $nexosisException 
-            } else {
-				$nexosisException = [NexosisClientException]::new($_.Exception.Response.StatusDescription, [int]$_.Exception.Response.StatusCode)
-				throw $nexosisException
             }
 		} else {
+			# Unexpected exception - wrap it in a NexosisClientException.
 			$nexosisException = [NexosisClientException]::new($_.Exception.message, $_.Exception)
 			throw $nexosisException
 		}

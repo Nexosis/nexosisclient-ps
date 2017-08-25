@@ -15,13 +15,19 @@ Function Get-AccountBalance {
 #>[CmdletBinding()]
 	Param()
     process {
-        $response = Invoke-Http -method Get -path "data" -needHeaders
-        $hasResponseCode = [bool]($response.PSobject.Properties.name -match "StatusCode")
+        #  get as little data as possible since we just want the account balance HTTP header.
+        $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
+        $params['page']=0
+        $params['pageSize'] = 1
+
+        $response = Invoke-Http -method Get -path "data" -params $params -needHeaders
         
-        if (($hasResponseCode -eq $true) -and ($response.StatusCode -eq 200)) {
-            $response.Headers['Nexosis-Account-Balance']
+        if (($null -ne $response.Headers) -and ($response.Headers.ContainsKey('Nexosis-Account-Balance'))) {
+            $response.Headers['Nexosis-Account-Balance'] 
         } else {
-           $response
+            $nexosisException = [NexosisClientException]::new("Error requesting account balance. No Nexosis-Account-Balance header in HTTP Response. See ErrorResponse for more details.", $response.StatusCode)
+            $nexosisException.ErrorResponse = $response
+			throw $nexosisException
         }
     }
 }

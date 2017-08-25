@@ -83,7 +83,9 @@ Function Get-Import {
 			}
 			if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
 				$params['pageSize'] = $pageSize
-			}
+			} elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
+				$params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
+			}	
 
 			$response = Invoke-Http -method Get -path 'imports' -params $params    
 			$hasResponseCode = $null -ne $response.StatusCode

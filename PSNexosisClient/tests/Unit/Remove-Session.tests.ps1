@@ -14,8 +14,19 @@ Describe "Remove-Session" -Tag 'Unit' {
 		Set-StrictMode -Version latest
 		
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers)
-		} -Verifiable
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content=''
+			}
+			if($Headers['accept'] -eq 'application/json') {
+				$response.Content = "{ }"
+			} elseif ($Headers['accept'] -eq 'text/csv') {
+				$response.Content = "A,B,C,D`r`n1,2,3,4`r`n"
+			}
+			$response
+        } -Verifiable
 
 		BeforeAll {
 			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version

@@ -24,8 +24,18 @@ Describe "Get-SessionResult" -Tag 'Unit' {
 		}
     
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-            Write-Verbose $uri
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content=''
+			}
+			if($Headers['accept'] -eq 'application/json') {
+				$response.Content = "{ }"
+			} elseif ($Headers['accept'] -eq 'text/csv') {
+				$response.Content = "A,B,C,D`r`n1,2,3,4`r`n"
+			}
+			$response
         } -Verifiable
         
         $sessionId = [guid]::NewGuid()

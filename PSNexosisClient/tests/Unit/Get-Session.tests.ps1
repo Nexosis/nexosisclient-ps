@@ -24,8 +24,18 @@ Describe "Get-Session" -Tag 'Unit' {
 		}
     
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-            Write-Verbose $uri
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content=''
+			}
+			if($Headers['accept'] -eq 'application/json') {
+				$response.Content = "{ }"
+			} elseif ($Headers['accept'] -eq 'text/csv') {
+				$response.Content = "A,B,C,D`r`n1,2,3,4`r`n"
+			}
+			$response
         } -Verifiable
         
 	    It "loads session by dataSourceName filter" {
@@ -96,17 +106,5 @@ Describe "Get-Session" -Tag 'Unit' {
 		It "should throw error with invalid page" {
 			{Get-Session -dataSourceName 'salesdata' -page -1 -pageSize 100} | should throw "Parameter '-page' must be an integer greater than 0."
 		}
-
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			# do code, return stuff.
-			Return @{ StatusCode = 404 }
-		} -Verifiable
-
-		It "should have StatusCode" {
-			$result = Get-Session -dataSourceName 'salesSession' -page 1 -pageSize 1 
-			$result.StatusCode | should be 404
-		}
-
     }
 }

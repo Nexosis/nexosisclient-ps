@@ -22,13 +22,14 @@ Function Get-SessionStatus {
         [GUID]$SessionId
 	)
     process {
-        $response = Invoke-Http -method Head -path "sessions/$SessionId"
-        $hasResponseCode = $null -ne $response.StatusCode
+        $response = Invoke-Http -method Head -path "sessions/$SessionId"      
 
-        if (($hasResponseCode -eq $true) -and ($response.StatusCode -eq 200)) {
+        if (($null -ne $response.Headers) -and ($response.Headers.ContainsKey('Nexosis-Session-Status'))) {
             $response.Headers['Nexosis-Session-Status']
-        } else {
-            $response            
+        } elseif ($hasResponseCode) {
+            $nexosisException = [NexosisClientException]::new("Error requesting session status. No Nexosis-Session-Status header in HTTP Response. See ErrorResponse for more details.", $response.StatusCode)
+            $nexosisException.ErrorResponse = $response
+			throw $nexosisException
         }
     }
 }

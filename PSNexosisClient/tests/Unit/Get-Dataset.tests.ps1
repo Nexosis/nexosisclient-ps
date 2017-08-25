@@ -24,9 +24,19 @@ Describe "Get-Dataset" -Tag 'Unit' {
         }
 
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			# do code, return stuff.
-		} -Verifiable
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content=''
+			}
+			if($Headers['accept'] -eq 'application/json') {
+				$response.Content = "{ }"
+			} elseif ($Headers['accept'] -eq 'text/csv') {
+				$response.Content = "A,B,C,D`r`n1,2,3,4`r`n"
+			}
+			$response
+        } -Verifiable
 
 		It "loads datasets by datasetname filter" {
 			$results = Get-Dataset -partialName 'testName'
@@ -88,17 +98,6 @@ Describe "Get-Dataset" -Tag 'Unit' {
 					($Headers.Get_Item("User-Agent") -eq $TestVars.UserAgent)
 				)
 			}
-		}
-
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-			# do code, return stuff.
-			Return @{ StatusCode = 404 }
-		} -Verifiable
-
-		It "should have StatusCode" {
-			$result = Get-Dataset
-			$result.StatusCode | should be 404
 		}
 	}
 }

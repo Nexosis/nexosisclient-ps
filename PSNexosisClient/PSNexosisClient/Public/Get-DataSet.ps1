@@ -52,22 +52,18 @@ Function Get-DataSet {
         if ($partialName.Trim().Length -gt 0) { 
             $params['partialName'] = $partialName
         }
+
         if ($page -ne 0) {
             $params['page'] = $page
         }
 
         if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
             $params['pageSize'] = $pageSize
+        } elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
+            $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
         }
 
         $response = Invoke-Http -method Get -path 'data' -params $params
-        
-        $hasResponseCode = $null -ne $response.StatusCode
-        
-        if ($hasResponseCode -eq $true) {
-            $response
-        } else {
-            $response.items
-        }
+        $response.items
     }
 }

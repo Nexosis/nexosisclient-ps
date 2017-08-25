@@ -22,6 +22,7 @@ Add-Type -AssemblyName System.Web
 # Setup Constant Variables
 Set-Variable -Name UserAgent -Option Constant -Visibility Private -Scope Script -Value "Nexosis-PS-API-Client/$moduleVersion"
 Set-Variable -Name MaxPageSize -Option Constant -Visibility Public -Scope Script -Value 1000
+Set-Variable -Name ServerDefaultPageSize -Option Constant -Visibility Public -Scope Script -Value 100
 Set-Variable -Name ApiBaseUrl -Option Constant -Visibility Public -Scope Script -Value 'https://ml.nexosis.com/v1'
 
 if ($null -eq $Env:NEXOSIS_BASE_TEST_URL) {

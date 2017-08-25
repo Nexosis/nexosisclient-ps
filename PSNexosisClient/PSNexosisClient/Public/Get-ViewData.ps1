@@ -51,6 +51,17 @@ Function Get-ViewData {
      .Example
       # Read the data in the view named 'salesdata' and convert it to JSON at a dept of 4
       Get-ViewData -viewName 'salesview' | ConvertTo-Json -Depth 4
+
+    .Example
+    (Get-ViewData 'salesTransactionsWithPromoView').data
+
+    sales   transactions isPromo timestamp                   
+    -----   ------------ ------- ---------                   
+    1500.56 195          0       2013-01-01T00:00:00.0000000Z
+    4078.52 696          0       2013-01-02T00:00:00.0000000Z
+    4545.69 743          1       2013-01-03T00:00:00.0000000Z
+    4872.63 797          1       2013-01-04T00:00:00.0000000Z
+    2420.81 367          0       2013-01-05T00:00:00.0000000Z
     #>[CmdletBinding()]
         Param(
             [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
@@ -95,21 +106,15 @@ Function Get-ViewData {
     
             if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
                 $params['pageSize'] = $pageSize
-            }
+            } elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
+                $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
+            }    
     
             foreach ($val in  $include) {
                 $params.Add('include', $val)
             }
                 
-            $response = Invoke-Http -method Get -path "views/$viewName" -params $params
-                
-            $hasResponseCode = $null -ne $response.StatusCode
-            
-            if ($hasResponseCode -eq $true) {
-                $response
-            } else {
-                $response.items
-            }
+            Invoke-Http -method Get -path "views/$viewName" -params $params
         }
     }
     

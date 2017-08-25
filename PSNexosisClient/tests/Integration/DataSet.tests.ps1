@@ -116,7 +116,7 @@ Describe "All Dataset Tests" -Tag 'Integration' {
         }
 
         It "should return a list containing one dataset" {
-            $response = Get-DataSet -partialName 'PSTest-Data-' -page 0 -pageSize 1 
+            $response = Get-DataSet -partialName $script:dataSetName -page 0 -pageSize 1 
             $response.DataSetName | should be $script:dataSetName
             ($response.columns).psobject.properties.Name -join ',' | should be 'sales,timeStamp,transactions'
         }

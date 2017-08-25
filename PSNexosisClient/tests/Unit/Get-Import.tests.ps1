@@ -24,9 +24,19 @@ Describe "Get-Import" -Tag 'Unit' {
         }
     
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $ContentType)
-            Write-Verbose $uri
-		} -Verifiable
+			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
+            $response =  New-Object PSObject -Property @{
+				StatusCode="200"
+				Headers=@{}
+				Content=''
+			}
+			if($Headers['accept'] -eq 'application/json') {
+				$response.Content = "{ }"
+			} elseif ($Headers['accept'] -eq 'text/csv') {
+				$response.Content = "A,B,C,D`r`n1,2,3,4`r`n"
+			}
+			$response
+        } -Verifiable
 
 		It "loads imports by datasetname filter" {
 			$results = Get-Import -dataSetName 'testName'
@@ -117,10 +127,5 @@ Describe "Get-Import" -Tag 'Unit' {
 			# do code, return stuff.
 			Return @{ StatusCode = 404 }
 		} -Verifiable
-
-		It "should have StatusCode" {
-			$result = Get-Import -dataSetName 'salesdata' -page 1 -pageSize 1 
-			$result.StatusCode | should be 404
-		}
 	}
 }
