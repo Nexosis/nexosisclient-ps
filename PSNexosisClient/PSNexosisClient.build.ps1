@@ -62,6 +62,8 @@ task InstallDependencies {
     Install-Module -Name InvokeBuild -Force
     Install-Module -Name Pester -Force
     Install-Module -Name PSScriptAnalyzer -Force
+    Install-Module -Name BuildHelpers -Force
+    Install-Module -Name PSDeploy -Force
 }
 
 # Synopsis: Test the project with Pester. Publish Test and Coverage Reports
