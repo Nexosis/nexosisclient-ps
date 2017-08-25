@@ -23,6 +23,10 @@ install:
 
     Install-Module -Name PSScriptAnalyzer -Force
 
+    Install-Module -Name BuildHelpers -Force
+
+    Install-Module -Name PSDeploy -Force
+
 before_test:
 - ps: >-
     pushd PSNexosisClient
@@ -42,5 +46,9 @@ test_script:
     Invoke-Build RunUnitTests
 
     Invoke-Build ConfirmTestsPassed
+
+    Set-BuildVariables
+
+    Invoke-PSDeploy -Path .
     
     popd
