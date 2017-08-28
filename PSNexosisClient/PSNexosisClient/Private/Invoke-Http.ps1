@@ -79,8 +79,10 @@ function Invoke-Http {
         }
 	} Catch {
 		if ($_.Exception.Response -ne $null) {
-			Write-Verbose  "StatusCode: $($_.Exception.Response.StatusCode.value__)"
-			Write-Verbose  "StatusDescription: $($_.Exception.Response.StatusDescription)" 
+            $statusCode = $_.Exception.Response.StatusCode.value__
+            $statusDescription = $_.Exception.Response.StatusDescription
+			Write-Verbose  "StatusCode: $statusCode"
+			Write-Verbose  "StatusDescription: $statusDescription" 
 			
 			# If it's an HTTP HEAD request, there's no body to capture the error details from.
             if ($_.Exception.Response.Method -eq 'HEAD') {
@@ -92,9 +94,15 @@ function Invoke-Http {
 			    $reader.BaseStream.Position = 0
 				$reader.DiscardBufferedData()
 				# Capture JSON Error message from respose stream
-				$responseJsonError = ($reader.ReadToEnd() | ConvertFrom-Json)
+                try {
+				    $responseRawError = $reader.ReadToEnd()
+                    responseJsonError = $responseRawError | ConvertFrom-Json
+                    $nexosisException = [NexosisClientException]::new($responseJsonError.message, [PSObject]$responseJsonError)
+				} catch {
+                    $nexosisException = [NexosisClientException]::new($statusDescription, $statusCode)
+                }
+
 				
-				$nexosisException = [NexosisClientException]::new($responseJsonError.message, [PSObject]$responseJsonError)
 				throw $nexosisException 
             }
 		} else {
