@@ -1,4 +1,4 @@
-Function Get-Session {
+Function Get-NexosisSession {
 <# 
  .Synopsis
   Gets the list of sessions that have been created for the company associated with your account.
@@ -26,15 +26,15 @@ Function Get-Session {
 
  .Example
   # Get all the sessions for all datasources (Views, DataSets, etc.)
-  Get-Session
+  Get-NexosisSession
 
  .Example
   # Retrieve all sessions for a given data source named 'salesdata'
-  Get-Session -dataSourceName 'salesdata'
+  Get-NexosisSession -dataSourceName 'salesdata'
 
  .Example
  # Retrieve all sessions that were created after 8-15-2017 for data source named 'salesdata'
-  Get-Session -dataSourceName 'salesdata' -requestedAfterDate 8-15-2017
+  Get-NexosisSession -dataSourceName 'salesdata' -requestedAfterDate 8-15-2017
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]

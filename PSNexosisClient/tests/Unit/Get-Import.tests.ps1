@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-Import" -Tag 'Unit' {
+Describe "Get-NexosisImport" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest
 		
@@ -39,7 +39,7 @@ Describe "Get-Import" -Tag 'Unit' {
         } -Verifiable
 
 		It "loads imports by datasetname filter" {
-			$results = Get-Import -dataSetName 'testName'
+			$results = Get-NexosisImport -dataSetName 'testName'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -48,7 +48,7 @@ Describe "Get-Import" -Tag 'Unit' {
 		}
 
 		It "loads datasets by datasetname filter with paging" {
-			$results = Get-Import -dataSetName 'blah' -page 0 -pageSize 1 
+			$results = Get-NexosisImport -dataSetName 'blah' -page 0 -pageSize 1 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/imports?dataSetName=blah&pageSize=1"
 			} 
@@ -86,7 +86,7 @@ Describe "Get-Import" -Tag 'Unit' {
 		}
 
 		It "gets import by import id" {
-			Get-Import -importId "015d7a16-8b2b-4c9c-865d-9a400e01a291"
+			Get-NexosisImport -importId "015d7a16-8b2b-4c9c-865d-9a400e01a291"
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -97,29 +97,29 @@ Describe "Get-Import" -Tag 'Unit' {
         }
 		
         It "throws when importID is null" {
-			{ Get-Import -importId [GUID]$null } | should Throw 'Cannot process argument transformation on parameter 'importId'. Cannot convert value "[GUID]" to type "System.Guid". Error: "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)."'
+			{ Get-NexosisImport -importId [GUID]$null } | should Throw 'Cannot process argument transformation on parameter 'importId'. Cannot convert value "[GUID]" to type "System.Guid". Error: "Guid should contain 32 digits with 4 dashes (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)."'
 		}
 		
 		It "gets imports by dataset name and requested before and after dates including paging defaults" {
-            Get-Import -dataSetName 'salesdata' -requestedAfterDate 2017-01-01 -requestedBeforeDate 2017-01-20 
+            Get-NexosisImport -dataSetName 'salesdata' -requestedAfterDate 2017-01-01 -requestedBeforeDate 2017-01-20 
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/imports?dataSetName=salesdata&requestedAfterDate=01%2f01%2f2017+00%3a00%3a00&requestedBeforeDate=01%2f20%2f2017+00%3a00%3a00"
 			} 
 		}
 		
 		It "gets imports by dataset name with page and pageSize" {
-            Get-Import -dataSetName 'salesdata' -page 1 -pageSize 1 
+            Get-NexosisImport -dataSetName 'salesdata' -page 1 -pageSize 1 
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/imports?dataSetName=salesdata&page=1&pageSize=1"
 			} 
 		}
 
 		It "should throw error with invalid pagesize" {
-			{Get-Import -dataSetName 'salesdata' -page 1 -pageSize 1001} | should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
+			{Get-NexosisImport -dataSetName 'salesdata' -page 1 -pageSize 1001} | should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
 		}
 
 		It "should throw error with invalid page param" {
-			{Get-Import -dataSetName 'salesdata' -page -1 -pageSize 100} | should throw "Parameter '-page' must be an integer greater than 0."
+			{Get-NexosisImport -dataSetName 'salesdata' -page -1 -pageSize 100} | should throw "Parameter '-page' must be an integer greater than 0."
 		}
 		
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 

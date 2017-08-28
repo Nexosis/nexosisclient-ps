@@ -10,26 +10,26 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 $PSVersion = $PSVersionTable.PSVersion.Major
 $ScriptRoot = $PSScriptRoot
 
-Describe "Import-DataSetFromCsv" -Tag 'Integration' {
+Describe "Import-NexosisDataSetFromCsv" -Tag 'Integration' {
 	Context "Integration Tests" {
 		Set-StrictMode -Version latest
 		
 		BeforeAll {
 			$script:csvContents = Get-Content "$ScriptRoot\sample.csv"
-			Import-DataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "$ScriptRoot\sample.csv"
+			Import-NexosisDataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "$ScriptRoot\sample.csv"
 		}
 
 		It "uploads a csv" {
-			Import-DataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "$ScriptRoot\sample.csv"
+			Import-NexosisDataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "$ScriptRoot\sample.csv"
 		}
 
 		It "It confirms dataset contents match CSV data" {
-			((Get-DataSetData -dataSetName 'ps-csvimport').data | 
+			((Get-NexosisDataSetData -dataSetName 'ps-csvimport').data | 
 				ConvertTo-Csv -NoTypeInformation | % {$_.Replace('"','')} ) | Should Be $script:csvContents 
 		}
 
 		AfterAll {
-			Remove-DataSet -dataSetName 'ps-csvimport' -force
+			Remove-NexosisDataSet -dataSetName 'ps-csvimport' -force
 		}
 	}
 }

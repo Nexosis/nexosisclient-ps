@@ -22,7 +22,7 @@ $jsonPostBody = @"
 }
 "@
 
-Describe "Import-DataSetFromS3" -Tag 'Unit' {
+Describe "Import-NexosisDataSetFromS3" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 
@@ -56,7 +56,7 @@ Describe "Import-DataSetFromS3" -Tag 'Unit' {
         } -Verifiable
 
 		It "mock is called once" {
-			Import-DataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region
+			Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context
 		}
 
@@ -98,19 +98,19 @@ Describe "Import-DataSetFromS3" -Tag 'Unit' {
 		}
 		
 		It "should throw if dataset name is null or empty" {
-			{ Import-DataSetFromS3 -dataSetName '    ' -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region }  | should Throw "Argument '-dataSetName' cannot be null or empty."
+			{ Import-NexosisDataSetFromS3 -dataSetName '    ' -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region }  | should Throw "Argument '-dataSetName' cannot be null or empty."
 		}
 		
 		It "should throw if S3Bucketname name is null or empty" {
-			{ Import-DataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName '     ' -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region }  | should Throw "Argument '-S3BucketName' cannot be null or empty."
+			{ Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName '     ' -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region }  | should Throw "Argument '-S3BucketName' cannot be null or empty."
 		}
 
 		It "should throw if S3BucketPath name is null or empty" {
-			{ Import-DataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath '     ' -S3Region $TestVars.S3region }  | should Throw "Argument '-S3BucketPath' cannot be null or empty."
+			{ Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath '     ' -S3Region $TestVars.S3region }  | should Throw "Argument '-S3BucketPath' cannot be null or empty."
 		}
 
 		It "should throw if S3Region name is null or empty" {
-			{ Import-DataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region '       ' }  | should Throw "Argument '-S3Region' cannot be null or empty."
+			{ Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region '       ' }  | should Throw "Argument '-S3Region' cannot be null or empty."
 		}
 	}
 }

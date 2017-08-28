@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-AccountBalance" -Tag 'Integration' {
+Describe "Get-NexosisAccountBalance" -Tag 'Integration' {
 	Context "integration tests" {
 		Set-StrictMode -Version latest		
 
@@ -24,7 +24,7 @@ Describe "Get-AccountBalance" -Tag 'Integration' {
         }
 
 		It "gets account balance" {
-            $balance = Get-AccountBalance
+            $balance = Get-NexosisAccountBalance
             Write-Verbose $balance
 		    $balance | should match "^[+-]?\d+(\.\d+)? USD$"
 		}

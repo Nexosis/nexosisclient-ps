@@ -18,9 +18,13 @@ function Invoke-Http {
 		[Parameter(Mandatory=$false)]
 		[switch]$needHeaders=$false
 	)
+    if ($null -eq $script:PSNexosisVars.ApiKey) {
+        Set-NexosisConfig -SetApiKeyFromEnvironment
+    } 
+
 	$headers = @{}
 	$headers.Add("accept", $acceptHeader)
-	$headers.Add("api-key", $script:PSNexosisVars.ApiKey)
+	$headers.Add("api-key", "********************************")
 	$headers.Add("User-Agent", $script:UserAgent)
 
 	$endpoint = "$($script:PSNexosisVars.ApiBaseUrl)/$path"
@@ -32,14 +36,20 @@ function Invoke-Http {
 		if ($fileName -ne $null) {
 			# submit request with file
 			Write-Verbose "Invoke-WebRequest -Uri $uri -Method $method -Headers $($headers.GetEnumerator()  | % { "$($_.Name)=$($_.Value)" }) -ContentType $contentType -InFile $fileName"
+			# replace acceptHeader with actual key so we don't print in in VerboseMode
+			$headers["api-key"] = $script:PSNexosisVars.ApiKey
 			$httpResults = Invoke-WebRequest -Uri $uri -Method $method -Headers $headers -ContentType $contentType -InFile $fileName
 		} elseif ($body -ne $null) {
 			# filename null, body is populated, submit body data
 			Write-Verbose "Invoke-WebRequest -Uri $uri -Method $method -Headers $($headers.GetEnumerator()  | % { "$($_.Name)=$($_.Value)" }) -Body $body -ContentType $contentType"
+			# replace acceptHeader with actual key so we don't print in in VerboseMode
+			$headers["api-key"] = $script:PSNexosisVars.ApiKey
 			$httpResults = Invoke-WebRequest -Uri $uri -Method $method -Headers $headers -Body $body -ContentType $contentType
 		} else {		
 			# no file, no body
 			Write-Verbose "Invoke-WebRequest -Uri $uri -Method $method -Headers $($headers.GetEnumerator()  | % { "$($_.Name)=$($_.Value)" }) -ContentType $contentType"
+			# replace acceptHeader with actual key so we don't print in in VerboseMode
+			$headers["api-key"] = $script:PSNexosisVars.ApiKey
 			$httpResults = Invoke-WebRequest -Uri $uri -Method $method -Headers $headers -ContentType $contentType			 
 		}
 
@@ -50,7 +60,7 @@ function Invoke-Http {
 				# return the results so calls can work with headers, etc.
 				$httpResults
 			} elseif ($needHeaders -eq $true) {
-				# Need headers (Get-AccountBalance, etc), return entire HttpRequest object
+				# Need headers (Get-NexosisAccountBalance, etc), return entire HttpRequest object
 				# Callers need to handle checking statuscode and handling Headers and Content
 				$httpResults
 			} elseif ($acceptHeader -eq 'application/json') {
@@ -65,7 +75,7 @@ function Invoke-Http {
 			}
 		} else {
             # if it's not 200-299 status code and not an exception (400-599), just return the WebRequest object
-            assert($true, "Unexpected condition - Invoke-WebRequest had a status code between 200-299 but did not throw an exception. NExosis API should not throw 300's.")
+            assert($true, "Unexpected condition - Invoke-WebRequest had a status code between 200-299 but did not throw an exception. Nexosis API should not throw 300's.")
         }
 	} Catch {
 		if ($_.Exception.Response -ne $null) {

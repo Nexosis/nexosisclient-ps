@@ -1,4 +1,4 @@
-Function Remove-Session {
+Function Remove-NexosisSession {
 <# 
   .Synopsis
   Delete sessions
@@ -26,7 +26,7 @@ Function Remove-Session {
 
  .Example
   # Remove all sessions with the given event name and dataset name
-  Remove-Session -dataSetName 'salesdata' -eventName '50percentoff'
+  Remove-NexosisSession -dataSetName 'salesdata' -eventName '50percentoff'
 #>[CmdletBinding(SupportsShouldProcess=$true)] 
 	Param(
         [Parameter(ValueFromPipeline=$True, Mandatory=$false)]

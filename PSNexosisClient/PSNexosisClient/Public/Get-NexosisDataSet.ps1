@@ -1,4 +1,4 @@
-Function Get-DataSet {
+Function Get-NexosisDataSet {
 <# 
  .Synopsis
   Gets the list of all datasets that have been saved to the system.
@@ -20,15 +20,15 @@ Function Get-DataSet {
 
  .Example
   # Get a list of datasets that have the world 'sales' in the dataset name
-  Get-DataSet -partialName 'sales'
+  Get-NexosisDataSet -partialName 'sales'
 
  .Example
   # Get a list of datasets, convert it to Json
-  Get-DataSet -page 0 -pageSize 2 | ConvertTo-Json -Depth 4
+  Get-NexosisDataSet -page 0 -pageSize 2 | ConvertTo-Json -Depth 4
 
   .Example
    # Get page 0 of datasets that have the world 'sales' in the dataset name, with a max of 20 for this page
-   Get-DataSet -partialName 'sales' -page 0 -pageSize 20
+   Get-NexosisDataSet -partialName 'sales' -page 0 -pageSize 20
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]

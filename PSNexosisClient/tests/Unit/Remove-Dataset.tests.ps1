@@ -8,7 +8,7 @@ Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Remove-Dataset" -Tag 'Unit' {
+Describe "Remove-NexosisDataSet" -Tag 'Unit' {
 	Context "Unit tests" {
 		Set-StrictMode -Version latest
 		
@@ -38,7 +38,7 @@ Describe "Remove-Dataset" -Tag 'Unit' {
 		}
 
 		It "deletes dataset by name" {
-			Remove-DataSet -dataSetName 'test' -cascadeOption CascadeSessions -force
+			Remove-NexosisDataSet -dataSetName 'test' -cascadeOption Sessions -force
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -71,11 +71,11 @@ Describe "Remove-Dataset" -Tag 'Unit' {
 		}
 
 		It "throws exception with dataSetName is invalid" {
-			{ Remove-DataSet -dataSetName '      ' } | Should throw "Argument '-DataSetName' cannot be null or empty."
+			{ Remove-NexosisDataSet -dataSetName '      ' } | Should throw "Argument '-DataSetName' cannot be null or empty."
 		}
 
 		It "removes datasetdata by dataset name and dates" {
-            Remove-DataSet -dataSetName 'salesdata' -startDate 2017-01-01 -endDate 2017-01-20 -force
+            Remove-NexosisDataSet -dataSetName 'salesdata' -startDate 2017-01-01 -endDate 2017-01-20 -force
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00"
 			} 

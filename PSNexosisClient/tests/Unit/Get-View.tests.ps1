@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Get-View" -Tag 'Unit' {
+Describe "Get-NexosisView" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest		
 
@@ -39,7 +39,7 @@ Describe "Get-View" -Tag 'Unit' {
         } -Verifiable
 
 		It "loads views by view name filter" {
-			$results = Get-View -partialName 'testName'
+			$results = Get-NexosisView -partialName 'testName'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -48,7 +48,7 @@ Describe "Get-View" -Tag 'Unit' {
 		}
 
 		It "loads views by view name filter with paging" {
-			$results = Get-View -partialName 'blah' -page 0 -pageSize 1 
+			$results = Get-NexosisView -partialName 'blah' -page 0 -pageSize 1 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/views?partialName=blah&pageSize=1"
 			} 
@@ -73,15 +73,15 @@ Describe "Get-View" -Tag 'Unit' {
         }
 
 		It "throws error when page parameter is invalid" {
-			{ Get-View -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
+			{ Get-NexosisView -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
 		}
 
 		It "throws error when pageSize parameter is invalid" {
-			{ Get-View -partialName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
+			{ Get-NexosisView -partialName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
 		}
 
 		It "gets views with page and pagesize" {
-			Get-View -partialName 'testName' -page 1 -pageSize 1 
+			Get-NexosisView -partialName 'testName' -page 1 -pageSize 1 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/views?partialName=testName&page=1&pageSize=1"
 			} 
@@ -101,7 +101,7 @@ Describe "Get-View" -Tag 'Unit' {
 		}
 
 		It "loads views by view name filter" {
-			$results = Get-View -dataSetName 'testName'
+			$results = Get-NexosisView -dataSetName 'testName'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/views?dataSetName=testName"
 			} 

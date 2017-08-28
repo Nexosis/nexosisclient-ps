@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Get-AccountBalance" -Tag 'Unit' {
+Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest		
 
@@ -34,7 +34,7 @@ Describe "Get-AccountBalance" -Tag 'Unit' {
         } -Verifiable
 	
 		It "gets account balance" {
-			$value = Get-AccountBalance
+			$value = Get-NexosisAccountBalance
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 			$value | should be "200 USD"
 		}

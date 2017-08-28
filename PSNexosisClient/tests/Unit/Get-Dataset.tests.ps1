@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Get-Dataset" -Tag 'Unit' {
+Describe "Get-NexosisDataSet" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest		
 
@@ -39,7 +39,7 @@ Describe "Get-Dataset" -Tag 'Unit' {
         } -Verifiable
 
 		It "loads datasets by datasetname filter" {
-			$results = Get-Dataset -partialName 'testName'
+			$results = Get-NexosisDataSet -partialName 'testName'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -48,7 +48,7 @@ Describe "Get-Dataset" -Tag 'Unit' {
 		}
 
 		It "loads datasets by datasetname filter with paging" {
-			$results = Get-Dataset -partialName 'blah' -page 0 -pageSize 1 
+			$results = Get-NexosisDataSet -partialName 'blah' -page 0 -pageSize 1 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data?partialName=blah&pageSize=1"
 			} 
@@ -73,15 +73,15 @@ Describe "Get-Dataset" -Tag 'Unit' {
         }
 
 		It "throws error when page parameter is invalid" {
-			{ Get-Dataset -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
+			{ Get-NexosisDataSet -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
 		}
 
 		It "throws error when pageSize parameter is invalid" {
-			{ Get-Dataset -partialName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
+			{ Get-NexosisDataSet -partialName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
 		}
 
 		It "gets datasets with page and pagesize" {
-			Get-Dataset -partialName 'testName' -page 1 -pageSize 1 
+			Get-NexosisDataSet -partialName 'testName' -page 1 -pageSize 1 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data?partialName=testName&page=1&pageSize=1"
 			} 

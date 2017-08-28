@@ -1,4 +1,4 @@
-Function New-DataSet {
+Function New-NexosisDataSet {
 <# 
  .Synopsis
   This operation creates a new dataset or updates an existing dataset using data from a PSCustomObject.
@@ -71,7 +71,7 @@ Function New-DataSet {
 
  .Example
   # create a new dataset using an array of hashes containing 3 columns to submit
-  New-DataSet -dataSetName 'new-data' -data `
+  New-NexosisDataSet -dataSetName 'new-data' -data `
 	@(
 		@{
 			timestamp = "2013-01-01T00:00:00+00:00"
@@ -102,7 +102,7 @@ Function New-DataSet {
 
   .Example
   # Submit a dataset with a data array object and a columns metadata hashtable
-  New-DataSet -dataSetName 'new-data' -data `
+  New-NexosisDataSet -dataSetName 'new-data' -data `
 	@(
 		@{
 			timestamp = "2013-01-01T00:00:00+00:00"

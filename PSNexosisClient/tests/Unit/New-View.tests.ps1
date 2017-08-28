@@ -124,7 +124,7 @@ $testBodyWithColumnsMetaData = @"
 }
 "@
 
-Describe "New-View" -Tag 'Unit' {
+Describe "New-NexosisView" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		
@@ -154,35 +154,35 @@ Describe "New-View" -Tag 'Unit' {
         } -Verifiable
 
 		It "throws if ViewName is null or empty" {
-			{ New-View -viewName '' -dataSetName "dataSetName" -joins $testJoins }  | should Throw "Cannot bind argument to parameter 'viewName' because it is an empty string."
+			{ New-NexosisView -viewName '' -dataSetName "dataSetName" -joins $testJoins }  | should Throw "Cannot bind argument to parameter 'viewName' because it is an empty string."
 		}
 
 		It "throws if ViewName is invalid" {
-			{ New-View -viewName '     ' -dataSetName "dataSetName" -joins $testJoins }  | should Throw "Argument '-viewName' cannot be null or empty."
+			{ New-NexosisView -viewName '     ' -dataSetName "dataSetName" -joins $testJoins }  | should Throw "Argument '-viewName' cannot be null or empty."
 		}
 
 		It "throws if joins is null or empty" {
-			{ New-View -viewName 'notnull' -dataSetName "dataSetName" -joins $null}  | should Throw "Cannot bind argument to parameter 'joins' because it is null."
+			{ New-NexosisView -viewName 'notnull' -dataSetName "dataSetName" -joins $null}  | should Throw "Cannot bind argument to parameter 'joins' because it is null."
 		}
 
 		It "throws if joins paramter is not an array" {
-			{ New-View -viewName 'notnull' -dataSetName "dataSetName" -joins "blah"}  | should Throw "Parameter '-joins' must be an array of hashes."
+			{ New-NexosisView -viewName 'notnull' -dataSetName "dataSetName" -joins "blah"}  | should Throw "Parameter '-joins' must be an array of hashes."
 		}
 
 		It "throws if columnMetaData paramter is not an array of hashes" {
-			{ New-View -viewName 'notnull' -dataSetName "dataSetName" -joins $testJoins -columnMetaData "string" }  | should Throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."
+			{ New-NexosisView -viewName 'notnull' -dataSetName "dataSetName" -joins $testJoins -columnMetaData "string" }  | should Throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."
 		}
 
 		It "throws exception when dataSetName is invalid" {
-			{New-View -viewName 'notnull' -dataSetName '       ' -joins $testJoins } | Should throw "Argument '-DataSetName' cannot be null or empty."
+			{New-NexosisView -viewName 'notnull' -dataSetName '       ' -joins $testJoins } | Should throw "Argument '-DataSetName' cannot be null or empty."
 		}
 
 		It "throw exception if joins does not contain at least one join" {
-			{ New-View -viewName 'notnull' -dataSetName "dataSetName" -joins @() } | Should throw "Parameter '-joins' must contain at least one join."
+			{ New-NexosisView -viewName 'notnull' -dataSetName "dataSetName" -joins @() } | Should throw "Parameter '-joins' must contain at least one join."
 		}
 
 		It "puts new view, join with name" {
-			New-View -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins
+			New-NexosisView -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -234,7 +234,7 @@ Describe "New-View" -Tag 'Unit' {
 								 }
 			}
 			
-			New-View -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins -columnMetaData $columnsMetaData
+			New-NexosisView -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins -columnMetaData $columnsMetaData
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 5) -eq ($testBodyWithColumnsMetaData | ConvertFrom-Json | ConvertTo-Json -Depth 5)
 			}

@@ -1,4 +1,4 @@
-Function Import-DataSetFromCsv {
+Function Import-NexosisDataSetFromCsv {
 <# 
  .Synopsis
   This operation creates a new dataset or updates an existing dataset using data from a CSV File.
@@ -16,7 +16,7 @@ Function Import-DataSetFromCsv {
 
  .Example 
   # Submit a dataset using the contents of the specified CSV File.
-  Import-DataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "C:\path\to\sample.csv"
+  Import-NexosisDataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "C:\path\to\sample.csv"
   
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(

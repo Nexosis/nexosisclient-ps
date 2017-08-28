@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-SessionStatus" -Tag 'Unit' {
+Describe "Get-NexosisSessionStatus" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest
 	
@@ -36,7 +36,7 @@ Describe "Get-SessionStatus" -Tag 'Unit' {
 		$sessionId = [guid]::NewGuid()
 
          It "gets session status" {
-			$status = Get-SessionStatus -sessionId $sessionId
+			$status = Get-NexosisSessionStatus -sessionId $sessionId
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 			$status | should be "Started"
 		}

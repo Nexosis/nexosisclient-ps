@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-SessionResult" -Tag 'Unit' {
+Describe "Get-NexosisSessionResult" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest
 		
@@ -41,7 +41,7 @@ Describe "Get-SessionResult" -Tag 'Unit' {
         $sessionId = [guid]::NewGuid()
 
         It "returns a session result" {
-            Get-SessionResult -sessionId $sessionId
+            Get-NexosisSessionResult -sessionId $sessionId
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
         }
 

@@ -21,7 +21,7 @@ Describe "All Import Tests" -Tag 'Integration' {
         }
 
         It "Imports a file from S3, makes sure it gets correct values" {
-            $results = Import-DataSetFromS3 `
+            $results = Import-NexosisDataSetFromS3 `
                         -dataSetName $script:dsName `
                         -S3BucketName $script:bucketName `
                         -S3BucketPath $script:s3path `
@@ -37,7 +37,7 @@ Describe "All Import Tests" -Tag 'Integration' {
         }
 
         It "loads imports by datasetname filter" {
-            $details = Get-Import -dataSetName $script:dsName -page 0 -pageSize 1
+            $details = Get-NexosisImport -dataSetName $script:dsName -page 0 -pageSize 1
             $details.ImportId | Should Be $script:ImportId
             $details.type | Should be  "s3"
             $details.dataSetName | Should be $script:dsName
@@ -45,7 +45,7 @@ Describe "All Import Tests" -Tag 'Integration' {
         }
 
         It "get imports by GUID" {
-            $details = Get-Import  $script:ImportId
+            $details = Get-NexosisImport  $script:ImportId
             $details.ImportId | Should Be $script:ImportId
             $details.type | Should be  "s3"
             $details.dataSetName | Should be $script:dsName
@@ -55,10 +55,10 @@ Describe "All Import Tests" -Tag 'Integration' {
         AfterAll {
             # Make sure import is completed before deleting
             do {
-                $status = Get-Import -importId $script:ImportId
+                $status = Get-NexosisImport -importId $script:ImportId
             } while ($status.status -ne "completed")
 
-            Remove-DataSet -dataSetName $script:dsName -cascadeOption CascadeSessions -force
+            Remove-NexosisDataSet -dataSetName $script:dsName -cascadeOption Sessions -force
         }
     }
 }

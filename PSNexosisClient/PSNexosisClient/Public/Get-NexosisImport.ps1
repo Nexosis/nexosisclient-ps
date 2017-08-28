@@ -1,4 +1,4 @@
-Function Get-Import {
+Function Get-NexosisImport {
 <# 
  .Synopsis
   Lists imports that have been created.
@@ -20,27 +20,27 @@ Function Get-Import {
 
  .Example
   # Get all imports
-  Get-Import
+  Get-NexosisImport
 
  .Example
  # Get Import by Import ID
- Get-Import -ImportId 015d7a16-8b2b-4c9c-865d-9a400e01a291
+ Get-NexosisImport -ImportId 015d7a16-8b2b-4c9c-865d-9a400e01a291
 
  .Example
   # Get all imports for DataSet named 'SalesData' 
-  Get-Import -DataSetName 'SalesData'
+  Get-NexosisImport -DataSetName 'SalesData'
   
  .Example
   # Get first page and one result of imports for dataset named 'SalesData' 
-  Get-Import -dateSetName 'SalesData' -page 0 -pageSize 20
+  Get-NexosisImport -dateSetName 'SalesData' -page 0 -pageSize 20
 
  .Example
   # Get all imports requested after the date 2017-07-25 UTC
-  Get-Import -requestedAfterDate 2017-07-25+00:00
+  Get-NexosisImport -requestedAfterDate 2017-07-25+00:00
 
  .Example
   # Get all datasets that match the partial name 'Location' and Get all associated Imports
-  ((Get-DataSet -partialName 'Location') | Foreach { $_.DataSetName } | Get-Import)
+  ((Get-NexosisDataSet -partialName 'Location') | Foreach { $_.DataSetName } | Get-NexosisImport)
   
 #>[CmdletBinding()]
 	Param(

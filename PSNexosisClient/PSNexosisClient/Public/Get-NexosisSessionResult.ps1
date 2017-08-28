@@ -1,4 +1,4 @@
-Function Get-SessionResult {
+Function Get-NexosisSessionResult {
 <# 
  .Synopsis
   Gets the forecast or impact results of a particular session
@@ -18,11 +18,11 @@ Function Get-SessionResult {
 
  .Example
   # Retrieve session data for sesion with the given session ID
-  Get-SessionResult -sessionId 015df24f-7f43-4efe-b8ba-1e28d67eb3fa
+  Get-NexosisSessionResult -sessionId 015df24f-7f43-4efe-b8ba-1e28d67eb3fa
 
  .Example
   # Return just the session result data for the given session ID.
-  (Get-SessionResult -SessionId 015df24f-7f43-4efe-b8ba-1e28d67eb3fa).data
+  (Get-NexosisSessionResult -SessionId 015df24f-7f43-4efe-b8ba-1e28d67eb3fa).data
 
 #>[CmdletBinding()]
 	Param(

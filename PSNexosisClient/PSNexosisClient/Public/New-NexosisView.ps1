@@ -1,4 +1,4 @@
-Function New-View {
+Function New-NexosisView {
     <# 
      .Synopsis
       This operation creates or updates a view definition.
@@ -58,7 +58,7 @@ Function New-View {
                 }
             )
 
-    New-View -viewName 'SalesWithPromosView' -dataSetName "salesData" -joins $joins 
+    New-NexosisView -viewName 'SalesWithPromosView' -dataSetName "salesData" -joins $joins 
     
     #>[CmdletBinding(SupportsShouldProcess=$true)]
         Param(

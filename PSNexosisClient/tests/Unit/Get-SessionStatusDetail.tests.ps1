@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-SessionStatusDetail" -Tag 'Unit' {
+Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest
 	
@@ -41,7 +41,7 @@ Describe "Get-SessionStatusDetail" -Tag 'Unit' {
 		$sessionId = [guid]::NewGuid()
 
          It "gets session status" {
-			Get-SessionStatusDetail -sessionId $sessionId
+			Get-NexosisSessionStatusDetail -sessionId $sessionId
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -81,7 +81,7 @@ Describe "Get-SessionStatusDetail" -Tag 'Unit' {
 		}
 
 		It "throws an error if sessionId is not a GUID" {
-			{Get-SessionStatusDetail -sessionID '    '} | should throw "Cannot process argument transformation on parameter 'SessionId'. Cannot convert value `"    `" to type `"System.Guid`". Error: `"Unrecognized Guid format.`""
+			{Get-NexosisSessionStatusDetail -sessionID '    '} | should throw "Cannot process argument transformation on parameter 'SessionId'. Cannot convert value `"    `" to type `"System.Guid`". Error: `"Unrecognized Guid format.`""
 		}
     }
 }

@@ -1,4 +1,4 @@
-Function Get-View {
+Function Get-NexosisView {
     <# 
      .Synopsis
       Gets the list of view definitions that have been created
@@ -23,19 +23,19 @@ Function Get-View {
     
      .Example
       # Get a list of all views
-      Get-View 
+      Get-NexosisView 
     
      .Example
       # Get all the Views that have the world 'sales' in the dataset name
-      Get-View -dataSetName sales
+      Get-NexosisView -dataSetName sales
 
      .Example
       # Get the first two views and convert it to Json
-      Get-View -page 0 -pageSize 2 | ConvertTo-Json -Depth 4
+      Get-NexosisView -page 0 -pageSize 2 | ConvertTo-Json -Depth 4
     
       .Example
        # Get page 0 of datasets that have the world 'sales' in the dataset name, with a max of 20 for this page
-       Get-DataSet -partialName 'sales' -page 0 -pageSize 20
+       Get-NexosisDataSet -partialName 'sales' -page 0 -pageSize 20
     #>[CmdletBinding()]
         Param(
             [Parameter(Mandatory=$false, ValueFromPipeline=$True)]

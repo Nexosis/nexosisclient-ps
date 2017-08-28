@@ -1,4 +1,4 @@
-Function Get-SessionStatusDetail {
+Function Get-NexosisSessionStatusDetail {
 <# 
  .Synopsis
   Retrieves the Details of the session status including the current status.
@@ -11,7 +11,7 @@ Function Get-SessionStatusDetail {
 
  .Example
   # Get additional detail about the status of a session
-  Get-SessionStatusDetail -SessionID 015da45b-2ee7-4a63-b6c7-2f3798ea70a2
+  Get-NexosisSessionStatusDetail -SessionID 015da45b-2ee7-4a63-b6c7-2f3798ea70a2
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]

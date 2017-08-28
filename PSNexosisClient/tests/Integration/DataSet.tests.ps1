@@ -110,31 +110,31 @@ Describe "All Dataset Tests" -Tag 'Integration' {
 				}
 			)
 			# Create new dataset
-			$response = New-DataSet -dataSetName $script:dataSetName -data $data -columnMetaData $columns 
+			$response = New-NexosisDataSet -dataSetName $script:dataSetName -data $data -columnMetaData $columns 
 			$response.dataSetName | should be $script:dataSetName
 			($response.columns).psobject.properties.Name -join ',' | should be 'sales,timeStamp,transactions'
         }
 
         It "should return a list containing one dataset" {
-            $response = Get-DataSet -partialName $script:dataSetName -page 0 -pageSize 1 
+            $response = Get-NexosisDataSet -partialName $script:dataSetName -page 0 -pageSize 1 
             $response.DataSetName | should be $script:dataSetName
             ($response.columns).psobject.properties.Name -join ',' | should be 'sales,timeStamp,transactions'
         }
 
         It "checks the data in the dateset in CSV" {
-            Get-DataSetData -dataSetName $script:dataSetName -ReturnCsv | Should Be ($csvResults.Replace("`r`n","`n"))
+            Get-NexosisDataSetData -dataSetName $script:dataSetName -ReturnCsv | Should Be ($csvResults.Replace("`r`n","`n"))
         }
 
         It "checks the data in the dateset in JSON" {
-            (get-datasetdata -dataSetName $script:dataSetName).data | ConvertTo-Json | Should Be $script:jsonResults
+            (Get-NexosisDataSetdata -dataSetName $script:dataSetName).data | ConvertTo-Json | Should Be $script:jsonResults
         }
 		
 		It "Should attempt to delete a missing dataset and get an error" {
-			{Remove-DataSet -dataSetName "test12345" -Force} | should throw "Item of type dataSet with identifier test12345 was not found"
+			{Remove-NexosisDataSet -dataSetName "test12345" -Force} | should throw "Item of type dataSet with identifier test12345 was not found"
 		}
 		
         AfterAll {
-            Remove-Dataset -dataSetName $script:dataSetName -force
+            Remove-NexosisDataSet -dataSetName $script:dataSetName -force
         }
     }
 }

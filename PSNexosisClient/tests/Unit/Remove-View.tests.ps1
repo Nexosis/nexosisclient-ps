@@ -8,7 +8,7 @@ Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Remove-View" -Tag 'Unit' {
+Describe "Remove-NexosisView" -Tag 'Unit' {
 	Context "Unit tests" {
 		Set-StrictMode -Version latest
 		
@@ -38,7 +38,7 @@ Describe "Remove-View" -Tag 'Unit' {
 		}
 
 		It "deletes View by name" {
-			Remove-View -viewName 'test' -cascadeOption CascadeSessions -force
+			Remove-NexosisView -viewName 'test' -cascadeOption Sessions -force
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -71,7 +71,7 @@ Describe "Remove-View" -Tag 'Unit' {
 		}
 
 		It "throws exception with viewName is invalid" {
-			{ Remove-View -viewName '      ' } | Should throw "Argument '-ViewName' cannot be null or empty."
+			{ Remove-NexosisView -viewName '      ' } | Should throw "Argument '-ViewName' cannot be null or empty."
 		}
 	}
 }

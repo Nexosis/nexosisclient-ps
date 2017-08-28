@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Remove-Session" -Tag 'Unit' {
+Describe "Remove-NexosisSession" -Tag 'Unit' {
 	Context "Unit tests" {
 		Set-StrictMode -Version latest
 		
@@ -40,12 +40,12 @@ Describe "Remove-Session" -Tag 'Unit' {
         
         $sessionId = [guid]::NewGuid()
 		It "deletes one session by sessionid" {
-			Remove-Session -sessionid $sessionId -force
+			Remove-NexosisSession -sessionid $sessionId -force
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
         }
         
         It "delete many sessions for one dataset by session type" {
-            Remove-Session -dataSetName 'test' -sessionType 'forecast' -force
+            Remove-NexosisSession -dataSetName 'test' -sessionType 'forecast' -force
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
         }
 
@@ -54,7 +54,7 @@ Describe "Remove-Session" -Tag 'Unit' {
 		}
 
 		It "calls delete with the proper URI" {
-            Remove-Session -dataSetName 'test' -sessionType 'impact' -force
+            Remove-NexosisSession -dataSetName 'test' -sessionType 'impact' -force
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/sessions?sessionType=impact&dataSetName=test"
 			} 
@@ -79,22 +79,22 @@ Describe "Remove-Session" -Tag 'Unit' {
 		}
 
 		It "throws exception with sessionId is invalid" {
-			{ Remove-Session -sessionId '      ' } | Should throw "Cannot process argument transformation on parameter 'sessionId'. Cannot convert value `"      `" to type `"System.Guid`". Error: `"Unrecognized Guid format.`""
+			{ Remove-NexosisSession -sessionId '      ' } | Should throw "Cannot process argument transformation on parameter 'sessionId'. Cannot convert value `"      `" to type `"System.Guid`". Error: `"Unrecognized Guid format.`""
 		}
 
 		It "removes session by sessionid name and dates" {
-            Remove-Session -dataSetName 'testName' -sessionType 'impact' -requestedBeforeDate 2017-01-01 -requestedAfterDate 2017-01-20 -force 
+            Remove-NexosisSession -dataSetName 'testName' -sessionType 'impact' -requestedBeforeDate 2017-01-01 -requestedAfterDate 2017-01-20 -force 
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/sessions?sessionType=impact&dataSetName=testName&requestedAfterDate=01%2f20%2f2017+00%3a00%3a00&requestedBeforeDate=01%2f01%2f2017+00%3a00%3a00"
 			} 
         }
 
         It "makes sure SessionID param is exclusive" {
-            {Remove-Session -sessionId ([guid]::NewGuid()) -sessionType 'impact'} | Should throw "Parameter '-SessionID' is exclusive and cannot be used with any other parameters."
+            {Remove-NexosisSession -sessionId ([guid]::NewGuid()) -sessionType 'impact'} | Should throw "Parameter '-SessionID' is exclusive and cannot be used with any other parameters."
         }
 
         It "should fail if sessionType is not Impact or Forecast" {
-          {Remove-Session -dataSetName 'testName' -sessionType 'sadasddas'} | Should throw  "Invalid parameter specified for '-SessionType.' Valid options are 'forecast' and 'impact.'"
+          {Remove-NexosisSession -dataSetName 'testName' -sessionType 'sadasddas'} | Should throw  "Invalid parameter specified for '-SessionType.' Valid options are 'forecast' and 'impact.'"
         }
 	}
 }

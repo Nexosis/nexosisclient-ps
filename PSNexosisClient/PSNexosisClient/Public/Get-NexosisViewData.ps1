@@ -1,4 +1,4 @@
-Function Get-ViewData {
+Function Get-NexosisViewData {
     <# 
      .Synopsis
       Reads the data in a particular view and returns it as an object.
@@ -30,30 +30,30 @@ Function Get-ViewData {
     
      .Example
       # Read the data in the view named 'salesdata'
-      Get-ViewData -viewName 'salesView'   
+      Get-NexosisViewData -viewName 'salesView'   
      
       .Example 
       # Return the data from view 'salesView'
-      (Get-ViewData -viewName 'salesView').Data
+      (Get-NexosisViewData -viewName 'salesView').Data
       
       .Example
       # Get the data in the view named 'salesview' starting at page 0 and include 1000 records between the provided start date and enddate.
-      Get-ViewData -viewName 'salesview' -page 0 -pageSize 1000 -startDate 2017-02-25 -endDate 2017-03-25
+      Get-NexosisViewData -viewName 'salesview' -page 0 -pageSize 1000 -startDate 2017-02-25 -endDate 2017-03-25
     
      .Example
       # Read up to 1000 records in from view S'salesview'
-      Get-ViewData -viewName 'salesview' -page 0 -pageSize 1000 
+      Get-NexosisViewData -viewName 'salesview' -page 0 -pageSize 1000 
     
      .Example
-      # Return the data from view named `new-view` and only include columns timestamp and sales.
-      (Get-ViewData -viewName 'new-view' -include timestamp,sales).data
+      # Return the data from view named `New-NexosisView` and only include columns timestamp and sales.
+      (Get-NexosisViewData -viewName 'New-NexosisView' -include timestamp,sales).data
     
      .Example
       # Read the data in the view named 'salesdata' and convert it to JSON at a dept of 4
-      Get-ViewData -viewName 'salesview' | ConvertTo-Json -Depth 4
+      Get-NexosisViewData -viewName 'salesview' | ConvertTo-Json -Depth 4
 
     .Example
-    (Get-ViewData 'salesTransactionsWithPromoView').data
+    (Get-NexosisViewData 'salesTransactionsWithPromoView').data
 
     sales   transactions isPromo timestamp                   
     -----   ------------ ------- ---------                   

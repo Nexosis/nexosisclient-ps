@@ -17,42 +17,42 @@ List of all commands
 ```powershell
 PS C:\> ((Get-Module PSNexosisClient).ExportedCommands).Keys
 
-Get-AccountBalance
-Get-DataSet
-Get-DataSetData
-Get-Import
-Get-PSNexosisConfig
-Get-Session
-Get-SessionResult
-Get-SessionStatus
-Get-SessionStatusDetail
-Import-DataSetFromCsv
-Import-DataSetFromS3
-New-DataSet
-Remove-DataSet
-Remove-Session
-Start-ForecastSession
-Start-ImpactSession
+Get-NexosisAccountBalance
+Get-NexosisDataSet
+Get-NexosisDataSetData
+Get-NexosisImport
+Get-NexosisConfig
+Get-NexosisSession
+Get-NexosisSessionResult
+Get-NexosisSessionStatus
+Get-NexosisSessionStatusDetail
+Import-NexosisDataSetFromCsv
+Import-NexosisDataSetFromS3
+New-NexosisDataSet
+Remove-NexosisDataSet
+Remove-NexosisSession
+Start-NexosisForecastSession
+Start-NexosisImpactSession
 ```
 
 To get basic help on commands in the PSNexosisClient, type:
 
 ```powershell
-PS C:\> get-help Get-DataSet
+PS C:\> get-help Get-NexosisDataSet
 ```
 
 and that will return
 
 ```
 NAME
-    Get-DataSet
+    Get-NexosisDataSet
     
 SYNOPSIS
     Gets the list of all datasets that have been saved to the system.
     
     
 SYNTAX
-    Get-DataSet [[-partialName] <String>] [[-page] <Int32>] [[-pageSize] <Int32>] [<CommonParameters>]
+    Get-NexosisDataSet [[-partialName] <String>] [[-page] <Int32>] [[-pageSize] <Int32>] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -63,55 +63,55 @@ RELATED LINKS
     http://docs.nexosis.com/clients/powershell
 
 REMARKS
-    To see the examples, type: "get-help Get-DataSet -examples".
-    For more information, type: "get-help Get-DataSet -detailed".
-    For technical information, type: "get-help Get-DataSet -full".
-    For online help, type: "get-help Get-DataSet -online"
+    To see the examples, type: "get-help Get-NexosisDataSet -examples".
+    For more information, type: "get-help Get-NexosisDataSet -detailed".
+    For technical information, type: "get-help Get-NexosisDataSet -full".
+    For online help, type: "get-help Get-NexosisDataSet -online"
 ```
 
 To just get examples, run:
 ```powershell
-PS C:\> get-help Get-DataSet -Examples
+PS C:\> get-help Get-NexosisDataSet -Examples
 ```
 
 which will return all the examples only:
 ```powershell
 NAME
-    Get-DataSet
+    Get-NexosisDataSet
     
 SYNOPSIS
     Gets the list of all datasets that have been saved to the system.
     
     -------------------------- EXAMPLE 1 --------------------------
     
-    PS C:\> Get-DataSet -partialName 'sales'
+    PS C:\> Get-NexosisDataSet -partialName 'sales'
 
     -------------------------- EXAMPLE 2 --------------------------
     
-    PS C:\> Get-DataSet -page 0 -pageSize 2 | ConvertTo-Json -Depth 4
+    PS C:\> Get-NexosisDataSet -page 0 -pageSize 2 | ConvertTo-Json -Depth 4
     
     -------------------------- EXAMPLE 3 --------------------------
     
-    PS C:\> Get-DataSet -partialName 'sales' -page 0 -pageSize 20
+    PS C:\> Get-NexosisDataSet -partialName 'sales' -page 0 -pageSize 20
 ```
 
 To get the full details of Help documents on a particular Module in the PSNexosisClient module, type:
 
 ```powershell 
-PS C:\> help New-DataSet
+PS C:\> help New-NexosisDataSet
 ```
 
 Help Documentation contains more detailed explanation:
 ```powershell 
 NAME
-    New-DataSet
+    New-NexosisDataSet
     
 SYNOPSIS
     This operation creates a new dataset or updates an existing dataset using data from a PSCustomObject.
     
     
 SYNTAX
-    New-DataSet [-dataSetName] <String> [-data] <Object> [[-columnMetaData] <Object>] [-WhatIf] [-Confirm] [<CommonParameters>]
+    New-NexosisDataSet [-dataSetName] <String> [-data] <Object> [[-columnMetaData] <Object>] [-WhatIf] [-Confirm] [<CommonParameters>]
     
     
 DESCRIPTION
@@ -174,21 +174,21 @@ If the dataset already exists, adds rows to the dataset. If the specified data c
 RELATED LINKS
 
 REMARKS
-    To see the examples, type: "get-help New-DataSet -examples".
-    For more information, type: "get-help New-DataSet -detailed".
-    For technical information, type: "get-help New-DataSet -full".
+    To see the examples, type: "get-help New-NexosisDataSet -examples".
+    For more information, type: "get-help New-NexosisDataSet -detailed".
+    For technical information, type: "get-help New-NexosisDataSet -full".
 ```
 
 ## Some Examples
 Get all datasets
 ```powershell
-PS C:\> Get-Dataset -partialName 'salesdata'
+PS C:\> Get-NexosisDataSet -partialName 'salesdata'
 ```
 
 Commands can be chained together. The following example will retrieve all datasets whose data set name matches 'Location' - and will return the status of all the S3 imports:
 
 ```powershell
- PS C:\> ((Get-DataSet -partialName 'Location') | Foreach { $_.DataSetName } | Get-Import) | Where type -eq 's3' | Format-Table -Property @('datasetname', 'requestedDate', 'status')
+ PS C:\> ((Get-NexosisDataSet -partialName 'Location') | Foreach { $_.DataSetName } | Get-NexosisImport) | Where type -eq 's3' | Format-Table -Property @('datasetname', 'requestedDate', 'status')
 ```
 
 Here's example output:

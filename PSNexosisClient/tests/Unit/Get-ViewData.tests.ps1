@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-ViewData" -Tag 'Unit' {
+Describe "Get-NexosisViewData" -Tag 'Unit' {
 	Context "unit tests" {
         Set-StrictMode -Version latest		
 
@@ -39,7 +39,7 @@ Describe "Get-ViewData" -Tag 'Unit' {
         } -Verifiable
         
         It "gets view data by name name with paging" {
-            Get-ViewData -viewName 'salesview' -page 1 -pageSize 1000
+            Get-NexosisViewData -viewName 'salesview' -page 1 -pageSize 1000
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
         }
 
@@ -54,15 +54,15 @@ Describe "Get-ViewData" -Tag 'Unit' {
 		}
 
 		It "throws exception when viewName is invalid" {
-			{Get-ViewData -viewName '       '} | Should throw "Argument '-ViewName' cannot be null or empty."
+			{Get-NexosisViewData -viewName '       '} | Should throw "Argument '-ViewName' cannot be null or empty."
 		}
 
 		It "throws error when page parameter is invalid" {
-			{ Get-ViewData -viewName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
+			{ Get-NexosisViewData -viewName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
 		}
 
 		It "throws error when pageSize parameter is invalid" {
-			{ Get-ViewData -viewName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
+			{ Get-NexosisViewData -viewName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
 		}
 
         It "calls with the proper HTTP verb" {
@@ -91,14 +91,14 @@ Describe "Get-ViewData" -Tag 'Unit' {
 		}
 
 		It "gets view data by view name and dates with paging defaults" {
-            Get-ViewData -viewName 'salesview' -startDate 2017-01-01 -endDate 2017-01-20
+            Get-NexosisViewData -viewName 'salesview' -startDate 2017-01-01 -endDate 2017-01-20
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/views/salesview?startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00"
 			} 
 		}
 		
 		It "uses correct URI for multiple include columns" {
-			Get-ViewData -viewName 'Location-A' -include @('sales','transactions') 
+			Get-NexosisViewData -viewName 'Location-A' -include @('sales','transactions') 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/views/Location-A?include=sales&include=transactions"
 			}

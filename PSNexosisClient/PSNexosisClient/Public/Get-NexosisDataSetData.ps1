@@ -1,4 +1,4 @@
-Function Get-DataSetData {
+Function Get-NexosisDataSetData {
 <# 
  .Synopsis
   Reads the data in a particular dataset and returns it as an object or in CSV format.
@@ -33,31 +33,31 @@ Function Get-DataSetData {
 
  .Example
   # Read the data in the dataset named 'salesdata'
-  Get-DataSetData -dataSetName 'salesdata'   
+  Get-NexosisDataSetData -dataSetName 'salesdata'   
  
   .Example 
   # Return the data from dataset Location-A
-  (Get-DataSetData -dataSetName 'Location-A').Data
+  (Get-NexosisDataSetData -dataSetName 'Location-A').Data
   
   .Example
   # Get the data in the dataset named 'salesdata' starting at page 0 and include 1000 records between the provided start date and enddate.
-  Get-DataSetData -dataSetName 'salesdata' -page 0 -pageSize 1000 -startDate 2017-02-25 -endDate 2017-03-25
+  Get-NexosisDataSetData -dataSetName 'salesdata' -page 0 -pageSize 1000 -startDate 2017-02-25 -endDate 2017-03-25
 
  .Example
   # Read up to 1000 records in from dataset Sales Data
-  Get-DataSetData -dataSetName 'salesdata' -page 0 -pageSize 1000 
+  Get-NexosisDataSetData -dataSetName 'salesdata' -page 0 -pageSize 1000 
 
  .Example
   # Return the data from dataset named `new-data` and only include columns timestamp and sales.
-  (Get-DataSetData -dataSetName 'new-data' -include timestamp,sales).data
+  (Get-NexosisDataSetData -dataSetName 'new-data' -include timestamp,sales).data
 
  .Example
   # Read the data in the dataset named 'salesdata' and convert it to JSON at a dept of 4
-  Get-DataSetData -dataSetName 'salesdata' | ConvertTo-Json -Depth 4
+  Get-NexosisDataSetData -dataSetName 'salesdata' | ConvertTo-Json -Depth 4
 
  .Example
   # Returns data in DataSet name 'salesdata' in CSV format, including only two columns.
-  Get-DataSetData -dataSetName 'salesdata' -include timestamp,sales -ReturnCsv
+  Get-NexosisDataSetData -dataSetName 'salesdata' -include timestamp,sales -ReturnCsv
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]

@@ -3,11 +3,11 @@ Add-Type -TypeDefinition @"
     public enum DataSetDeleteOptions
     {
         None = 0,
-        CascadeSessions = 1
+        Sessions = 1
     }
 "@
 
-Function Remove-DataSet {
+Function Remove-NexosisDataSet {
 <# 
  .Synopsis
  Remove an entire dataset or a subset of data in the dataset. 
@@ -29,24 +29,24 @@ Function Remove-DataSet {
  .Parameter CascadeOption
   Options for cascading the delete.
   When None, only deletes the dataset, or a range of data in the dataset. 
-  When CascadeSessions, deletes datasets and if start and/or end date are supplied,
+  When Sessions, deletes datasets and if start and/or end date are supplied,
   sessions created in that date range are also deleted.
 
  .Example
   # Remove the dataset named 'salesdata'
-  Remove-DataSet -dataSetName 'salesdata'
+  Remove-NexosisDataSet -dataSetName 'salesdata'
 
  .Example
   # Remove the dataset named 'salesdata' and delete all associated sessions
-  Remove-DataSet -dataSetName 'salesdata' -cascadeOption CascadeSession
+  Remove-NexosisDataSet -dataSetName 'salesdata' -cascadeOption CascadeSession
 
  .Example
   # Remove data within the dataset between start and end date, and force (no prompt)
-  Remove-DataSet -dataSetName 'salesdata' -startDate '2017-02-25T00:00:00+00:00' -endDate '2017-03-25T00:00:00+00:00' -force
+  Remove-NexosisDataSet -dataSetName 'salesdata' -startDate '2017-02-25T00:00:00+00:00' -endDate '2017-03-25T00:00:00+00:00' -force
 
   .Example
   # Get all datasets that match the partial name 'PSTest' and deletes them.
-  (Get-DataSet -partialName 'PSTest') | foreach { $_.DataSetName } | Remove-DataSet
+  (Get-NexosisDataSet -partialName 'PSTest') | foreach { $_.DataSetName } | Remove-NexosisDataSet
 #>[CmdletBinding(SupportsShouldProcess=$true)] 
 	Param(
 		[Parameter(ValueFromPipeline=$True, Mandatory=$true)]
@@ -74,7 +74,7 @@ Function Remove-DataSet {
 			$params['endDate'] = "$endDate"
 		}
 
-		if ($cascadeOption -band [DataSetDeleteOptions]::CascadeSessions) { 
+		if ($cascadeOption -band [DataSetDeleteOptions]::Sessions) { 
 			$params.Add('cascade','session')
 		}
 

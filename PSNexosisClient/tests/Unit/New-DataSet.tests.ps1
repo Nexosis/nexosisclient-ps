@@ -21,7 +21,7 @@ $testBody = @"
 }
 "@
 
-Describe "New-DataSet" -Tag 'Unit' {
+Describe "New-NexosisDataSet" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		
@@ -51,27 +51,27 @@ Describe "New-DataSet" -Tag 'Unit' {
         } -Verifiable
 
 		It "throws if DataSetName is null or empty" {
-			{ New-DataSet -dataSetName '' -data @() }  | should Throw "Cannot bind argument to parameter 'dataSetName' because it is an empty string."
+			{ New-NexosisDataSet -dataSetName '' -data @() }  | should Throw "Cannot bind argument to parameter 'dataSetName' because it is an empty string."
 		}
 
 		It "throws if DataSetName is invalid" {
-			{ New-DataSet -dataSetName '     ' -data @() }  | should Throw "Argument '-DataSetName' cannot be null or empty."
+			{ New-NexosisDataSet -dataSetName '     ' -data @() }  | should Throw "Argument '-DataSetName' cannot be null or empty."
 		}
 
 		It "throws if data is null or empty" {
-			{ New-DataSet -dataSetName 'notnull' -data $null}  | should Throw "Cannot bind argument to parameter 'data' because it is null."
+			{ New-NexosisDataSet -dataSetName 'notnull' -data $null}  | should Throw "Cannot bind argument to parameter 'data' because it is null."
 		}
 
 		It "throws if data paramter is not an array" {
-			{ New-DataSet -dataSetName 'notnull' -data "blah"}  | should Throw "Parameter '-data' must be an array of hashes."   
+			{ New-NexosisDataSet -dataSetName 'notnull' -data "blah"}  | should Throw "Parameter '-data' must be an array of hashes."   
 		}
 
 		It "throws if columnMetaData paramter is not an array of hashes" {
-			{ New-DataSet -dataSetName 'notnull' -data @() -columnMetaData "string" }  | should Throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."
+			{ New-NexosisDataSet -dataSetName 'notnull' -data @() -columnMetaData "string" }  | should Throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."
 		}
 
 		It "puts new data and metadata with a name" {
-			New-DataSet -dataSetName "testnew" -data @() -columnMetaData @{}
+			New-NexosisDataSet -dataSetName "testnew" -data @() -columnMetaData @{}
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 

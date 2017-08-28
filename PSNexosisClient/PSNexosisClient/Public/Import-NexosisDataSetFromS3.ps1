@@ -1,4 +1,4 @@
-Function Import-DataSetFromS3 {
+Function Import-NexosisDataSetFromS3 {
 <# 
  .Synopsis
   This operation creates a new dataset or updates an existing dataset using data from a CSV File. 
@@ -24,7 +24,7 @@ Function Import-DataSetFromS3 {
 
  .Example
   # Import a CSV into the data set name 'salesdata' located in S3 given the S3 Bucket path and region.
- Import-DataSetFromS3 -dataSetName 'salesdata' -S3BucketName 'nexosis-sample-data' -S3BucketPath 'LocationA.csv' -S3Region 'us-east-1'
+ Import-NexosisDataSetFromS3 -dataSetName 'salesdata' -S3BucketName 'nexosis-sample-data' -S3BucketPath 'LocationA.csv' -S3Region 'us-east-1'
   
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(

@@ -44,7 +44,7 @@ Enum ResultInterval
 
 # Setup a hashtable of configurable variables with Defaults
 $script:PSNexosisVars = new-object PSObject -Property @{
-	ApiKey  = $Env:NEXOSIS_API_KEY
+	ApiKey = $Env:NEXOSIS_API_KEY
 	ApiBaseUrl = $BaseUrl
     DefaultPageSize=100
 }

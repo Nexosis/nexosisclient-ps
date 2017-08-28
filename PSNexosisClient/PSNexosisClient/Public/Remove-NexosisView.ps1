@@ -3,11 +3,11 @@ Add-Type -TypeDefinition @"
 public enum ViewDeleteOptions
 {
     None = 0,
-    CascadeSessions = 1
+    Sessions = 1
 }
 "@
 
-Function Remove-View {
+Function Remove-NexosisView {
 <# 
 .Synopsis
 Remove a view definition
@@ -21,19 +21,19 @@ Name of the view from which to remove.
 .Parameter CascadeOption
 Options for cascading the delete.
 When None, only deletes the view definition.
-When CascadeSessions, deletes view definition and sessions using that view are also deleted.
+When Sessions, deletes view definition and sessions using that view are also deleted.
 
 .Example
 # Remove the view named 'salesview'
-Remove-View -viewName 'salesview'
+Remove-NexosisView -viewName 'salesview'
 
 .Example
 # Remove the view definition named 'salesview' and delete all associated sessions
-Remove-View -viewName 'salesview' -cascadeOption CascadeSession
+Remove-NexosisView -viewName 'salesview' -cascadeOption CascadeSession
 
 .Example
 # Get all view definitions that match the partial name 'sales' and delete them.
-(Get-View -partialName 'sales') | foreach { $_.ViewName } | Remove-View
+(Get-NexosisView -partialName 'sales') | foreach { $_.ViewName } | Remove-NexosisView
 #>[CmdletBinding(SupportsShouldProcess=$true)] 
 Param(
     [Parameter(ValueFromPipeline=$True, Mandatory=$true)]
@@ -49,7 +49,7 @@ Param(
             throw "Argument '-ViewName' cannot be null or empty."
         }
 
-        if ($cascadeOption -band [ViewDeleteOptions]::CascadeSessions) { 
+        if ($cascadeOption -band [ViewDeleteOptions]::Sessions) { 
             $params.Add('cascade','session')
         }
 

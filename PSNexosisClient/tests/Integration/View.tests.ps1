@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "New-View" -Tag 'Integration' {
+Describe "New-NexosisView" -Tag 'Integration' {
 	Context "Integration Tests" {
 		Set-StrictMode -Version latest
         
@@ -68,7 +68,7 @@ Describe "New-View" -Tag 'Integration' {
                 }
             )
             # Create new dataset
-            New-DataSet -dataSetName $script:dataSetName -data $data -columnMetaData $columns
+            New-NexosisDataSet -dataSetName $script:dataSetName -data $data -columnMetaData $columns
 
             $eventColumns = @{
                 timestamp = @{
@@ -105,8 +105,8 @@ Describe "New-View" -Tag 'Integration' {
                 }
             )
             # create two new datasets to make a view
-            New-DataSet -dataSetName $script:dataSetName -data $data -columnMetaData $columns
-            New-DataSet -dataSetName $script:joinDataSetName -data $eventData -columnMetaData $eventColumns
+            New-NexosisDataSet -dataSetName $script:dataSetName -data $data -columnMetaData $columns
+            New-NexosisDataSet -dataSetName $script:joinDataSetName -data $eventData -columnMetaData $eventColumns
         }
    
 		It "creates a new view" {			
@@ -125,7 +125,7 @@ Describe "New-View" -Tag 'Integration' {
             )
             
 			# Create new dataset
-            $viewResponse = New-View -viewName $script:viewName -dataSetName $script:dataSetName -joins $joins 
+            $viewResponse = New-NexosisView -viewName $script:viewName -dataSetName $script:dataSetName -joins $joins 
             
             { $viewResponse.StatusCode -eq 200 } | should be $true
             $viewResponse.viewName | should be $script:viewName
@@ -135,17 +135,17 @@ Describe "New-View" -Tag 'Integration' {
         }
              
         It "removes a view" {
-            {Remove-View -viewName $script:viewName -force}  | should not throw
+            {Remove-NexosisView -viewName $script:viewName -force}  | should not throw
         }
 
         It "Should attempt to delete a missing view and get an error" {
-            {Remove-View -viewName 'view123456' -force}  |  should throw "Item of type view with identifier view123456 was not found"
+            {Remove-NexosisView -viewName 'view123456' -force}  |  should throw "Item of type view with identifier view123456 was not found"
         }
 	
         AfterAll {
             # Remove created datasets
-            Remove-Dataset -dataSetName $script:dataSetName -force
-            Remove-Dataset -dataSetName $script:joinDataSetName -force     
+            Remove-NexosisDataSet -dataSetName $script:dataSetName -force
+            Remove-NexosisDataSet -dataSetName $script:joinDataSetName -force     
         }
 	}
 }

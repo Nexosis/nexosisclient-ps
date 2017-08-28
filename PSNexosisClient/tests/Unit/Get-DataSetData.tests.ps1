@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-DatasetData" -Tag 'Unit' {
+Describe "Get-NexosisDataSetData" -Tag 'Unit' {
 	Context "unit tests" {
         Set-StrictMode -Version latest		
 
@@ -39,7 +39,7 @@ Describe "Get-DatasetData" -Tag 'Unit' {
         } -Verifiable
         
         It "gets datasetdata by dataset name with paging" {
-            Get-DataSetData -dataSetName 'salesdata' -page 1 -pageSize 1000
+            Get-NexosisDataSetData -dataSetName 'salesdata' -page 1 -pageSize 1000
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
         }
 
@@ -54,15 +54,15 @@ Describe "Get-DatasetData" -Tag 'Unit' {
 		}
 
 		It "throws exception when dataSetName is invalid" {
-			{Get-DataSetData -dataSetName '       '} | Should throw "Argument '-DataSetName' cannot be null or empty."
+			{Get-NexosisDataSetData -dataSetName '       '} | Should throw "Argument '-DataSetName' cannot be null or empty."
 		}
 
 		It "throws error when page parameter is invalid" {
-			{ Get-DatasetData -dataSetName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
+			{ Get-NexosisDataSetData -dataSetName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
 		}
 
 		It "throws error when pageSize parameter is invalid" {
-			{ Get-DatasetData -dataSetName	 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
+			{ Get-NexosisDataSetData -dataSetName	 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
 		}
 
         It "calls with the proper HTTP verb" {
@@ -91,7 +91,7 @@ Describe "Get-DatasetData" -Tag 'Unit' {
 		}
 
 		It "has proper HTTP Headers for CSV" {
-			Get-DataSetData -dataSetName 'test' -ReturnCsv
+			Get-NexosisDataSetData -dataSetName 'test' -ReturnCsv
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				(
 					($Headers.Contains("accept")) -and 
@@ -101,14 +101,14 @@ Describe "Get-DatasetData" -Tag 'Unit' {
 		}
 
 		It "gets datasetdata by dataset name and dates with paging defaults" {
-            Get-DataSetData -dataSetName 'salesdata' -startDate 2017-01-01 -endDate 2017-01-20
+            Get-NexosisDataSetData -dataSetName 'salesdata' -startDate 2017-01-01 -endDate 2017-01-20
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00"
 			} 
 		}
 		
 		It "uses correct URI for multiple include columns" {
-			Get-DataSetData -dataSetName 'Location-A' -include @('sales','transactions') 
+			Get-NexosisDataSetData -dataSetName 'Location-A' -include @('sales','transactions') 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data/Location-A?include=sales&include=transactions"
 			}

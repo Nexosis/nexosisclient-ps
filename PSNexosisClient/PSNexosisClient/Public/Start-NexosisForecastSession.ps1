@@ -1,4 +1,4 @@
-Function Start-ForecastSession {
+Function Start-NexosisForecastSession {
 <# 
  .Synopsis
   Start a forecast session for a submitted data source using the Target Column, 
@@ -45,7 +45,7 @@ Function Start-ForecastSession {
  .Example
   # Start a Daily Forecast session on the data source 'salesdata' and set the target column to forecast to
   'sales' - forecast between the range of 01-06-2013 to 01-13-2013
-  Start-ForecastSession -dataSourceName 'salesdata' -targetColumn 'sales' -startDate 2013-01-06 -endDate 2013-01-13 -resultInterval Day -columnMetadata $columns
+  Start-NexosisForecastSession -dataSourceName 'salesdata' -targetColumn 'sales' -startDate 2013-01-06 -endDate 2013-01-13 -resultInterval Day -columnMetadata $columns
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]

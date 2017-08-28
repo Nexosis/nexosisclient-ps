@@ -10,7 +10,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 $PSVersion = $PSVersionTable.PSVersion.Major
 $scriptRoot = $PSScriptRoot
 
-Describe "Import-DataSetFromCsv" -Tag 'Unit' {
+Describe "Import-NexosisDataSetFromCsv" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 
@@ -41,7 +41,7 @@ Describe "Import-DataSetFromCsv" -Tag 'Unit' {
 
 
 		It "mock is called once" {
-			Import-DataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "$scriptRoot\sample.csv"
+			Import-NexosisDataSetFromCsv -dataSetName 'ps-csvimport' -csvFilePath "$scriptRoot\sample.csv"
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context 
 		}
 
@@ -62,11 +62,11 @@ Describe "Import-DataSetFromCsv" -Tag 'Unit' {
         }
 
 		It "should throw if dataset name is null or empty" {
-			{ Import-DataSetFromCsv -dataSetName '   ' -csvFilePath "abcdefg.csv" }  | should Throw "Argument '-dataSetName' cannot be null or empty."
+			{ Import-NexosisDataSetFromCsv -dataSetName '   ' -csvFilePath "abcdefg.csv" }  | should Throw "Argument '-dataSetName' cannot be null or empty."
 		}
 
 		It "errors if csv file doesn't exist" {
-			{ Import-DataSetFromCsv -dataSetName 'abc' -csvFilePath "abcdefg.txt" } | Should throw "File abcdefg.txt doesn't exist."
+			{ Import-NexosisDataSetFromCsv -dataSetName 'abc' -csvFilePath "abcdefg.txt" } | Should throw "File abcdefg.txt doesn't exist."
 		}
 
 		It "has proper HTTP headers" {
