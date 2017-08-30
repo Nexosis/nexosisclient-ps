@@ -37,7 +37,7 @@ Describe "Remove-NexosisDataSet" -Tag 'Unit' {
 			}
 		}
 
-		It "deletes dataset by name" {
+		It "deletes dataset by name cascading session" {
 			Remove-NexosisDataSet -dataSetName 'test' -cascadeOption Sessions -force
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
@@ -78,6 +78,20 @@ Describe "Remove-NexosisDataSet" -Tag 'Unit' {
             Remove-NexosisDataSet -dataSetName 'salesdata' -startDate 2017-01-01 -endDate 2017-01-20 -force
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00"
+			} 
+		}
+		
+		It "removes datasetdata by dataset name cascading views" {
+            Remove-NexosisDataSet -dataSetName 'salesdata' -cascadeOption Views -force
+            Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?cascade=view"
+			} 
+		}
+		
+		It "removes datasetdata by dataset name cascading views and sessions" {
+            Remove-NexosisDataSet -dataSetName 'salesdata' -cascadeOption All -force
+            Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?cascade=session&cascade=view"
 			} 
         }
 	}
