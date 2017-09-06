@@ -38,6 +38,8 @@ Function Import-NexosisDataSetFromCsv {
 			} else {
 				throw "File $csvFilePath doesn't exist."
 			}
-		}
+		} else {
+            throw "CSV File cannot be null or empty."
+        }
 	}
 }
