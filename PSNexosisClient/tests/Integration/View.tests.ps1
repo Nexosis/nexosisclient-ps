@@ -115,7 +115,9 @@ Describe "New-NexosisView" -Tag 'Integration' {
                     
             $joins = @(
                 @{
-                    dataSetName=$script:joinDataSetName
+                    dataset = @{
+                        name=$script:joinDataSetName
+                    };
                     columnOptions = @{
                         isPromo=@{
                             alias="promo"
@@ -141,10 +143,22 @@ Describe "New-NexosisView" -Tag 'Integration' {
         It "Should attempt to delete a missing view and get an error" {
             {Remove-NexosisView -viewName 'view123456' -force}  |  should throw "Item of type view with identifier view123456 was not found"
         }
+
+        It "Should create a view based on a named calendar"{
+            $calJoins = @(@{calendar=@{name="Nexosis.Holidays-US"}})
+            $viewResponse = New-NexosisView -viewName "PSViewTestCalName" -dataSetName "dataSetName" -joins $calJoins
+            $viewResponse.joins[0].calendar.name | should be 'Nexosis.Holidays-US'
+        }
+
+        It "Should create a view based on a calendar url"{
+            $calJoins = @(@{calendar=@{url="https://calendar.google.com/calendar/ical/en.usa%23holiday%40group.v.calendar.google.com/public/basic.ics"}})
+            $viewResponse = New-NexosisView -viewName "PSViewTestCalUrl" -dataSetName "dataSetName" -joins $calJoins
+            $viewResponse.joins[0].calendar.url | should not be $null
+        }
 	
         AfterAll {
             # Remove created datasets
-            Remove-NexosisDataSet -dataSetName $script:dataSetName -force
+            Remove-NexosisDataSet -dataSetName $script:dataSetName -cascadeOption 'All' -force
             Remove-NexosisDataSet -dataSetName $script:joinDataSetName -force     
         }
 	}

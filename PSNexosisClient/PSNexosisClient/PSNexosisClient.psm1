@@ -25,10 +25,10 @@ Set-Variable -Name MaxPageSize -Option Constant -Visibility Public -Scope Script
 Set-Variable -Name ServerDefaultPageSize -Option Constant -Visibility Public -Scope Script -Value 100
 Set-Variable -Name ApiBaseUrl -Option Constant -Visibility Public -Scope Script -Value 'https://ml.nexosis.com/v1'
 
-if ($null -eq $Env:NEXOSIS_BASE_TEST_URL) {
+if ($null -eq $Env:NEXOSIS_API_TESTURI) {
     $BaseUrl = $script:ApiBaseUrl
  } else {
-    $BaseUrl = ($Env:NEXOSIS_BASE_TEST_URL)
+    $BaseUrl = ($Env:NEXOSIS_API_TESTURI)
  }
 
 Write-Verbose $script:UserAgent
@@ -48,6 +48,7 @@ $script:PSNexosisVars = new-object PSObject -Property @{
 	ApiBaseUrl = $BaseUrl
     DefaultPageSize=100
 }
+
 
 Add-Type -TypeDefinition @"
 using System;

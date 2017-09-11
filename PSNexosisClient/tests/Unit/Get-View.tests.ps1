@@ -73,7 +73,7 @@ Describe "Get-NexosisView" -Tag 'Unit' {
         }
 
 		It "throws error when page parameter is invalid" {
-			{ Get-NexosisView -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
+			{ Get-NexosisView -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than or equal to 0."
 		}
 
 		It "throws error when pageSize parameter is invalid" {

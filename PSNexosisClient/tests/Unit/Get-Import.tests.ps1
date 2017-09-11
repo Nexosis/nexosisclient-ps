@@ -119,7 +119,7 @@ Describe "Get-NexosisImport" -Tag 'Unit' {
 		}
 
 		It "should throw error with invalid page param" {
-			{Get-NexosisImport -dataSetName 'salesdata' -page -1 -pageSize 100} | should throw "Parameter '-page' must be an integer greater than 0."
+			{Get-NexosisImport -dataSetName 'salesdata' -page -1 -pageSize 100} | should throw "Parameter '-page' must be an integer greater than or equal to 0."
 		}
 		
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 

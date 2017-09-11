@@ -12,7 +12,9 @@ $PSVersion = $PSVersionTable.PSVersion.Major
 # Hashtable of the join definitions
 $testJoins = @(
     @{
-        name="rightDataSet1"
+		dataset = @{
+			name="rightDataSet1"
+		};
         columnOptions= @{
 			theColumnName=@{
 				alias="columnAlias"
@@ -20,7 +22,9 @@ $testJoins = @(
         }
     }, 
     @{
-        name="rightDataSet2"
+       dataset = @{
+		   name="rightDataSet2"
+	   };
         columnOptions=@{
 			columnNameA=@{
 				alias="columnAliasA"
@@ -42,9 +46,8 @@ $testBody = @"
                     "alias": "columnAlias"
                 }
             },
-            "joins": null,
             "dataSet": {
-                "name": null
+                "name": "rightDataSet1"
             }
         },
         {
@@ -56,9 +59,8 @@ $testBody = @"
                     "alias": "columnAliasA"
                 }
             },
-            "joins": null,
             "dataSet": {
-                "name": null
+                "name": "rightDataSet2"
             }
         }
     ]
@@ -101,9 +103,8 @@ $testBodyWithColumnsMetaData = @"
                     "alias": "columnAlias"
                 }
             },
-            "joins": null,
             "dataSet": {
-                "name": null
+                "name": "rightDataSet1"
             }
         },
         {
@@ -115,9 +116,8 @@ $testBodyWithColumnsMetaData = @"
                     "alias": "columnAliasA"
                 }
             },
-            "joins": null,
             "dataSet": {
-                "name": null
+                "name": "rightDataSet2"
             }
         }
     ]
@@ -195,6 +195,7 @@ Describe "New-NexosisView" -Tag 'Unit' {
 		It "calls with the correct body" {
 			# Converting from string to json and back seems to remove 
 			# any extra whitespace, formatting, etc. so they compare acutal contents.
+			
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 6) -eq ($testBody | ConvertFrom-Json | ConvertTo-Json -Depth 6)
 			}
@@ -237,6 +238,14 @@ Describe "New-NexosisView" -Tag 'Unit' {
 			New-NexosisView -viewName "testnew" -dataSetName "dataSetName" -joins $testJoins -columnMetaData $columnsMetaData
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 5) -eq ($testBodyWithColumnsMetaData | ConvertFrom-Json | ConvertTo-Json -Depth 5)
+			}
+		}
+
+		It "puts new view with a named calendar" {
+			$calJoins = @(@{calendar=@{name="Nexosis-Holidays-US"}})
+			New-NexosisView -viewName "testnew" -dataSetName "dataSetName" -joins $calJoins
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				($Body | ConvertFrom-Json | ConvertTo-Json -Depth 5) -eq ('{"dataSetName": "dataSetName","joins": [ { "calendar": { "name": "Nexosis-Holidays-US"}}]}' | ConvertFrom-Json | ConvertTo-Json -Depth 5)
 			}
 		}
 	}

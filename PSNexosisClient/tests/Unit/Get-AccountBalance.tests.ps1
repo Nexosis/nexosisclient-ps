@@ -7,7 +7,6 @@ if($env:APPVEYOR_REPO_COMMIT_MESSAGE -match "!verbose")
 Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
-
 $PSVersion = $PSVersionTable.PSVersion.Major
 Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
 	Context "unit tests" {

@@ -73,7 +73,7 @@ Describe "Get-NexosisDataSet" -Tag 'Unit' {
         }
 
 		It "throws error when page parameter is invalid" {
-			{ Get-NexosisDataSet -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than 0."
+			{ Get-NexosisDataSet -partialName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than or equal to 0."
 		}
 
 		It "throws error when pageSize parameter is invalid" {

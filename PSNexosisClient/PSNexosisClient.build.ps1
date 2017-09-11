@@ -109,9 +109,9 @@ task RunIntegrationTests {
     # Publish Test Report
     $options = @{
         BuildNumber = $BuildNumber
-        GitRepo = "Nexosis/PSNexosisClient"
-        GitRepoURL = "https://github.com/Nexosis/PSNexosisClient"
-        CiURL = "https://build.nexosis.com/job/PSNexosisClient/"
+        GitRepo = "Nexosis/nexosisclient-ps"
+        GitRepoURL = "https://github.com/Nexosis/nexosisclient-ps"
+        CiURL = "https://ci.appveyor.com/project/Nexosis/nexosisclient-ps"
         ShowHitCommands = $false
         Compliance = 0.4
         ScriptAnalyzerFile = (Join-Path $Artifacts "ScriptAnalysisResults.json")
@@ -123,7 +123,7 @@ task RunIntegrationTests {
 }
 
 # Synopsis: Test the project with Pester. Publish Test and Coverage Reports
-task RunUnitTests {
+task RunUnitTests Clean,{
     $invokePesterParams = @{
         ExcludeTag=@('Integration') 
         CodeCoverage=(Join-Path (Join-Path "$PSScriptRoot\PSNexosisClient" "Public") "*.ps1")
