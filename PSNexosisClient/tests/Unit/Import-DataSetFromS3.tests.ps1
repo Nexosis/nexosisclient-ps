@@ -31,7 +31,7 @@ Describe "Import-NexosisDataSetFromS3" -Tag 'Unit' {
             $TestVars = @{
                 ApiKey       = $Env:NEXOSIS_API_KEY
 				UserAgent	 = "Nexosis-PS-API-Client/$moduleVersion"
-				ApiEndPoint	 = 'https://api.uat.nexosisdev.com/v1'
+				ApiEndPoint	 = $Env:NEXOSIS_API_TESTURI
 				MaxPageSize  = "1000"
 				dsName = 'Location-A'
 				bucketName = 'nexosis-sample-data'

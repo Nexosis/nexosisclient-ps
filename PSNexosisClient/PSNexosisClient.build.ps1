@@ -138,9 +138,9 @@ task RunUnitTests {
     # Publish Test Report
     $options = @{
         BuildNumber = $BuildNumber
-        GitRepo = "Nexosis/PSNexosisClient"
-        GitRepoURL = "https://github.com/Nexosis/PSNexosisClient"
-        CiURL = "https://build.nexosis.com/job/PSNexosisClient/"
+        GitRepo = "Nexosis/nexosisclient-ps"
+        GitRepoURL = "https://github.com/Nexosis/nexosisclient-ps"
+        CiURL = "https://ci.appveyor.com/project/Nexosis/nexosisclient-ps"
         ShowHitCommands = $false
         Compliance = 0.4
         ScriptAnalyzerFile = (Join-Path $Artifacts "ScriptAnalysisResults.json")
