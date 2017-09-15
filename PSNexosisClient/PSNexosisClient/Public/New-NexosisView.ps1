@@ -13,15 +13,27 @@ Function New-NexosisView {
      Name of the dataset to add data.
 
      .Parameter Joins
-     A data structure containing the Join Definition for how to join another DataSet with the dataset specified in Joins.
+     A data structure containing the Join Definition for how to join another DataSet or a calendar with the dataset specified in Joins.
 
         @(
             @{
-                name="rightDataSetName"
+                dataset = @{
+                    name="rightDataSetName"
+                },    
                 columnOptions= @{
                     columnNameToIncludeInJoin=@{
                         alias="columnAlias"
                     }
+                }
+            }
+        )
+
+        Or
+
+        @(
+            @{
+                calendar = @{
+                    name="Nexosis.Holidays-US"
                 }
             }
         )
@@ -45,7 +57,9 @@ Function New-NexosisView {
 
     $joins = @(
                 @{
-                    dataSetName="promoData"
+                    dataset = @{
+                        name="promoData"
+                    };
                     columnOptions = @{
                         timestamp=@{
                             joinInterval="Day"
@@ -92,26 +106,14 @@ Function New-NexosisView {
             if ($null -eq $columnMetaData) {
                 $viewDefinition = @{
                     dataSetName = $dataSetName
-                    joins = @()
+                    joins = $joins
                 }
             } else {
                 $viewDefinition = @{
                     dataSetName = $dataSetName
                     columns = $columnMetaData
-                    joins = @()
+                    joins = $joins
                 }
-            }
-
-            foreach ($join in $joins) {
-                $joinToAdd = @{
-                    dataSet=@{
-                        name = $join["dataSetName"]
-                    }
-                    columnOptions=$join["columnOptions"]
-                    joins=$null
-                }
-               
-                $viewDefinition["joins"] += $joinToAdd
             }
 
             if ($dataSetName.Trim().Length -eq 0) { 

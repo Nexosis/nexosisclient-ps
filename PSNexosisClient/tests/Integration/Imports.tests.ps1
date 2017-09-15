@@ -38,7 +38,7 @@ Describe "All Import Tests" -Tag 'Integration' {
 
         It "loads imports by datasetname filter" {
             $details = Get-NexosisImport -dataSetName $script:dsName -page 0 -pageSize 1
-            $details.ImportId | Should Be $script:ImportId
+            $details.ImportId | Should Be $script:ImportId #not guaranteed if more than one import session created.
             $details.type | Should be  "s3"
             $details.dataSetName | Should be $script:dsName
             $details.status | Should -match "requested|started|completed"
@@ -58,7 +58,7 @@ Describe "All Import Tests" -Tag 'Integration' {
                 $status = Get-NexosisImport -importId $script:ImportId
             } while ($status.status -ne "completed")
 
-            Remove-NexosisDataSet -dataSetName $script:dsName -cascadeOption Sessions -force
+            Remove-NexosisDataSet -dataSetName $script:dsName -cascadeOption All -force
         }
     }
 }

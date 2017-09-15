@@ -7,7 +7,6 @@ if($env:APPVEYOR_REPO_COMMIT_MESSAGE -match "!verbose")
 Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
-
 $PSVersion = $PSVersionTable.PSVersion.Major
 Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
 	Context "unit tests" {
@@ -18,7 +17,7 @@ Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
             $TestVars = @{
                 ApiKey       = $Env:NEXOSIS_API_KEY
 				UserAgent	 = "Nexosis-PS-API-Client/$moduleVersion"
-				ApiEndPoint	 = 'https://api.uat.nexosisdev.com/v1'
+				ApiEndPoint	 = $Env:NEXOSIS_API_TESTURI
 				MaxPageSize  = "1000"
             }
         }

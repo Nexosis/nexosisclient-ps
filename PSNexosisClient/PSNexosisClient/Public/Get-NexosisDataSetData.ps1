@@ -83,7 +83,7 @@ Function Get-NexosisDataSetData {
 		}
 
 		if ($page -lt 0) {
-            throw "Parameter '-page' must be an integer greater than 0."
+            throw "Parameter '-page' must be an integer greater than or equal to 0."
         }
 
 		if (($pageSize -gt ($script:MaxPageSize)) -or ($pageSize -lt 1)) {

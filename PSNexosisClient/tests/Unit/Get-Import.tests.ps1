@@ -18,7 +18,7 @@ Describe "Get-NexosisImport" -Tag 'Unit' {
             $TestVars = @{
                 ApiKey       = $Env:NEXOSIS_API_KEY
 				UserAgent	 = "Nexosis-PS-API-Client/$moduleVersion"
-				ApiEndPoint	 = 'https://api.uat.nexosisdev.com/v1'
+				ApiEndPoint	 = $Env:NEXOSIS_API_TESTURI
 				MaxPageSize  = "1000"
             }
         }
@@ -119,7 +119,7 @@ Describe "Get-NexosisImport" -Tag 'Unit' {
 		}
 
 		It "should throw error with invalid page param" {
-			{Get-NexosisImport -dataSetName 'salesdata' -page -1 -pageSize 100} | should throw "Parameter '-page' must be an integer greater than 0."
+			{Get-NexosisImport -dataSetName 'salesdata' -page -1 -pageSize 100} | should throw "Parameter '-page' must be an integer greater than or equal to 0."
 		}
 		
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
