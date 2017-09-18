@@ -13,7 +13,7 @@
 #   - RepoFolder
 #     - RepoFolder.psd1
 #
-# * Nuget key in $ENV:NugetApiKey
+# * Nuget key in $ENV:NugetApiKey 
 #
 # * Set-BuildEnvironment from BuildHelpers module has populated ENV:BHModulePath and related variables
 
