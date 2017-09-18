@@ -48,8 +48,6 @@ test_script:
     Invoke-Build ConfirmTestsPassed
 
     Set-BuildEnvironment
-    
-    Get-Item ENV:BH*
 
     Invoke-PSDeploy -Path .\Deploy.psdeploy.ps1 -Force 
     
