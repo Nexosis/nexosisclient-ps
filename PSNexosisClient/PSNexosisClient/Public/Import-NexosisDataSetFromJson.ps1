@@ -6,8 +6,8 @@ Function Import-NexosisDataSetFromJson {
  .Description
  This operation creates a new dataset using data from a JSON File. If the dataset already exists,
  adds rows to the dataset. If the specified data contains records with timestamps that already
- exist in the dataset, those records will be overwritten. NOTE: The JSON file must be formatted
- as described in the API Documentation on Adding DataSet Data.
+ exist in the dataset, those records will be overwritten. 
+ NOTE: The JSON file must be formatted as described in the API Documentation on Adding New DataSet Data.
 
  .Parameter DataSet
   Name of the dataset to create or which to add data.
