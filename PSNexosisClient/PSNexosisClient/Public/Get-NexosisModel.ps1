@@ -59,14 +59,14 @@ Function Get-NexosisModel {
     
             $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
     
-            if (($dataSourceName -ne $null) -or ($dataSourceName.Trim().Length -gt 0)) {
+            if (($null -ne $dataSourceName) -or ($dataSourceName.Trim().Length -gt 0)) {
                 $params['dataSourceName'] = $dataSourceName
             }
             
-            if ($requestedAfterDate -ne $null) { 
+            if ($null -ne $requestedAfterDate) { 
                 $params['createdAfterDate'] = $createdAfterDate
             }
-            if ($requestedBeforeDate -ne $null) {
+            if ($null -ne $requestedBeforeDate) {
                 $params['createdBeforeDate'] = $createdBeforeDate
             }
 

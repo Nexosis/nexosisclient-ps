@@ -81,7 +81,7 @@ Function New-NexosisView {
             [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
             [string]$dataSetName,
             [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-            $joins=@(),
+            $joins,
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
             $columnMetaData
         )

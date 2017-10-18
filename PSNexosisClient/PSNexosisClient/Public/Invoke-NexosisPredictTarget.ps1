@@ -37,7 +37,7 @@ Function Invoke-NexosisPredictTarget {
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
         [Guid]$modelId,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-        $data=@()
+        $data
     )
     process {
         if (($null -eq $data) -or ($data -isnot [Array]) -or ($data.Count -lt 1))

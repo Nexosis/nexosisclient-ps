@@ -45,7 +45,7 @@ Describe "All Import Tests" -Tag 'Integration' {
         }
 
         It "get imports by GUID" {
-            $details = Get-NexosisImport  $script:ImportId
+            $details = Get-NexosisImport $script:ImportId
             $details.ImportId | Should Be $script:ImportId
             $details.type | Should be  "s3"
             $details.dataSetName | Should be $script:dsName
@@ -56,6 +56,7 @@ Describe "All Import Tests" -Tag 'Integration' {
             # Make sure import is completed before deleting
             do {
                 $status = Get-NexosisImport -importId $script:ImportId
+                Start-Sleep -Seconds 10
             } while ($status.status -ne "completed")
 
             Remove-NexosisDataSet -dataSetName $script:dsName -cascadeOption All -force
