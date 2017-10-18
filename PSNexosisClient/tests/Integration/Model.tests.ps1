@@ -14,27 +14,40 @@ Describe "All Model Tests" -Tag 'Integration' {
         Set-StrictMode -Version latest
          
         BeforeAll {
-            # import dataset
+            # see if Integration Test Model exists already
+            $script:integrationModel = Get-NexosisModel -dataSourceName autompg-regression-ps-integration-test
             $script:dataSetName = 'autompg-regression-ps-integration-test'
-            Import-NexosisDataSetFromJson -dataSetName $script:dataSetName -jsonFilePath 'auto-mpg.data.json'
+
+            if ($script:integrationModel -eq $null) {
+                # import dataset if needed              
+                Import-NexosisDataSetFromJson -dataSetName $script:dataSetName -jsonFilePath 'auto-mpg.data.json'
+            }
         }
 
-        It "creates a new model" {			
-            # Create new dataset
-            $result = Start-NexosisModelSession -dataSourceName $script:dataSetName -targetColumn mpg -predictionDomain Regression
+        It "creates a new model if needed" {	
+            if ($script:integrationModel -eq $null) {
+                # Create new dataset
+                $result = Start-NexosisModelSession -dataSourceName $script:dataSetName -targetColumn mpg -predictionDomain Regression
 
-            "Monitoring session $($result.sessionid)." | Write-Host
-            $sessionStatus = Get-NexosisSessionStatus -SessionId $result.SessionID
-            
-            # Loop / Sleep while we wait for model and predictions to be generated
-            while ($sessionStatus -eq 'Started' -or $sessionStatus -eq "Requested") {
-                Start-Sleep -Seconds 10
-                $sessionStatus = (Get-NexosisSessionStatus -SessionId $result.sessionID)
+                "Monitoring session $($result.sessionid)." | Write-Host
+                $sessionStatus = Get-NexosisSessionStatus -SessionId $result.SessionID
+                
+                # Loop / Sleep while we wait for model and predictions to be generated
+                while ($sessionStatus -eq 'Started' -or $sessionStatus -eq "Requested") {
+                    Start-Sleep -Seconds 10
+                    $sessionStatus = (Get-NexosisSessionStatus -SessionId $result.sessionID)
+                }
+
+                $completedResult = Get-NexosisSessionResult -SessionId $result.sessionId
+                $script:modelId = $completedResult.ModelId
+                $script:sessionId = $completedResult.sessionId
+            } else {
+                # It already exists, skip this long running test and retrieve the session Id and Modelid
+                # for use in other tests
+                $result = Get-NexosisModel -dataSourceName  $script:dataSetName 
+                $script:modelId = $result.ModelId
+                $script:sessionId = $result.sessionId
             }
-
-            $completedResult = Get-NexosisSessionResult -SessionId $result.sessionId
-            $script:modelId = $completedResult.ModelId
-            $script:sessionId = $completedResult.sessionId
         }
 
         It "should return a list of models by DataSourceName" {
@@ -62,6 +75,7 @@ Describe "All Model Tests" -Tag 'Integration' {
         }
 
         It "should make predictions" {
+            # send in prediction
             $data = @(
                 @{
                     Make = "plymouth"
@@ -87,7 +101,7 @@ Describe "All Model Tests" -Tag 'Integration' {
 
             $results = Invoke-NexosisPredictTarget -modelId $script:modelId -data $data
             $results.data | Should Not Be $null
-            $results.data.Count | Should Be 2
+            $results.data.Count | Should Be $data.count
             $results.modelId | should be $script:modelId
             $results.sessionId | should be $script:sessionId
             $results.predictionDomain | Should be "regression"
@@ -95,7 +109,9 @@ Describe "All Model Tests" -Tag 'Integration' {
         }
 		
         AfterAll {
-            Remove-NexosisDataSet -dataSetName $script:dataSetName -force
+            if ($script:integrationModel -eq $null) {
+                Remove-NexosisDataSet -dataSetName $script:dataSetName -force
+            }
         }
     }
 }
