@@ -155,14 +155,14 @@ Function New-NexosisDataSet {
 	Param(
 		[Parameter(Mandatory=$true, ValueFromPipeline=$True)]
 		[string]$dataSetName,
-		[Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+		[Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
 		$data,
 		[Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
 		$columnMetaData
 	)
 	process {
 
-		if ($data -isnot [System.Array]) {
+		if (($null -ne $data) -and ($data -isnot [System.Array])) {
 		    throw "Parameter '-data' must be an array of hashes."
 		}
 
@@ -171,13 +171,21 @@ Function New-NexosisDataSet {
 			throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."	
 		}
 
-		# Construct the object to send to the REST endpoint
-		$dataSet = @{
-			dataSetName = $dataSetName
-			columns = $columnMetaData
-			data =@(
-				$data
-			)
+		if($null -ne $data) {
+			# Construct the object to send to the REST endpoint
+			$dataSet = @{
+				dataSetName = $dataSetName
+				columns = $columnMetaData
+				data =@(
+					$data
+				)
+			}
+		} else {
+			# Construct the object to send to the REST endpoint
+			$dataSet = @{
+				dataSetName = $dataSetName
+				columns = $columnMetaData
+			}
 		}
 
 		if ($dataSetName.Trim().Length -eq 0) { 
