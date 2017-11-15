@@ -78,7 +78,7 @@ Function Start-NexosisForecastSession {
         
         $params['dataSourceName'] = $dataSourceName
         
-        if ($targetColumn -ne $null){
+        if (($null -ne $targetColumn) -and ($targetColumn.Trim().Length -ne 0)) {
             $params['targetColumn'] = $targetColumn
         } 
 

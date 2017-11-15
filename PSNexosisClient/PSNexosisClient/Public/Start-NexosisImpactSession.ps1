@@ -79,7 +79,7 @@ Function Start-NexosisImpactSession {
       
       $params['dataSourceName'] = $dataSourceName
 
-      if ($targetColumn.Trim().Length > 0) {
+      if (($null -ne $targetColumn) -and ($targetColumn.Trim().Length -ne 0)) {
         $params['targetColumn'] = $targetColumn
       }
 
