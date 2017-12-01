@@ -21,11 +21,18 @@ Function Get-NexosisAccountBalance {
         $params['pageSize'] = 1
 
         $response = Invoke-Http -method Get -path "data" -params $params -needHeaders
-        
-        if (($null -ne $response.Headers) -and ($response.Headers.ContainsKey('Nexosis-Account-Balance'))) {
-            $response.Headers['Nexosis-Account-Balance'] 
+
+        $script:headers = @{}        
+
+        if ($null -ne $response.Headers) {
+            foreach ($key in $response.Headers.Keys) {
+                if ($key.StartsWith("Nexosis-Account-")) {
+                    $headers.Add($key.Replace('Nexosis-Account-','').Replace('-', ' '), $response.Headers[$key])
+                }
+            }
+            $script:headers
         } else {
-            $nexosisException = [NexosisClientException]::new("Error requesting account balance. No Nexosis-Account-Balance header in HTTP Response. See ErrorResponse for more details.", $response.StatusCode)
+            $nexosisException = [NexosisClientException]::new("Error requesting account balance. Error trying to retrieve appropriate Account Balance Headers in HTTP Response. See ErrorResponse for more details.", $response.StatusCode)
             $nexosisException.ErrorResponse = $response
 			throw $nexosisException
         }

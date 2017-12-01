@@ -28,14 +28,29 @@ Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
 				StatusCode="200"
 				Headers=@{}
 			}
+			$response.Headers.Add("Nexosis-Account-DataSetCount-Current","181")
+			# Next one will be eventually removed 
 			$response.Headers.Add("Nexosis-Account-Balance","200 USD")
+			$response.Headers.Add("Nexosis-Account-PredictionCount-Allotted","250000")
+			$response.Headers.Add("Nexosis-Account-SessionCount-Allotted","3500")
+			$response.Headers.Add("Nexosis-Account-SessionCount-Current","0")
+			$response.Headers.Add("Nexosis-Account-DataSetCount-Allotted","200")
+			$response.Headers.Add("Nexosis-Account-PredictionCount-Current","0")
 			$response
         } -Verifiable
 	
 		It "gets account balance" {
 			$value = Get-NexosisAccountBalance
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
-			$value | should be "200 USD"
+			$value.Count | should match 7
+			$value.'DataSetCount Current' | should match "^\d+$"
+			# Next one will be eventually removed 
+		    $value.Balance | should match "^[+-]?\d+(\.\d+)? USD$"
+			$value.'PredictionCount Allotted' | should match "^\d+$"
+			$value.'SessionCount Allotted' | should match "^\d+$"
+			$value.'SessionCount Current' | should match "^\d+$"
+			$value.'DataSetCount Allotted' | should match "^\d+$"
+			$value.'PredictionCount Current' | should match "^\d+$"
 		}
         
 		It "uses the mock" {
