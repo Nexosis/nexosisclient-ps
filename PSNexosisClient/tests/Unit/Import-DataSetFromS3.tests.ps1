@@ -84,7 +84,7 @@ Describe "Import-NexosisDataSetFromS3" -Tag 'Unit' {
 		}
 
 		It "uses the mock" {
-			Assert-VerifiableMocks
+			Assert-VerifiableMock
 		}
 
 		It "calls with the proper HTTP verb" {

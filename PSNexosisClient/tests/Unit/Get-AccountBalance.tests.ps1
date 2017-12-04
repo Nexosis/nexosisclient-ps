@@ -54,7 +54,7 @@ Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
 		}
         
 		It "uses the mock" {
-			Assert-VerifiableMocks
+			Assert-VerifiableMock
 		}
         
 		It "calls with the proper URI" {

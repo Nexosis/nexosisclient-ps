@@ -46,7 +46,7 @@ Describe "Get-NexosisMode" -Tag 'Unit' {
 		}
 
 		It "uses the mock" {
-			Assert-VerifiableMocks
+			Assert-VerifiableMock
 		}
 
 		It "loads model by dataSourceName and paging" {

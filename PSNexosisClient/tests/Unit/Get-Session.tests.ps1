@@ -44,7 +44,7 @@ Describe "Get-NexosisSession" -Tag 'Unit' {
 		}
 
 		It "uses the mock" {
-			Assert-VerifiableMocks
+			Assert-VerifiableMock
 		}
 
 		It "loads session by dataSourceName filter with paging" {

@@ -44,7 +44,7 @@ Describe "Get-NexosisView" -Tag 'Unit' {
 		}
 
 		It "uses the mock" {
-			Assert-VerifiableMocks
+			Assert-VerifiableMock
 		}
 
 		It "loads views by view name filter with paging" {
