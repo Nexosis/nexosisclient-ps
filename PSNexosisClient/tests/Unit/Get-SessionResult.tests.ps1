@@ -79,5 +79,12 @@ Describe "Get-NexosisSessionResult" -Tag 'Unit' {
 				)
 			}
 		}
+
+		 It "returns a session result showing confusion matrix" {
+            Get-NexosisSessionResult -sessionId $sessionId -confusionMatrix
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/$sessionId/results/confusionmatrix"
+			} 
+        }
     }
 }

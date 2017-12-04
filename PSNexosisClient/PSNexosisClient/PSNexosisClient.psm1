@@ -45,6 +45,7 @@ Enum ResultInterval
 Enum PredictionDomain
 {
     Regression
+    Classification
 }
 
 # Setup a hashtable of configurable variables with Defaults

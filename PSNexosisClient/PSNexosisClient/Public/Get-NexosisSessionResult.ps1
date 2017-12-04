@@ -27,9 +27,14 @@ Function Get-NexosisSessionResult {
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
-        [GUID]$SessionId
+        [GUID]$SessionId,
+        [switch]$confusionMatrix
 	)
     process {
-        Invoke-Http -method Get -path "sessions/$SessionId/results"
+        if ($confusionMatrix.IsPresent) {
+             Invoke-Http -method Get -path "sessions/$SessionId/results/confusionmatrix"
+        } else {
+            Invoke-Http -method Get -path "sessions/$SessionId/results"
+        }
     }
 }

@@ -12,14 +12,31 @@ Function Start-NexosisModelSession {
      .Parameter targetColumn
      Column in the specified data source to predict with the generated model
      
-     .Parameter PredictionDomaim
-      Type of prediction the built model is intended to make. (Currently the only suppported value is Regression).
+     .Parameter PredictionDomain
+      Type of prediction the built model is intended to make. Supports Regression or Classification. 
+      
+      Regression models are used to predict a target (dependent) variable from one or more feature (independent) 
+      variables. Regression models always require at least one feature column, and since the output of a 
+      regression model is a continuous value, these models can only be used to predict numeric targets.
+
+      Classification models are used to predict which of a discrete set of classes a given record represents. 
+      Like regression models, classification models predict a target (dependent) variable from one or more
+      feature (independent) variables, and they require at least one feature column. Unlike regression models, 
+      the target column of a classification model can be any data type. (The target should contain relatively 
+      few distinct values, or classes, to predict.) By default, the Nexosis API will balance the data source 
+      used to build a classification model. That is, if 90% of the records in the data source have class A
+      and 10% have class B, the API will strive to generate a model that is equally proficient at identifying
+      both class A and class B records. To override this, include the switch '-allowUnbalancedData' to the call.
      
      .Parameter callbackUrl
       The Webhook url that will receive updates when the Session status changes
       If you provide a callback url, your response will contain a header named Nexosis-Webhook-Token.  You will receive this
       same header in the request message to your Webhook, which you can use to validate that the message came from Nexosis.
     
+     .Parameter allowUnbalancedData
+      For Classification Only: If allowUnbalancedData is provided, the API will not seek to balance the data source, which 
+      may result in a model better at predicting class A than class B. Defaults to True if not provided.
+
      .Parameter isEstimate
       If specified, the session will not be processed.  The returned object will be populated with the estimated 
       cost that the request would have incurred.
@@ -27,6 +44,10 @@ Function Start-NexosisModelSession {
      .Example
       # Start a session to Build a model using the dataSource housePrices that can later be used to predict house prices.
       Start-NexosisModelSession -dataSourceName 'housingData' -targetColumn 'salePrice' -predictionDomain Regression
+
+     .Example
+      # Start a session to Build a model using the dataSource housePrices that can later be used to predict house prices.
+      Start-NexosisModelSession -dataSourceName 'csgo' -targetColumn 'VACBanned' -predictionDomain Classification
     #>[CmdletBinding(SupportsShouldProcess=$true)]
         Param(
             [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
@@ -40,6 +61,8 @@ Function Start-NexosisModelSession {
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
             $columnMetadata=@{},
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+            [switch]$allowUnbalancedData,
+            [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
             [switch]$isEstimate
         )
         process {
@@ -50,6 +73,10 @@ Function Start-NexosisModelSession {
             if ($columnMetadata -isnot [Hashtable])
             {
                 throw "Parameter '-ColumnMetaData' must be a hashtable of columns metadata for the data."	
+            }
+
+            if ($allowUnbalancedData.IsPresent -and $predictionDomain -ne [PredictionDomain]::Classification) {
+                throw "Switch -allowUnbalancedData can only be used for Classification, not Regression."
             }
             
             $createModelObj = @{
@@ -69,6 +96,12 @@ Function Start-NexosisModelSession {
                 $createModelObj['callbackUrl'] = $callbackUrl
             }
             
+            if ($allowUnbalancedData.IsPresent) {
+                $createModelObj['extraParameters'] = @{
+                    balance = $false
+                }
+            }
+
             if ($isEstimate.IsPresent) {
                 $createModelObj['isEstimate'] = $isEstimate.ToString().ToLower()
             }

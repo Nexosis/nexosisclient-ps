@@ -14,6 +14,15 @@ $jsonPostBody = @"
 {
     "region":  "us-east-1",
     "path":  "LocationA.csv",
+    "bucket":  "nexosis-sample-data",
+    "dataSetName":  "Location-A"
+}
+"@
+
+$jsonPostBodyWithColumns = @"
+{
+    "region":  "us-east-1",
+    "path":  "LocationA.csv",
     "columns":  {
 
                 },
@@ -111,6 +120,15 @@ Describe "Import-NexosisDataSetFromS3" -Tag 'Unit' {
 
 		It "should throw if S3Region name is null or empty" {
 			{ Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region '       ' }  | should Throw "Argument '-S3Region' cannot be null or empty."
+		}
+
+		It "calls with correct JSON body with columns" {
+			Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region -columns @{}
+			# Converting from string to json and back seems to remove 
+			# any extra whitespace, formatting, etc. so they compare acutal contents.
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($jsonPostBodyWithColumns | ConvertFrom-Json | ConvertTo-Json)
+			}
 		}
 	}
 }

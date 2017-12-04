@@ -39,17 +39,12 @@ Function Import-NexosisDataSetFromS3 {
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         $columns=$null
 	)
-
-    #$columns=New-Object 'system.collections.generic.dictionary[string,Nexosis.Api.ColumnMetadata]'
-    #$columns.Add("abc", (New-Object Nexosis.Api.ColumnMetadata -Property @{DataType=[Nexosis.Api.ColumnType]::String;Role=[Nexosis.Api.ColumnRole]::None} ))
-    #$columns.GetEnumerator() | Select @{Label="Name";Expression={$_.Key}}, @{Label="role";Expression={$_.Value.Role.ToString()}}, @{Label="dataType";Expression={$_.Value.DataType.ToString()}} | ConvertTo-JSon
-
+    
     $importS3Data = @{  
         dataSetName = $dataSetName
         bucket = $S3BucketName
         path = $S3BucketPath
         region = $S3Region
-        columns = @{}
     }
 
 	if ($dataSetName.Trim().Length -eq 0) { 
@@ -64,6 +59,10 @@ Function Import-NexosisDataSetFromS3 {
     if ($S3Region.Trim().Length -eq 0) { 
 		throw "Argument '-S3Region' cannot be null or empty."
 	}
+
+    if ($null -ne $columns) {
+        $importS3Data['columns'] = $columns
+    }
 
     if ($pscmdlet.ShouldProcess($dataSetName)) {
         Invoke-Http -method Post -path "imports/S3" -Body ($importS3Data | ConvertTo-Json -Depth 6)
