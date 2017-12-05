@@ -25,6 +25,7 @@ Get-NexosisImport
 Get-NexosisModel
 Get-NexosisModelDetail
 Get-NexosisSession
+Get-NexosisSessionConfusionMatrix
 Get-NexosisSessionResult
 Get-NexosisSessionStatus
 Get-NexosisSessionStatusDetail
