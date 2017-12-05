@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-NexosisSessionResult" -Tag 'Unit' {
+Describe "Get-NexosisSessionConfusionMatrix" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest
 		
@@ -41,7 +41,7 @@ Describe "Get-NexosisSessionResult" -Tag 'Unit' {
         $sessionId = [guid]::NewGuid()
 
         It "returns a session result" {
-            Get-NexosisSessionResult -sessionId $sessionId
+            Get-NexosisSessionConfusionMatrix -sessionId $sessionId
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
         }
 
@@ -51,7 +51,7 @@ Describe "Get-NexosisSessionResult" -Tag 'Unit' {
         
         It "calls with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/$sessionId/results"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/$sessionId/results/confusionmatrix"
 			} 
 		}
 
