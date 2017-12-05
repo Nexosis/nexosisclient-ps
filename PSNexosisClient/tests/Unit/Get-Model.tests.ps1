@@ -7,22 +7,24 @@ if($env:APPVEYOR_REPO_COMMIT_MESSAGE -match "!verbose")
 Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
-$PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
+$PSVersion = $PSVersionTable.PSVersion.Major
+Describe "Get-NexosisMode" -Tag 'Unit' {
 	Context "unit tests" {
-		Set-StrictMode -Version latest
-	
+		Set-StrictMode -Version latest		
+
 		BeforeAll {
 			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version
-			$TestVars = @{
-				ApiKey       = $Env:NEXOSIS_API_KEY
+            $TestVars = @{
+                ApiKey       = $Env:NEXOSIS_API_KEY
 				UserAgent	 = "Nexosis-PS-API-Client/$moduleVersion"
-				ApiEndPoint	 = $Env:NEXOSIS_API_TESTURI
+				ApiEndPoint	 = "https://fake.url/v1"
 				MaxPageSize  = "1000"
-			}
-		}
-		
+            }
+
+            Set-NexosisConfig -ApiBaseUrl "https://fake.url/v1"
+        }
+
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
 			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
             $response =  New-Object PSObject -Property @{
@@ -37,11 +39,9 @@ Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
 			}
 			$response
         } -Verifiable
-		
-		$sessionId = [guid]::NewGuid()
 
-         It "gets session status" {
-			Get-NexosisSessionStatusDetail -sessionId $sessionId
+		It "loads model by dataSourceName" {
+			$results = Get-NexosisModel -dataSourceName 'testName'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -49,9 +49,16 @@ Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
 			Assert-VerifiableMock
 		}
 
+		It "loads model by dataSourceName and paging" {
+			$results = Get-NexosisModel -dataSourceName 'blah' -page 0 -pageSize 1 
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/models?dataSourceName=blah&pageSize=1"
+			} 
+		}
+
 		It "calls with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/$sessionId"
+				$Uri -eq "$($TestVars.ApiEndPoint)/models?dataSourceName=testName"
 			} 
 		}
 
@@ -67,6 +74,21 @@ Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
 			}
         }
 
+		It "throws error when page parameter is invalid" {
+			{ Get-NexosisModel -dataSourceName 'testName' -Page -1 } | Should throw "Parameter '-page' must be an integer greater than or equal to 0."
+		}
+
+		It "throws error when pageSize parameter is invalid" {
+			{ Get-NexosisModel -dataSourceName 'testName' -PageSize -1 } | Should throw "Parameter '-pageSize' must be an integer between 1 and $($TestVars.MaxPageSize)."
+		}
+
+		It "gets models by dataSourceName with page and pagesize" {
+			Get-NexosisModel -dataSourceName 'testName' -page 1 -pageSize 1 
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/models?dataSourceName=testName&page=1&pageSize=1"
+			} 
+		}
+
 		It "has proper HTTP headers" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				(
@@ -79,9 +101,5 @@ Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
 				)
 			}
 		}
-
-		It "throws an error if sessionId is not a GUID" {
-			{Get-NexosisSessionStatusDetail -sessionID '    '} | should throw "Cannot process argument transformation on parameter 'SessionId'. Cannot convert value `"    `" to type `"System.Guid`". Error: `"Unrecognized Guid format.`""
-		}
-    }
+	}
 }

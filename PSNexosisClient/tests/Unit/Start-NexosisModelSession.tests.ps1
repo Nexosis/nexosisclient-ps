@@ -5,11 +5,11 @@ if($env:APPVEYOR_REPO_COMMIT_MESSAGE -match "!verbose")
 }
 
 Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
-Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
+Import-Module "$PSScriptRoot\..\..\PSNexosisClient" -Force
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Start-ForeacastSession" -Tag 'Unit' {
+Describe "Start-NexosisModelSession" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 		
@@ -38,8 +38,8 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 			$response
         } -Verifiable
 		
-		It "starts forecast session with all parameters" {
-			Start-NexosisForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
+		It "starts model session with all parameters" {
+			Start-NexosisModelSession -dataSourceName 'name' -targetColumn 'SalePrice' -predictionDomain Regression -callbackUrl 'http://slackme.com' -isEstimate
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -49,16 +49,16 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 		
 		It "calls the correct URI" {		
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/model"
 			} 		
 		}
 
 		It "throws if columnMetaData paramter is not an array of hashes" {
-			{ Start-NexosisForecastSession -dataSourceName 'notnull' -startDate 01-01-2017 -endDate 01-20-2017 -columnMetaData "string" }  | should Throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."
+			{ Start-NexosisModelSession -dataSourceName 'test' -predictionDomain Regression -columnMetadata '' }  | should Throw "Parameter '-ColumnMetaData' must be a hashtable of columns metadata for the data."
 		}
 
 		It "throws exception when dataSourceName is null or empty" {
-			{ Start-NexosisForecastSession -dataSourceName '       ' -startDate 01-01-2017 -endDate 01-20-2017 } | Should throw "Argument '-DataSourceName' cannot be null or empty."
+			{ Start-NexosisModelSession -dataSourceName '       '  -predictionDomain Regression  } | Should throw "Argument '-DataSourceName' cannot be null or empty."
 		}
 
 		It "calls with the proper HTTP verb" {
@@ -87,43 +87,50 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 		}
 
 		It "has proper HTTP body" {
+			Enum PredictionDomain
+			{
+				Regression
+			}
+
+			$dataSourceName = 'HousingData'
+			$targetColumn = 'SalePrice'
+			$predictionDomain = [PredictionDomain]::Regression
+			$isEstimate = $false
+
 			$columns = @{
 				columns = @{
-					timeStamp = @{
-						dataType = "date"
-						role = "timestamp"
-					}
-					sales = @{
+					SalePrice = @{
 						dataType = "numeric"
 						role = "target"
 					}
-					transactions=  @{
+					LotFrontage = @{
 						dataType = "numeric"
-						role = "none"
+						role = "feature"
+					}
+					LotArea=  @{
+						dataType = "numeric"
+						role = "feature"
+                    }
+                    YearBuild=  @{
+						dataType = "numeric"
+						role = "feature"
 					}
 				}
+            }
+            
+            $expected = @{
+				dataSourceName = $dataSourceName
+				targetColumn = $targetColumn
+                predictionDomain = $predictionDomain.ToString().ToLower()
+				columns = $columns.columns
 			}
 
-			Start-NexosisForecastSession -dataSourceName 'Location-A' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $columns 
+			Start-NexosisModelSession -dataSourceName $dataSourceName -targetColumn $targetColumn -predictionDomain $predictionDomain -columnMetadata $columns 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$body -eq ($columns	| ConvertTo-Json)
+				$body -eq ($expected | ConvertTo-Json)
 			}			
 		}
 
-		It "starts a forecast session with all parameters" {
-			Start-NexosisForecastSession -dataSourceName 'name'-targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
-			}	
-		}
-
-		It "starts a forecast session with all parameters except estimate" {
-			Start-NexosisForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com'
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&resultInterval=Day"
-			}	
-		}
-		
 		# Mock that includes Nexosis-Request-Cost Header
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
 			param($Uri, $Method, $Headers, $Body, $needHeaders)
@@ -139,7 +146,7 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 		} -Verifiable
 		
 		It "contains cost estimate" {
-			$response = Start-NexosisForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -isEstimate
+			$response = Start-NexosisModelSession -dataSourceName 'HousingData' -targetColumn 'SalePrice' -predictionDomain Regression -isEstimate
 			$response.CostEstimate | Should be "0.01 USD"
 		}
     }

@@ -50,7 +50,7 @@ Describe "Remove-NexosisSession" -Tag 'Unit' {
         }
 
 		It "uses the mock" {
-			Assert-VerifiableMocks
+			Assert-VerifiableMock
 		}
 
 		It "calls delete with the proper URI" {

@@ -18,21 +18,32 @@ List of all commands
 PS C:\> ((Get-Module PSNexosisClient).ExportedCommands).Keys
 
 Get-NexosisAccountBalance
+Get-NexosisConfig
 Get-NexosisDataSet
 Get-NexosisDataSetData
 Get-NexosisImport
-Get-NexosisConfig
+Get-NexosisModel
+Get-NexosisModelDetail
 Get-NexosisSession
 Get-NexosisSessionResult
 Get-NexosisSessionStatus
 Get-NexosisSessionStatusDetail
+Get-NexosisView
+Get-NexosisViewData
 Import-NexosisDataSetFromCsv
+Import-NexosisDataSetFromJson
 Import-NexosisDataSetFromS3
+Invoke-NexosisPredictTarget
 New-NexosisDataSet
+New-NexosisView
 Remove-NexosisDataSet
+Remove-NexosisModel
 Remove-NexosisSession
+Remove-NexosisView
+Set-NexosisConfig
 Start-NexosisForecastSession
 Start-NexosisImpactSession
+Start-NexosisModelSession
 ```
 
 To get basic help on commands in the PSNexosisClient, type:

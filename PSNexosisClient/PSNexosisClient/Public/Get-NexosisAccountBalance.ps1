@@ -1,10 +1,10 @@
 Function Get-NexosisAccountBalance {
 <# 
  .Synopsis
-  Retrieves the current balance of your Nexosis API Account in US Dollars.
+  Retrieves the Account Usage Status of your Nexosis API Account.
 
  .Description
-  Given the current API Key, Get-NexosisAccountBalance returns the current balance of the Nexosis API Account in US Dollars.
+  Given the current API Key, Get-NexosisAccountBalance returns the Account Usage Stats tracked for current pricing tier.
 
  .Link
  http://docs.nexosis.com/clients/powershell
@@ -17,15 +17,22 @@ Function Get-NexosisAccountBalance {
     process {
         #  get as little data as possible since we just want the account balance HTTP header.
         $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
-        $params['page']=0
+        $params['page'] = 0
         $params['pageSize'] = 1
 
         $response = Invoke-Http -method Get -path "data" -params $params -needHeaders
-        
-        if (($null -ne $response.Headers) -and ($response.Headers.ContainsKey('Nexosis-Account-Balance'))) {
-            $response.Headers['Nexosis-Account-Balance'] 
+
+        $script:headers = @{}        
+
+        if ($null -ne $response.Headers) {
+            foreach ($key in $response.Headers.Keys) {
+                if ($key.StartsWith("Nexosis-Account-")) {
+                    $headers.Add($key.Replace('Nexosis-Account-','').Replace('-', ' '), $response.Headers[$key])
+                }
+            }
+            $script:headers
         } else {
-            $nexosisException = [NexosisClientException]::new("Error requesting account balance. No Nexosis-Account-Balance header in HTTP Response. See ErrorResponse for more details.", $response.StatusCode)
+            $nexosisException = [NexosisClientException]::new("Error requesting account balance. Error trying to retrieve appropriate Account Balance Headers in HTTP Response. See ErrorResponse for more details.", $response.StatusCode)
             $nexosisException.ErrorResponse = $response
 			throw $nexosisException
         }

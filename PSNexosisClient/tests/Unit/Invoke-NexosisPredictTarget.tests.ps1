@@ -10,43 +10,45 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 $PSVersion = $PSVersionTable.PSVersion.Major
 $scriptRoot = $PSScriptRoot
 
-$jsonPostBody = @"
-{
-    "region":  "us-east-1",
-    "path":  "LocationA.csv",
-    "bucket":  "nexosis-sample-data",
-    "dataSetName":  "Location-A"
-}
-"@
+$data = @(
+	@{
+		LotFrontage= "65"
+		LotArea = "8450"
+		YearBuilt="2003"
+	}
+	@{
+		LotFrontage = "80"
+		LotArea = "96000"
+		YearBuilt = "1976"
+	}
+	@{
+		LotFrontage = "68"
+		LotArea = "11250"
+		YearBuilt = "2001"
+	}
+)  
 
-$jsonPostBodyWithColumns = @"
-{
-    "region":  "us-east-1",
-    "path":  "LocationA.csv",
-    "columns":  {
+$jsonPostBody = @{ data = $data } | ConvertTo-Json
 
-                },
-    "bucket":  "nexosis-sample-data",
-    "dataSetName":  "Location-A"
-}
-"@
-
-Describe "Import-NexosisDataSetFromS3" -Tag 'Unit' {
+Describe "Invoke-NexosisPredictTarget" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
 
 		BeforeAll {
+			$modelId = [Guid]::NewGuid()
 			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version
             $TestVars = @{
                 ApiKey       = $Env:NEXOSIS_API_KEY
 				UserAgent	 = "Nexosis-PS-API-Client/$moduleVersion"
-				ApiEndPoint	 = $Env:NEXOSIS_API_TESTURI
+				ApiEndPoint	 = "https://fake.url/v1"
 				MaxPageSize  = "1000"
 				dsName = 'Location-A'
 				bucketName = 'nexosis-sample-data'
 				s3path = 'LocationA.csv'
 				s3region = 'us-east-1'
             }
+
+            Set-NexosisConfig -ApiBaseUrl "https://fake.url/v1"
 		}
 
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
@@ -65,13 +67,13 @@ Describe "Import-NexosisDataSetFromS3" -Tag 'Unit' {
         } -Verifiable
 
 		It "mock is called once" {
-			Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region
+			Invoke-NexosisPredictTarget -modelId $modelId -data $data
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context
 		}
 
 		It "calls with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/imports/S3"
+				$Uri -eq "$($TestVars.ApiEndPoint)/models/$modelId/predict"
 			}
 		}
 
@@ -106,29 +108,16 @@ Describe "Import-NexosisDataSetFromS3" -Tag 'Unit' {
 			}
 		}
 		
-		It "should throw if dataset name is null or empty" {
-			{ Import-NexosisDataSetFromS3 -dataSetName '    ' -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region }  | should Throw "Argument '-dataSetName' cannot be null or empty."
-		}
-		
-		It "should throw if S3Bucketname name is null or empty" {
-			{ Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName '     ' -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region }  | should Throw "Argument '-S3BucketName' cannot be null or empty."
+		It "should throw if modelId is not a GUID" {
+			{ Invoke-NexosisPredictTarget -modelId '' }  | should Throw "Cannot process argument transformation on parameter 'ModelId'. Cannot convert value `"`" to type `"System.Guid`". Error: `"Unrecognized Guid format.`""
 		}
 
-		It "should throw if S3BucketPath name is null or empty" {
-			{ Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath '     ' -S3Region $TestVars.S3region }  | should Throw "Argument '-S3BucketPath' cannot be null or empty."
+		It "should throw if param data is not an array" {
+			{ Invoke-NexosisPredictTarget -modelId $modelId -data '' }  | should Throw "Parameter '-data' must be an array containing a hashtable of features needed to make the prediction."
 		}
 
-		It "should throw if S3Region name is null or empty" {
-			{ Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region '       ' }  | should Throw "Argument '-S3Region' cannot be null or empty."
-		}
-
-		It "calls with correct JSON body with columns" {
-			Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region -columns @{}
-			# Converting from string to json and back seems to remove 
-			# any extra whitespace, formatting, etc. so they compare acutal contents.
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
-				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($jsonPostBodyWithColumns | ConvertFrom-Json | ConvertTo-Json)
-			}
+		It "should throw if param data is not an array containing a hashtable" {
+			{ Invoke-NexosisPredictTarget -modelId $modelId -data @() }  | should Throw "Parameter '-data' must be an array containing a hashtable of features needed to make the prediction."
 		}
 	}
 }

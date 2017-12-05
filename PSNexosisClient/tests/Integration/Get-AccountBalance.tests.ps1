@@ -23,10 +23,16 @@ Describe "Get-NexosisAccountBalance" -Tag 'Integration' {
             }
         }
 
-		It "gets account balance" {
-            $balance = Get-NexosisAccountBalance
-            Write-Verbose $balance
-		    $balance | should match "^[+-]?\d+(\.\d+)? USD$"
+		It "gets account stats" {
+            $stats = Get-NexosisAccountBalance
+			$stats.Count | should match 7
+			$stats.'DataSetCount Current' | should match "^\d+$"
+		    $stats.Balance | should match "^[+-]?\d+(\.\d+)? USD$"
+			$stats.'PredictionCount Allotted' | should match "^\d+$"
+			$stats.'SessionCount Allotted' | should match "^\d+$"
+			$stats.'SessionCount Current' | should match "^\d+$"
+			$stats.'DataSetCount Allotted' | should match "^\d+$"
+			$stats.'PredictionCount Current' | should match "^\d+$"
 		}
 	}
 }

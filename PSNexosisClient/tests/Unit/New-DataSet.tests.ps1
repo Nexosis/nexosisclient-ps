@@ -58,10 +58,6 @@ Describe "New-NexosisDataSet" -Tag 'Unit' {
 			{ New-NexosisDataSet -dataSetName '     ' -data @() }  | should Throw "Argument '-DataSetName' cannot be null or empty."
 		}
 
-		It "throws if data is null or empty" {
-			{ New-NexosisDataSet -dataSetName 'notnull' -data $null}  | should Throw "Cannot bind argument to parameter 'data' because it is null."
-		}
-
 		It "throws if data paramter is not an array" {
 			{ New-NexosisDataSet -dataSetName 'notnull' -data "blah"}  | should Throw "Parameter '-data' must be an array of hashes."   
 		}

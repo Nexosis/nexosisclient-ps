@@ -8,20 +8,9 @@ Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-
-Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
-	Context "unit tests" {
+Describe "Remove-NexosisModel" -Tag 'Unit' {
+	Context "Unit tests" {
 		Set-StrictMode -Version latest
-	
-		BeforeAll {
-			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version
-			$TestVars = @{
-				ApiKey       = $Env:NEXOSIS_API_KEY
-				UserAgent	 = "Nexosis-PS-API-Client/$moduleVersion"
-				ApiEndPoint	 = $Env:NEXOSIS_API_TESTURI
-				MaxPageSize  = "1000"
-			}
-		}
 		
 		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
 			param($Uri, $Method, $Headers, $ContentType, $Body, $InFile)
@@ -37,11 +26,20 @@ Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
 			}
 			$response
         } -Verifiable
-		
-		$sessionId = [guid]::NewGuid()
 
-         It "gets session status" {
-			Get-NexosisSessionStatusDetail -sessionId $sessionId
+		BeforeAll {
+            $modelId = [Guid]::NewGuid()
+			$moduleVersion = (Test-ModuleManifest -Path $PSScriptRoot\..\..\PSNexosisClient\PSNexosisClient.psd1).Version
+			$TestVars = @{
+				ApiKey       = $Env:NEXOSIS_API_KEY
+				UserAgent	 = "Nexosis-PS-API-Client/$moduleVersion"
+				ApiEndPoint	 = $Env:NEXOSIS_API_TESTURI
+				MaxPageSize  = "1000"
+			}
+		}
+
+		It "deletes model by modelId" {
+			Remove-NexosisModel -modelId $modelId -Force
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -49,24 +47,17 @@ Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
 			Assert-VerifiableMock
 		}
 
-		It "calls with the proper URI" {
+		It "calls delete with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/$sessionId"
+				$Uri -eq "$($TestVars.ApiEndPoint)/models/$modelId"
 			} 
 		}
 
-        It "calls with the proper HTTP verb" {
+		It "calls with the proper HTTP verb" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
+				$method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Delete
 			}
         }
-
-         It "calls with the proper content-type" {
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$ContentType -eq 'application/json'
-			}
-        }
-
 		It "has proper HTTP headers" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				(
@@ -80,8 +71,15 @@ Describe "Get-NexosisSessionStatusDetail" -Tag 'Unit' {
 			}
 		}
 
-		It "throws an error if sessionId is not a GUID" {
-			{Get-NexosisSessionStatusDetail -sessionID '    '} | should throw "Cannot process argument transformation on parameter 'SessionId'. Cannot convert value `"    `" to type `"System.Guid`". Error: `"Unrecognized Guid format.`""
+		It "throws exception with modelId is invalid" {
+			{ Remove-NexosisModel -modelId '' } | Should throw "Cannot process argument transformation on parameter 'ModelId'. Cannot convert value `"`" to type `"System.Guid`". Error: `"Unrecognized Guid format.`""
 		}
-    }
+
+		It "removes models by dataSourceName using CreatedBeforeDate and CreatedAfterDate args" {
+            Remove-NexosisModel -dataSourceName 'test' -createdBeforeDate '01-01-2017 00:00:00' -createdAfterDate '01-20-2017 00:00:00' -force
+            Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/models?dataSourceName=test&createdAfterDate=01%2f20%2f2017+00%3a00%3a00&createdBeforeDate=01%2f01%2f2017+00%3a00%3a00"
+			} 
+		}
+	}
 }

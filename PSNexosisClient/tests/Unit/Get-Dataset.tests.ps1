@@ -44,7 +44,7 @@ Describe "Get-NexosisDataSet" -Tag 'Unit' {
 		}
 
 		It "uses the mock" {
-			Assert-VerifiableMocks
+			Assert-VerifiableMock
 		}
 
 		It "loads datasets by datasetname filter with paging" {

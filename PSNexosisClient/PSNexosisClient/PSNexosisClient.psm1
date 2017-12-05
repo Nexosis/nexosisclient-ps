@@ -42,6 +42,12 @@ Enum ResultInterval
     Year
 }
 
+Enum PredictionDomain
+{
+    Regression
+    Classification
+}
+
 # Setup a hashtable of configurable variables with Defaults
 $script:PSNexosisVars = new-object PSObject -Property @{
 	ApiKey = $Env:NEXOSIS_API_KEY
