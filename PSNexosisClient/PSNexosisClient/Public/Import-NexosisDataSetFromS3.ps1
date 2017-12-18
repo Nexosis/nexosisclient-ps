@@ -19,6 +19,15 @@ Function Import-NexosisDataSetFromS3 {
  .Parameter S3Region
   The AWS Region in which the S3 bucket is located.
 
+ .Parameter AccessKeyId
+ The AWS Access Key ID to use when authenticating the file request. Optional if the file is public.
+ 
+ .Parameter SecretAccessKey
+ The AWS Secret Access Key to use when authenticating the file request. Optional if the file is public.
+
+ .Parameter ImportContentType
+ The type of content to import (json or csv). Optional. Nexosis will automatically attempt to figure out the type of content if not provided.
+
  .Parameter Columns
   Metadata about each column in the dataset
 
@@ -37,15 +46,14 @@ Function Import-NexosisDataSetFromS3 {
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         [string]$S3Region,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        $accessKeyId,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        $secretAccessKey,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+        [ImportContentType]$contentType,
+        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         $columns=$null
 	)
-    
-    $importS3Data = @{  
-        dataSetName = $dataSetName
-        bucket = $S3BucketName
-        path = $S3BucketPath
-        region = $S3Region
-    }
 
 	if ($dataSetName.Trim().Length -eq 0) { 
 		throw "Argument '-dataSetName' cannot be null or empty."
@@ -60,6 +68,25 @@ Function Import-NexosisDataSetFromS3 {
 		throw "Argument '-S3Region' cannot be null or empty."
 	}
 
+    $importS3Data = @{  
+        dataSetName = $dataSetName
+        bucket = $S3BucketName
+        path = $S3BucketPath
+        region = $S3Region
+    }
+
+    if (($accessKeyId -ne $null) -or ($accessKeyId.Trim().Length -gt 0)) {
+        $importS3Data.Add('accessKeyId', $accessKeyId)
+    }
+    
+    if (($secretAccessKey -ne $null) -or ($secretAccessKey.Trim().Length -gt 0)) {
+        $importS3Data.Add('secretAccessKey', $secretAccessKey)
+    }
+
+    if ($contentType -ne $null) {
+        $importAzureData.Add('contentType', [string]$contentType)
+    }
+    
     if ($null -ne $columns) {
         $importS3Data['columns'] = $columns
     }

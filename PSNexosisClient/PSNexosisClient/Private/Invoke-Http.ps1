@@ -60,11 +60,21 @@ function Invoke-Http {
 				# return the results so calls can work with headers, etc.
 				# If need headers (Get-NexosisAccountBalance, etc), return entire HttpRequest object
 				# Callers need to handle checking statuscode and handling Headers and Content
+				
+				# Write raw response body to verbose output
+				Write-Verbose $httpResults
+				
 				$httpResults
 			} elseif ($acceptHeader -eq 'application/json') {
+				# Write raw response body to verbose output
+				Write-Verbose "Raw Body: $($httpResults.Content)"
+				
 				# Return HTTP Content from JSON
 				$httpResults.Content | ConvertFrom-Json
 			} else {
+				# Write raw response body to verbose output
+				Write-Verbose ($httpResults.Content)
+				
 				# Return raw content if expecting CSV like when accept header is 'text/csv' 
                 # or any other case, just return raw HTTP body / content
 				$httpResults.Content
@@ -74,11 +84,16 @@ function Invoke-Http {
             assert($true, "Unexpected condition - Invoke-WebRequest had a status code between 200-299 but did not throw an exception. Nexosis API should not throw 300's.")
         }
 	} Catch {
+		Write-Verbose "---EXCEPTION---"
 		# Make sure there's a Response object, so we can read in server-side messages
 		if ($_.Exception.Response -ne $null) {
             $statusCode = $_.Exception.Response.StatusCode.value__
             $statusDescription = $_.Exception.Response.StatusDescription
 			
+			Write-Verbose "Status Code: $statusCode"
+			Write-Verbose "Status Description:$statusDescription"
+			Write-Verbose "Method: $($_.Exception.Response.Method)"
+
 			# If it's an HTTP HEAD request, there's no body to capture the error details from.
             if ($_.Exception.Response.Method -eq 'HEAD') {
 				$nexosisException = [NexosisClientException]::new($_.Exception.Response.StatusDescription, [int]$_.Exception.Response.StatusCode)
@@ -91,6 +106,10 @@ function Invoke-Http {
 					$reader.BaseStream.Position = 0 # reset the response stream
 					$reader.DiscardBufferedData()
 					$responseRawError = $reader.ReadToEnd()
+
+					# Write raw response body to verbose output
+					Write-Verbose "Raw Body: $responseRawError"
+
 					# Capture JSON Error message from respose stream
 					$responseJsonError = $responseRawError | ConvertFrom-Json
 					# create Nexosis Client Exception
@@ -103,6 +122,9 @@ function Invoke-Http {
             }
 		} else {
 			# Unexpected exception - wrap it in a NexosisClientException.
+			Write-Verbose $_.Exception
+			Write-Verbose $_.Exception.message
+	
 			$nexosisException = [NexosisClientException]::new($_.Exception.message, $_.Exception)
 			throw $nexosisException
 		}
