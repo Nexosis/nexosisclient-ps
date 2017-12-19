@@ -75,15 +75,15 @@ Function Import-NexosisDataSetFromS3 {
         region = $S3Region
     }
 
-    if (($accessKeyId -ne $null) -or ($accessKeyId.Trim().Length -gt 0)) {
+    if (($null -ne $accessKeyId) -and ($accessKeyId.Trim().Length -gt 0)) {
         $importS3Data.Add('accessKeyId', $accessKeyId)
     }
     
-    if (($secretAccessKey -ne $null) -or ($secretAccessKey.Trim().Length -gt 0)) {
+    if (($null -ne $secretAccessKey) -and ($secretAccessKey.Trim().Length -gt 0)) {
         $importS3Data.Add('secretAccessKey', $secretAccessKey)
     }
 
-    if ($contentType -ne $null) {
+    if ($null -ne $contentType) {
         $importAzureData.Add('contentType', [string]$contentType)
     }
     

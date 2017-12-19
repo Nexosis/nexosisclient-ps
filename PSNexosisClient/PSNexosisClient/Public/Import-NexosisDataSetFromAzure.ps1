@@ -34,7 +34,7 @@ Function Import-NexosisDataSetFromAzure {
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
         [string]$dataSetName,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-        [string]$azureConnectionString,
+        [string]$connectionString,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         [string]$container,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
@@ -45,28 +45,30 @@ Function Import-NexosisDataSetFromAzure {
         $columns=$null
 	)
     
-    $importAzureData = @{  
-        dataSetName = $dataSetName
-        connectionString = $azureConnectionString
-        container = $container
-        blob = $blob
-    }
+   
 
 	if ($dataSetName.Trim().Length -eq 0) { 
 		throw "Argument '-dataSetName' cannot be null or empty."
     }
-    if ($azureConnectionString.Trim().Length -eq 0) { 
-		throw "Argument '-azureConnectionString' cannot be null or empty."
+    if ($null -eq $connectionString -or $connectionString.Trim().Length -eq 0) { 
+		throw "Argument '-ConnectionString' cannot be null or empty."
 	}
     if ($container.Trim().Length -eq 0) { 
-		throw "Argument '-container' cannot be null or empty."
+		throw "Argument '-Container' cannot be null or empty."
 	}
     if ($blob.Trim().Length -eq 0) { 
-		throw "Argument '-blob' cannot be null or empty."
+		throw "Argument '-Blob' cannot be null or empty."
 	}
+    
+    $importAzureData = @{  
+        dataSetName = $dataSetName
+        connectionString = $ConnectionString
+        container = $container
+        blob = $blob
+    }
 
     if ($contentType -ne $null) {
-        $importAzureData.Add('contentType', [string]$contentType)
+        $importAzureData['contentType'] = [string]$contentType
     }
 
     if ($null -ne $columns) {

@@ -15,9 +15,6 @@ Function Import-NexosisDataSetFromUrl {
  .Parameter Url
   A valid Cloud Storage Account Connection string.
 
- .Parameter Auth
-  Credentials used for Basic Authentication. Optional.
-
  .Parameter ImportContentType
   The type of content to import (json or csv). Optional. Nexosis will automatically attempt to figure out the type of content if not provided.
 
@@ -35,38 +32,33 @@ Function Import-NexosisDataSetFromUrl {
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         [string]$url,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [string]$auth,
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [ImportContentType]$contentType,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         $columns=$null
 	)
+    process {
+        if ($dataSetName.Trim().Length -eq 0) { 
+            throw "Argument '-dataSetName' cannot be null or empty."
+        }
+        if ($url.Trim().Length -eq 0) { 
+            throw "Argument '-Url' cannot be null or empty."
+        }
 
-	if ($dataSetName.Trim().Length -eq 0) { 
-		throw "Argument '-dataSetName' cannot be null or empty."
-    }
-    if ($url.Trim().Length -eq 0) { 
-		throw "Argument '-url' cannot be null or empty."
-	}
+        $importUrlData = @{  
+            dataSetName = $dataSetName
+            url = $url
+        }
 
-    $importUrlData = @{  
-        dataSetName = $dataSetName
-        url = $url
-    }
+        if ($null -ne $contentType) {
+            $importUrlData['contentType'] = [string]$contentType
+        }
 
-    if ($contentType -ne $null) {
-        $importUrlData['contentType'] = [string]$contentType
-    }
+        if ($null -ne $columns) {
+            $importUrlData['columns'] = $columns
+        }
 
-    if ($null -ne $columns) {
-        $importUrlData['columns'] = $columns
-    }
-
-    if (($null -ne $auth) -and ($auth.Trim().Length -ne 0)) {
-        $importUrlData['auth'] = $auth
-    }
-
-    if ($pscmdlet.ShouldProcess($dataSetName)) {
-        Invoke-Http -method Post -path "imports/Url" -Body ($importUrlData | ConvertTo-Json -Depth 6)
+        if ($pscmdlet.ShouldProcess($dataSetName)) {
+            Invoke-Http -method Post -path "imports/Url" -Body ($importUrlData | ConvertTo-Json -Depth 6)
+        }
     }
 }
