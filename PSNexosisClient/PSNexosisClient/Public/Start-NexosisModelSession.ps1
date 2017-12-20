@@ -37,10 +37,6 @@ Function Start-NexosisModelSession {
       For Classification Only: If allowUnbalancedData is provided, the API will not seek to balance the data source, which 
       may result in a model better at predicting class A than class B. Defaults to True if not provided.
 
-     .Parameter isEstimate
-      If specified, the session will not be processed.  The returned object will be populated with the estimated 
-      cost that the request would have incurred.
-    
      .Example
       # Start a session to Build a model using the dataSource housePrices that can later be used to predict house prices.
       Start-NexosisModelSession -dataSourceName 'housingData' -targetColumn 'salePrice' -predictionDomain Regression
@@ -61,9 +57,7 @@ Function Start-NexosisModelSession {
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
             $columnMetadata=@{},
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-            [switch]$allowUnbalancedData,
-            [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-            [switch]$isEstimate
+            [switch]$allowUnbalancedData
         )
         process {
             if (($dataSourceName -eq $null ) -or ($dataSourceName.Trim().Length -eq 0)) { 
@@ -102,19 +96,11 @@ Function Start-NexosisModelSession {
                 }
             }
 
-            if ($isEstimate.IsPresent) {
-                $createModelObj['isEstimate'] = $isEstimate.ToString().ToLower()
-            }
-
             if ($pscmdlet.ShouldProcess($dataSourceName)) {
     
                 if ($pscmdlet.ShouldProcess($dataSourceName)) {       
                     $response = Invoke-Http -method Post -path "sessions/model" -Body ($createModelObj | ConvertTo-Json -depth 6) -needHeaders
                     $responseObj = $response.Content | ConvertFrom-Json
-                    if ($response.Headers.ContainsKey('Nexosis-Request-Cost')) {
-                      # Add additional field called 'costEstimate' to the return object
-                      $responseObj | Add-Member -name "costEstimate" -value $response.Headers['Nexosis-Request-Cost'] -MemberType NoteProperty
-                    }
                     $responseObj
                   }
             }

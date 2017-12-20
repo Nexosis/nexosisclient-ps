@@ -38,10 +38,6 @@ Function Start-NexosisForecastSession {
    message to your Webhook, which you can use to validate that the message 
    came from Nexosis.
 
-  .Parameter isEstimate
-   If specified, the session will not be processed. The returned 
-   costs will include the estimated cost that the request would have incurred.  
-
  .Example
   # Start a Daily Forecast session on the data source 'salesdata' and set the target column to forecast to
   'sales' - forecast between the range of 01-06-2013 to 01-13-2013
@@ -61,9 +57,7 @@ Function Start-NexosisForecastSession {
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string]$callbackUrl,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        $columnMetadata=@{},
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [switch]$isEstimate
+        $columnMetadata=@{}
     )
     process {
         if (($dataSourceName -eq $null ) -or ($dataSourceName.Trim().Length -eq 0)) { 
@@ -93,10 +87,6 @@ Function Start-NexosisForecastSession {
             $params['callbackUrl'] = $callbackUrl
         }
 
-        if ($isEstimate) {
-            $params['isEstimate'] = $isEstimate.ToString().ToLowerInvariant()
-        }
-
         $params['resultInterval'] = $resultInterval.toString()
 
         if ($pscmdlet.ShouldProcess($dataSourceName)) {
@@ -104,10 +94,6 @@ Function Start-NexosisForecastSession {
             if ($pscmdlet.ShouldProcess($dataSourceName)) {       
                 $response = Invoke-Http -method Post -path "sessions/forecast" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -needHeaders
                 $responseObj = $response.Content | ConvertFrom-Json
-                if ($response.Headers.ContainsKey('Nexosis-Request-Cost')) {
-                  # Add additional field called 'costEstimate' to the return object
-                  $responseObj | Add-Member -name "costEstimate" -value $response.Headers['Nexosis-Request-Cost'] -MemberType NoteProperty
-                }
                 $responseObj
               }
         }

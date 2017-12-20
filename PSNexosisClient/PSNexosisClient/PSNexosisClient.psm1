@@ -58,7 +58,7 @@ Enum ImportContentType
 $script:PSNexosisVars = new-object PSObject -Property @{
 	ApiKey = $Env:NEXOSIS_API_KEY
 	ApiBaseUrl = $BaseUrl
-    DefaultPageSize=100
+    DefaultPageSize=50
 }
 
 

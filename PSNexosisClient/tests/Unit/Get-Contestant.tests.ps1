@@ -88,9 +88,9 @@ Describe "Get-NexosisContestant" -Tag 'Unit' {
 		}
 
 		It "gets contestant by sessionId, contestId including prediction interval and paging" {
-            Get-NexosisContestant -sessionId $TestVars.SessionID -contestantId $TestVars.ContestantId -page 1 -pageSize 50 -predictionInterval 0.5
+            Get-NexosisContestant -sessionId $TestVars.SessionID -contestantId $TestVars.ContestantId -page 1 -pageSize 100 -predictionInterval 0.5
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/$($TestVars.SessionId)/contest/contestants/$($TestVars.ContestantId)?page=1&pageSize=50&predictionInterval=0.5"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/$($TestVars.SessionId)/contest/contestants/$($TestVars.ContestantId)?page=1&pageSize=100&predictionInterval=0.5"
 			} 
 		}
 		

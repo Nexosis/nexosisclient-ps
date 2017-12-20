@@ -39,7 +39,7 @@ Describe "Start-NexosisModelSession" -Tag 'Unit' {
         } -Verifiable
 		
 		It "starts model session with all parameters" {
-			Start-NexosisModelSession -dataSourceName 'name' -targetColumn 'SalePrice' -predictionDomain Regression -callbackUrl 'http://slackme.com' -isEstimate
+			Start-NexosisModelSession -dataSourceName 'name' -targetColumn 'SalePrice' -predictionDomain Regression -callbackUrl 'http://slackme.com'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -95,7 +95,6 @@ Describe "Start-NexosisModelSession" -Tag 'Unit' {
 			$dataSourceName = 'HousingData'
 			$targetColumn = 'SalePrice'
 			$predictionDomain = [PredictionDomain]::Regression
-			$isEstimate = $false
 
 			$columns = @{
 				columns = @{
@@ -129,25 +128,6 @@ Describe "Start-NexosisModelSession" -Tag 'Unit' {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$body -eq ($expected | ConvertTo-Json)
 			}			
-		}
-
-		# Mock that includes Nexosis-Request-Cost Header
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $Body, $needHeaders)
-			
-			$response =  New-Object PSObject -Property @{
-				StatusCode="200"
-				Headers=@{}
-				Content = "{ }"
-			}
-			$response.Headers.Add("Nexosis-Request-Cost","0.01 USD")
-			$response
-			
-		} -Verifiable
-		
-		It "contains cost estimate" {
-			$response = Start-NexosisModelSession -dataSourceName 'HousingData' -targetColumn 'SalePrice' -predictionDomain Regression -isEstimate
-			$response.CostEstimate | Should be "0.01 USD"
 		}
 
 		It "should throw if allowUnbalancedData set on non-classification session" {

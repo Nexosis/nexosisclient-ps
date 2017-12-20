@@ -41,7 +41,7 @@ Describe "Import-NexosisDataSetFromUrl" -Tag 'Unit' {
 				DsName = 'importData'
 				MaxPageSize  = "1000"
 				Url = 'https://raw.githubusercontent.com/Nexosis/sampledata/master/iris.csv'
-				ContentType = [ImportContentType]::csv
+				ContentType = "csv"
             }
 		}
 

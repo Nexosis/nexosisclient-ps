@@ -39,7 +39,7 @@ Describe "Start-NexosisImpactSession" -Tag 'Unit' {
 			$response
         } -Verifiable
 		
-		It "starts an impact session with all parameters - no estimate" {
+		It "starts an impact session with all parameters" {
 			Start-NexosisImpactSession -dataSourceName 'name' -eventName '50percentoff' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
@@ -102,37 +102,12 @@ Describe "Start-NexosisImpactSession" -Tag 'Unit' {
 				$body -eq ($columns	| ConvertTo-Json)
 			}
 		}
-		It "starts an impact session with all parameters" {
-			Start-NexosisImpactSession -dataSourceName 'name' -eventName '50percentoff' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/impact?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&isEstimate=true&resultInterval=Day"
-			}	
-		}
 
-		It "starts an impact session with all parameters except estimate" {
+		It "starts an impact session with all parameters" {
 			Start-NexosisImpactSession -dataSourceName 'name' -eventName '50percentoff' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/impact?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&resultInterval=Day"
 			}	
-		}
-		
-		# Mock that includes Nexosis-Request-Cost Header
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $Body, $needHeaders)
-			
-			$response =  New-Object PSObject -Property @{
-				StatusCode="200"
-				Headers=@{}
-				Content = "{ }"
-			}
-			$response.Headers.Add("Nexosis-Request-Cost","0.01 USD")
-			$response
-			
-		} -Verifiable
-		
-		It "contains cost estimate" {
-			$response = Start-NexosisImpactSession -dataSourceName 'name' -eventName '50percentoff' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -isEstimate
-			$response.CostEstimate | Should be "0.01 USD"
 		}
 	}
 }

@@ -47,16 +47,16 @@ Describe "Get-NexosisDataSet" -Tag 'Unit' {
 			Assert-VerifiableMock
 		}
 
+		It "calls with the proper URI" {
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/data?partialName=testName"
+			} 
+		}
+
 		It "loads datasets by datasetname filter with paging" {
 			$results = Get-NexosisDataSet -partialName 'blah' -page 0 -pageSize 1 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data?partialName=blah&pageSize=1"
-			} 
-		}
-
-		It "calls with the proper URI" {
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/data?partialName=testName"
 			} 
 		}
 

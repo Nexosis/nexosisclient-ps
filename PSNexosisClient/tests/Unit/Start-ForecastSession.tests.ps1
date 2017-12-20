@@ -39,7 +39,7 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
         } -Verifiable
 		
 		It "starts forecast session with all parameters" {
-			Start-NexosisForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
+			Start-NexosisForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 		}
 
@@ -49,7 +49,7 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 		
 		It "calls the correct URI" {		
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&resultInterval=Day"
 			} 		
 		}
 
@@ -111,36 +111,10 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 		}
 
 		It "starts a forecast session with all parameters" {
-			Start-NexosisForecastSession -dataSourceName 'name'-targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com' -isEstimate
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&isEstimate=true&resultInterval=Day"
-			}	
-		}
-
-		It "starts a forecast session with all parameters except estimate" {
 			Start-NexosisForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&resultInterval=Day"
 			}	
-		}
-		
-		# Mock that includes Nexosis-Request-Cost Header
-		Mock -ModuleName PSNexosisClient Invoke-WebRequest { 
-			param($Uri, $Method, $Headers, $Body, $needHeaders)
-			
-			$response =  New-Object PSObject -Property @{
-				StatusCode="200"
-				Headers=@{}
-				Content = "{ }"
-			}
-			$response.Headers.Add("Nexosis-Request-Cost","0.01 USD")
-			$response
-			
-		} -Verifiable
-		
-		It "contains cost estimate" {
-			$response = Start-NexosisForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -isEstimate
-			$response.CostEstimate | Should be "0.01 USD"
 		}
     }
 }

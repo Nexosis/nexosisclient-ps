@@ -42,10 +42,8 @@ Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
 		It "gets account balance" {
 			$value = Get-NexosisAccountBalance
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
-			$value.Count | should match 7
+			$value.Count | should match 6
 			$value.'DataSetCount Current' | should match "^\d+$"
-			# Next one will be eventually removed 
-		    $value.Balance | should match "^[+-]?\d+(\.\d+)? USD$"
 			$value.'PredictionCount Allotted' | should match "^\d+$"
 			$value.'SessionCount Allotted' | should match "^\d+$"
 			$value.'SessionCount Current' | should match "^\d+$"

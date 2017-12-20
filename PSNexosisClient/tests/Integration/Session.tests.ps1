@@ -62,15 +62,7 @@ Describe "All Session Tests" -Tag 'Integration' {
         It "should return 404 with bad sessionId for SessionStatusDetail" {
             $guid = [guid]::NewGuid()
             {Get-NexosisSessionStatusDetail -sessionId $guid} | should throw "Item of type session with identifier $guid was not found"
-        }   
-
-        It "should estimate an impact session" {
-            $sessionResult = Start-NexosisImpactSession -dataSourceName $script:dsName -eventName 'integrationTestImpact' -targetColumn 'sales' -startDate 2015-01-03 -endDate 2015-01-10 -resultInterval Day -isEstimate
-            ([Guid]$sessionResult.sessionID) | Should BeOfType [Guid]
-            $sessionResult.costEstimate | should match "^[+-]?\d+(\.\d+)? USD$"
-			$sessionResult.type | should be 'impact'
-			$sessionResult.status | should match "estimated"
-        }
+        } 
 
         AfterAll {
             Remove-NexosisDataSet -dataSetName $script:dsName -cascadeOption Sessions -force

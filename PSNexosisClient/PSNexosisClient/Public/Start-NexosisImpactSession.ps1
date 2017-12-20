@@ -41,10 +41,6 @@ Function Start-NexosisImpactSession {
    message to your Webhook, which you can use to validate that the message 
    came from Nexosis.
 
-  .Parameter isEstimate
-   If specified, the session will not be processed. The returned 
-   costs will include the estimated cost that the request would have incurred.  
-
  .Example
  # Start a new Impact Session using the data source 'salesdata' and give it the event name 'promo-impact'. Build a daily forcast on target
  column 'sales' between the dates of 01-03-2013 through 01-04-2013
@@ -66,9 +62,7 @@ Function Start-NexosisImpactSession {
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
         [string]$callbackUrl,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        $columnMetadata=@{},
-        [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-        [switch]$isEstimate
+        $columnMetadata=@{}
     )
     process {
       $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
@@ -97,20 +91,12 @@ Function Start-NexosisImpactSession {
       if ($callbackUrl.Trim().Length > 0){
         $params['callbackUrl'] = $callbackUrl
       }
-
-      if ($isEstimate) {
-          $params['isEstimate'] = $isEstimate.ToString().ToLowerInvariant()
-      }
       
       $params['resultInterval'] = $resultInterval.toString()
             
       if ($pscmdlet.ShouldProcess($dataSourceName)) {       
           $response = Invoke-Http -method Post -path "sessions/impact" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json' -needHeaders
           $responseObj = $response.Content | ConvertFrom-Json
-          if ($response.Headers.ContainsKey('Nexosis-Request-Cost')) {
-            # Add additional field called 'costEstimate' to the return object
-            $responseObj | Add-Member -name "costEstimate" -value $response.Headers['Nexosis-Request-Cost'] -MemberType NoteProperty
-          }
           $responseObj
         }
     }
