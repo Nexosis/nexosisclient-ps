@@ -30,6 +30,10 @@ Function Get-NexosisAccountBalance {
                     $headers.Add($key.Replace('Nexosis-Account-','').Replace('-', ' '), $response.Headers[$key])
                 }
             }
+            # remove legacy header
+            if ($script:headers.containskey("Balance")) {
+                $script:headers.Remove("Balance")
+            }
             $script:headers
         } else {
             $nexosisException = [NexosisClientException]::new("Error requesting account balance. Error trying to retrieve appropriate Account Balance Headers in HTTP Response. See ErrorResponse for more details.", $response.StatusCode)
