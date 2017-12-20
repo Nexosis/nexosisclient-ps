@@ -22,7 +22,7 @@ Function Get-NexosisContestant {
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
         [GUID]$SessionId,
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
-        [GUID]$contestandId,
+        [GUID]$contestantId,
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
         $predictionInterval,
         [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
@@ -31,40 +31,32 @@ Function Get-NexosisContestant {
         $pageSize
 	)
     process {
-        if ($contestandId -ne $null) {
+        # Paging only works with contestantId
+        if ($null -ne $contestantId) {
             $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
-        
-            # Paging only works with contestandId
-             if ($page -ne $null) {
-                if ($page -lt 0) {
-                    throw "Parameter '-page' must be an integer greater than or equal to 0."
-                }
+            
+            if (($null -ne $page) -and ($page -ne 0)) {
+                $params['page'] = $page
+            }
 
-                if (($pageSize -gt ($script:MaxPageSize)) -or ($pageSize -lt 1)) {
-                    throw "Parameter '-pageSize' must be an integer between 1 and $script:MaxPageSize."
-                }
-
-                if ($page -ne 0) {
-                    $params['page'] = $page
-                }
-
+            if ($null -ne $pageSize) { 
                 if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
                     $params['pageSize'] = $pageSize
                 } elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
                     $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
                 }
             }
+
             if ($predictionInterval -ne $null) {
                 $params['predictionInterval'] = $predictionInterval
             }
 
-            Invoke-Http -method Get -path "sessions/$SessionId/contest/contestants/$contestandId" -params $params
+            Invoke-Http -method Get -path "sessions/$SessionId/contest/contestants/$contestantId" -params $params
         } else {
              if (
-                $page.Length -gt 0 -or
-                $page.Length -ne $null -or
-                $pageSize -ne $null -or
-                $predictionInterval -ne $null
+                ($null -ne $page) -or
+                ($null -ne $pageSize) -or
+                ($null -ne $predictionInterval)
             ) {
                 throw "Parameter '-sessionId' cannot be used with 'page', 'pageSize', or 'predictionInterval' unless providing '-contestentId'."
             }

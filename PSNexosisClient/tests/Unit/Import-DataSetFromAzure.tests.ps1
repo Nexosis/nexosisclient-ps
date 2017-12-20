@@ -19,6 +19,16 @@ $jsonPostBody = @"
 }
 "@
 
+$jsonPostBodyWithContentType = @"
+{
+    "contentType":  "csv",
+    "connectionString":  "BlobEndpoint=https://myblobendpoint.blob.core.windows.net/",
+    "dataSetName":  "MyAzureDataset",
+    "container":  "mycontainer",
+    "blob":  "mydatafile.csv"
+}
+"@
+
 $jsonPostBodyWithColumns = @"
 {
     "columns":  {
@@ -128,6 +138,13 @@ Describe "Import-NexosisDataSetFromAzure" -Tag 'Unit' {
 			# any extra whitespace, formatting, etc. so they compare acutal contents.
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($jsonPostBodyWithColumns | ConvertFrom-Json | ConvertTo-Json)
+			}
+		}
+
+		It "calls with contentType" {
+			Import-NexosisDataSetFromAzure -dataSetName $TestVars.DsName -ConnectionString $TestVars.connectionString -container $TestVars.container -Blob $TestVars.Blob -contentType csv
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($jsonPostBodyWithContentType | ConvertFrom-Json | ConvertTo-Json)
 			}
 		}
 	}

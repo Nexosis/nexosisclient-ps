@@ -149,5 +149,9 @@ Describe "Start-NexosisModelSession" -Tag 'Unit' {
 			$response = Start-NexosisModelSession -dataSourceName 'HousingData' -targetColumn 'SalePrice' -predictionDomain Regression -isEstimate
 			$response.CostEstimate | Should be "0.01 USD"
 		}
+
+		It "should throw if allowUnbalancedData set on non-classification session" {
+			{ Start-NexosisModelSession -dataSourceName 'HousingData' -targetColumn 'SalePrice' -predictionDomain Regression -allowUnbalancedData } | should throw "Switch -allowUnbalancedData can only be used for Classification, not Regression."
+		}
     }
 }

@@ -19,6 +19,17 @@ $jsonPostBody = @"
 }
 "@
 
+$jsonPostBodyWithAuth = @"
+{
+    "dataSetName":  "Location-A",
+    "path":  "LocationA.csv",
+    "bucket":  "nexosis-sample-data",
+    "region":  "us-east-1",
+    "secretAccessKey":  "secretkey",
+    "accessKeyId":  "accesskey"
+}
+"@
+
 $jsonPostBodyWithColumns = @"
 {
     "region":  "us-east-1",
@@ -128,6 +139,15 @@ Describe "Import-NexosisDataSetFromS3" -Tag 'Unit' {
 			# any extra whitespace, formatting, etc. so they compare acutal contents.
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
 				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($jsonPostBodyWithColumns | ConvertFrom-Json | ConvertTo-Json)
+			}
+		}
+
+		It "calls with correct JSON body with accesskey and token" {
+			Import-NexosisDataSetFromS3 -dataSetName $TestVars.DsName -S3BucketName $TestVars.BucketName -S3BucketPath $TestVars.S3path -S3Region $TestVars.S3region -accesskeyid 'accesskey' -secretAccessKey 'secretkey'
+			# Converting from string to json and back seems to remove 
+			# any extra whitespace, formatting, etc. so they compare acutal contents.
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
+				($Body | ConvertFrom-Json | ConvertTo-Json) -eq ($jsonPostBodyWithAuth | ConvertFrom-Json | ConvertTo-Json)
 			}
 		}
 	}

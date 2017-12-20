@@ -1,4 +1,4 @@
-Function Get-NexosisChampion {
+Function Get-NexosisContestChampion {
 <# 
  .Synopsis
   Gets the champion of a contest, and the test data used in scoring the algorithm
@@ -29,27 +29,19 @@ Function Get-NexosisChampion {
 	)
     process {
         $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)    
-        if ($page -ne $null) {
-            if ($page -lt 0) {
-                throw "Parameter '-page' must be an integer greater than or equal to 0."
-            }
+        if (($null -ne $page) -and ($page -ne 0)) {
+            $params['page'] = $page
+        }
 
-            if (($pageSize -gt ($script:MaxPageSize)) -or ($pageSize -lt 1)) {
-                throw "Parameter '-pageSize' must be an integer between 1 and $script:MaxPageSize."
-            }
-
-            if ($page -ne 0) {
-                $params['page'] = $page
-            }
-
-            if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
+        if ($null -ne $pageSize) {
+             if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
                 $params['pageSize'] = $pageSize
             } elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
                 $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
             }
         }
 
-        if ($predictionInterval -ne $null) {
+        if ($null -ne $predictionInterval) {
             $params['predictionInterval'] = $predictionInterval
         }
 
