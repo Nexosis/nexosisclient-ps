@@ -1,21 +1,21 @@
-Function Get-NexosisAccountBalance {
+Function Get-NexosisAccountQuotas {
 <# 
  .Synopsis
   Retrieves the Account Usage Status of your Nexosis API Account.
 
  .Description
-  Given the current API Key, Get-NexosisAccountBalance returns the Account Usage Stats tracked for current pricing tier.
+  Given the current API Key, Get-NexosisAccountQuotas returns the Account Usage Stats tracked for current pricing tier.
 
  .Link
  http://docs.nexosis.com/clients/powershell
 
  .Example
   # Retrieve current account balance
-  Get-NexosisAccountBalance
+  Get-NexosisAccountQuotas
 #>[CmdletBinding()]
 	Param()
     process {
-        #  get as little data as possible since we just want the account balance HTTP header.
+        #  get as little data as possible since we just want the account quotas HTTP header.
         $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
         $params['page'] = 0
         $params['pageSize'] = 1

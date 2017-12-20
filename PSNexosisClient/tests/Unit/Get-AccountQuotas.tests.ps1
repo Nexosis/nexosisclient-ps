@@ -8,7 +8,7 @@ Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
+Describe "Get-NexosisAccountQuotas" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest		
 
@@ -29,7 +29,7 @@ Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
 				Headers=@{}
 			}
 			$response.Headers.Add("Nexosis-Account-DataSetCount-Current","181")
-			# Next one will be eventually removed 
+			# Next one will be eventually removed, include in test to make sure it gets removed
 			$response.Headers.Add("Nexosis-Account-Balance","200 USD")
 			$response.Headers.Add("Nexosis-Account-PredictionCount-Allotted","250000")
 			$response.Headers.Add("Nexosis-Account-SessionCount-Allotted","3500")
@@ -39,8 +39,8 @@ Describe "Get-NexosisAccountBalance" -Tag 'Unit' {
 			$response
         } -Verifiable
 	
-		It "gets account balance" {
-			$value = Get-NexosisAccountBalance
+		It "gets account quotas" {
+			$value = Get-NexosisAccountQuotas
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 			$value.Count | should match 6
 			$value.'DataSetCount Current' | should match "^\d+$"

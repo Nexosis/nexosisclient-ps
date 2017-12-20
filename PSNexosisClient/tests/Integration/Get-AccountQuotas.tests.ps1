@@ -23,11 +23,10 @@ Describe "Get-NexosisAccountBalance" -Tag 'Integration' {
             }
         }
 
-		It "gets account stats" {
-            $stats = Get-NexosisAccountBalance
-			$stats.Count | should match 7
+		It "gets account quotas" {
+            $stats = Get-NexosisAccountQuotas
+			$stats.Count | should match 6
 			$stats.'DataSetCount Current' | should match "^\d+$"
-		    $stats.Balance | should match "^[+-]?\d+(\.\d+)? USD$"
 			$stats.'PredictionCount Allotted' | should match "^\d+$"
 			$stats.'SessionCount Allotted' | should match "^\d+$"
 			$stats.'SessionCount Current' | should match "^\d+$"

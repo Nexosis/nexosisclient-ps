@@ -17,8 +17,12 @@ List of all commands
 ```powershell
 PS C:\> ((Get-Module PSNexosisClient).ExportedCommands).Keys
 
-Get-NexosisAccountBalance
+Get-NexosisAccountQuotas
 Get-NexosisConfig
+Get-NexosisContest
+Get-NexosisContestant
+Get-NexosisContestChampion
+Get-NexosisContestSelection
 Get-NexosisDataSet
 Get-NexosisDataSetData
 Get-NexosisImport
@@ -31,9 +35,11 @@ Get-NexosisSessionStatus
 Get-NexosisSessionStatusDetail
 Get-NexosisView
 Get-NexosisViewData
+Import-NexosisDataSetFromAzure
 Import-NexosisDataSetFromCsv
 Import-NexosisDataSetFromJson
 Import-NexosisDataSetFromS3
+Import-NexosisDataSetFromUrl
 Invoke-NexosisPredictTarget
 New-NexosisDataSet
 New-NexosisView

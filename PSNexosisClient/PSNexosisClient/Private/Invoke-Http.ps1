@@ -58,7 +58,7 @@ function Invoke-Http {
 			if (($method -eq [Microsoft.PowerShell.Commands.WebRequestMethod]::Head) -or ($needHeaders -eq $true)) {
 				# If HTTP Head Request, $httpResults.Content won't exist so
 				# return the results so calls can work with headers, etc.
-				# If need headers (Get-NexosisAccountBalance, etc), return entire HttpRequest object
+				# If need headers (Get-NexosisAccountQuotas, etc), return entire HttpRequest object
 				# Callers need to handle checking statuscode and handling Headers and Content
 				
 				# Write raw response body to verbose output
