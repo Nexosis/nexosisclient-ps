@@ -20,6 +20,15 @@ Function Get-NexosisSessionResult {
  .Parameter SessionId
   A Session identifier (UUID) of the session results to retrieve.
 
+ .Parameter predictionInterval
+  The results returned will be from the given prediction interval.
+
+ .Parameter page
+  Zero-based page number of session results to retrieve
+
+ .Parameter pageSize
+  Count of session results to retrieve in each page (max 1000)
+
  .Example
   # Retrieve session data for sesion with the given session ID
   Get-NexosisSessionResult -sessionId 015df24f-7f43-4efe-b8ba-1e28d67eb3fa
@@ -31,9 +40,33 @@ Function Get-NexosisSessionResult {
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
-        [GUID]$SessionId
+        [GUID]$SessionId,
+        [Parameter(Mandatory=$false)]
+		[int]$page=0,
+		[Parameter(Mandatory=$false)]
+        [int]$pageSize=$script:PSNexosisVars.DefaultPageSize,
+        [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
+        $predictionInterval
 	)
     process {
-        Invoke-Http -method Get -path "sessions/$SessionId/results"
+        $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
+        
+        if (($null -ne $page) -and ($page -ne 0)) {
+            $params['page'] = $page
+        }
+
+        if ($null -ne $pageSize) { 
+            if ($pageSize -ne ($script:PSNexosisVars.DefaultPageSize)) {
+                $params['pageSize'] = $pageSize
+            } elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
+                $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
+            }
+        }
+
+        if ($predictionInterval -ne $null) {
+            $params['predictionInterval'] = $predictionInterval
+        }
+
+        Invoke-Http -method Get -path "sessions/$SessionId/results" -params $params
     }
 }
