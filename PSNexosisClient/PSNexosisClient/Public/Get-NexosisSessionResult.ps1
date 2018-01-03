@@ -24,10 +24,10 @@ Function Get-NexosisSessionResult {
   The results returned will be from the given prediction interval.
 
  .Parameter page
-  Zero-based page number of session results to retrieve
+  Zero-based page number of session results to retrieve.
 
  .Parameter pageSize
-  Count of session results to retrieve in each page (max 1000)
+  Count of session results to retrieve in each page (max 1000).
 
  .Example
   # Retrieve session data for sesion with the given session ID
