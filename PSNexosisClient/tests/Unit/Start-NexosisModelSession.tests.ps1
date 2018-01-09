@@ -134,7 +134,7 @@ Describe "Start-NexosisModelSession" -Tag 'Unit' {
 			{ Start-NexosisModelSession -dataSourceName 'HousingData' -targetColumn 'SalePrice' -predictionDomain Regression -allowUnbalancedData } | should throw "Switch -allowUnbalancedData can only be used for Classification, not Regression or Anomalies."
 		}
 
-		It "should throw if allowUnbalancedData set on non-anomaly session" {
+		It "should throw if containsAnomalies set on non-anomaly session" {
 			{ Start-NexosisModelSession -dataSourceName 'HousingData' -targetColumn 'SalePrice' -predictionDomain Regression -containsAnomalies } | should throw "Switch -containsAnomalies can only be used for Anomalies, not Regression or Classification."
 		}
     }
