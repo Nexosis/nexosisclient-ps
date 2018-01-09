@@ -46,6 +46,7 @@ Enum PredictionDomain
 {
     Regression
     Classification
+    Anomalies
 }
 
 Enum ImportContentType
