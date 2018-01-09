@@ -4,7 +4,15 @@ Function Start-NexosisModelSession {
       Queues a new model-building session to run
     
      .Description
-      Queues a new model-building session to run
+      Model-building sessions are used to build regression and classification models for later use. To build a model, 
+      specify the data source to model and the type of model to build. Once the model is built, use the various model
+      endpoints to interact with it and generate predictions.
+
+      The type of model to build is determined by the predictionDomain property on the request. Acceptable values 
+      are:
+        * regression: Builds a regression model
+        * classification: Builds a classification model
+        * anomalies: Builds an anomaly detection model
 
      .Parameter dataSourceName
       Name of the dataset or view from which to generate a model
@@ -13,7 +21,8 @@ Function Start-NexosisModelSession {
      Column in the specified data source to predict with the generated model
      
      .Parameter PredictionDomain
-      Type of prediction the built model is intended to make. Supports Regression or Classification. 
+      Type of prediction the built model is intended to make. Supports Regression, Classification 
+      and Anomaly Detection.
       
       Regression models are used to predict a target (dependent) variable from one or more feature (independent) 
       variables. Regression models always require at least one feature column, and since the output of a 
@@ -28,6 +37,13 @@ Function Start-NexosisModelSession {
       and 10% have class B, the API will strive to generate a model that is equally proficient at identifying
       both class A and class B records. To override this, include the switch '-allowUnbalancedData' to the call.
      
+      Anomaly detection models are used to detect outliers in a dataset. Unlike other model types, anomaly detection
+      models are built on unlabeled data, that is, data without known target values. (If you know which rows in your 
+      dataset are anomalies and which rows are not, build a classification model instead.) When building an anomaly
+      detection model, you should not specify a target column that is in your dataset. Instead, specify the name of
+      the column in which you want the results placed. If you don't specify a target column, a column named anomaly 
+      will be used to store prediction results.
+     
      .Parameter callbackUrl
       The Webhook url that will receive updates when the Session status changes
       If you provide a callback url, your response will contain a header named Nexosis-Webhook-Token.  You will receive this
@@ -36,6 +52,13 @@ Function Start-NexosisModelSession {
      .Parameter allowUnbalancedData
       For Classification Only: If allowUnbalancedData is provided, the API will not seek to balance the data source, which 
       may result in a model better at predicting class A than class B. Defaults to True if not provided.
+     
+     .Parameter containsAnomalies
+      For Anomaly Detection Only: Nexosis uses one of two different algorithms to build an anomaly detection model on 
+      your dataset. By default, we assume that your dataset contains some anomalies. If you are certain that your dataset
+      does not contain anomalies (it's from a known good source, for instance), you can specify as such. Set the 
+      containsAnomalies property to false and Nexosis will use an algorithm optimized for this sort of dataset to build 
+      a model.
 
      .Example
       # Start a session to Build a model using the dataSource housePrices that can later be used to predict house prices.
@@ -57,7 +80,9 @@ Function Start-NexosisModelSession {
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
             $columnMetadata=@{},
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
-            [switch]$allowUnbalancedData
+            [switch]$allowUnbalancedData,
+            [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
+            [switch]$containsAnomalies
         )
         process {
             if (($dataSourceName -eq $null ) -or ($dataSourceName.Trim().Length -eq 0)) { 
@@ -70,7 +95,11 @@ Function Start-NexosisModelSession {
             }
 
             if ($allowUnbalancedData.IsPresent -and $predictionDomain -ne [PredictionDomain]::Classification) {
-                throw "Switch -allowUnbalancedData can only be used for Classification, not Regression."
+                throw "Switch -allowUnbalancedData can only be used for Classification, not Regression or Anomalies."
+            }
+
+            if ($containsAnomalies.IsPresent -and $predictionDomain -ne [PredictionDomain]::Anomalies) {
+                throw "Switch -containsAnomalies can only be used for Anomalies, not Regression or Classification."
             }
             
             $createModelObj = @{
@@ -93,6 +122,12 @@ Function Start-NexosisModelSession {
             if ($allowUnbalancedData.IsPresent) {
                 $createModelObj['extraParameters'] = @{
                     balance = $false
+                }
+            }
+
+             if ($containsAnomalies.IsPresent) {
+                $createModelObj['extraParameters'] = @{
+                    containsAnomalies = $true
                 }
             }
 
