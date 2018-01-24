@@ -37,6 +37,8 @@ Get-NexosisSessionStatus
 Get-NexosisSessionStatusDetail
 Get-NexosisView
 Get-NexosisViewData
+Get-NexosisVocabulary
+Get-NexosisVocabularySummary
 Import-NexosisDataSetFromAzure
 Import-NexosisDataSetFromCsv
 Import-NexosisDataSetFromJson
