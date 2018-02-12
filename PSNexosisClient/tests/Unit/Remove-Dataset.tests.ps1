@@ -95,10 +95,10 @@ Describe "Remove-NexosisDataSet" -Tag 'Unit' {
 			} 
 		}
 		
-		It "removes datasetdata by dataset name cascading views, models, and sessions" {
+		It "removes datasetdata by dataset name cascading views, models, sessions, and vocabulary" {
             Remove-NexosisDataSet -dataSetName 'salesdata' -cascadeOption All -force
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?cascade=session&cascade=view&cascade=model"
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata?cascade=session&cascade=view&cascade=model&cascade=vocabulary"
 			} 
         }
 	}
