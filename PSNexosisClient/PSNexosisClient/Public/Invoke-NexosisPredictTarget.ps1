@@ -34,7 +34,7 @@ Function Invoke-NexosisPredictTarget {
         PS> Invoke-NexosisPredictTarget -modelId 17904d91-a42f-4ca9-836f-956a13530beb -data $data
     #>[CmdletBinding(SupportsShouldProcess=$true)]
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
+        [Parameter(Mandatory=$true)]
         [Guid]$modelId,
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         $data
@@ -45,7 +45,7 @@ Function Invoke-NexosisPredictTarget {
             throw "Parameter '-data' must be an array containing a hashtable of features needed to make the prediction."
         }
 
-        $requestData = @{ data = $data }
+        $requestData = @{ data = $data.SyncRoot }
         if ($pscmdlet.ShouldProcess($modelId)) {       
             Invoke-Http -method Post -path "models/$modelId/predict" -Body ($requestData | ConvertTo-Json -depth 6)
         }

@@ -5,7 +5,9 @@ Add-Type -TypeDefinition @"
         None = 0,
 		Sessions = 1,
 		Views = 2,
-		All = Sessions | Views
+		Models = 4,
+		Vocabulary = 8,
+		All = Sessions | Views | Models | Vocabulary
     }
 "@
 
@@ -30,10 +32,12 @@ Function Remove-NexosisDataSet {
 
  .Parameter CascadeOption
   Options for cascading Remove:
-  * None     - only deletes the dataset, or a range of data in the dataset. 
-  * Sessions - deletes datasets and if start and/or end date are supplied, sessions created in that date range are also deleted.
-  * Views    - deletes ALL Views associated with the dataset (ignores StartDate and EndDate)
-  * All      - deletes all Sessions and Views associated with the dataset
+  * None       - only deletes the dataset, or a range of data in the dataset. 
+  * Sessions   - deletes datasets and if start and/or end date are supplied, sessions created in that date range are also deleted.
+  * Views      - deletes ALL Views associated with the dataset (ignores StartDate and EndDate)
+  * Models     - deletes ALL Models whose sessions came from this dataset.
+  * Vocabulary - deletes any vocabularies which have been created based on this dataset. 
+  * All        - deletes all Sessions and Views associated with the dataset
 
  .Example
   # Remove the dataset named 'salesdata'
@@ -85,6 +89,14 @@ Function Remove-NexosisDataSet {
 			$params.Add('cascade','view')
 		}
 		
+		if ($cascadeOption -band [DataSetDeleteOptions]::Models) { 
+			$params.Add('cascade','model')
+		}
+
+		if ($cascadeOption -band [DataSetDeleteOptions]::Vocabulary) {
+			$params.Add('cascade','vocabulary')
+		}
+
 		if ($pscmdlet.ShouldProcess($dataSetName)) {
 			if ($Force -or $pscmdlet.ShouldContinue("Are you sure you want to permanently delete dataset '$dataSetName'.", "Confirm Delete?")) {
 				Invoke-Http -method Delete -path "data/$dataSetName" -params $params
