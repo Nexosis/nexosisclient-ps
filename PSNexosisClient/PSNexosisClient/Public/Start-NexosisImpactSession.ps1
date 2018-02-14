@@ -77,7 +77,7 @@ Function Start-NexosisImpactSession {
         $params['targetColumn'] = $targetColumn
       }
 
-      if ($eventName.Trim().Length > 0) {
+      if (($null -ne $eventName) -and ($eventName.Trim().Length -ne 0)) {
         $params['eventName'] = $eventName
       }
 
@@ -88,7 +88,7 @@ Function Start-NexosisImpactSession {
         $params['endDate'] = $endDate
       }
       
-      if ($callbackUrl.Trim().Length > 0){
+      if (($null -ne $callBackUrl) -and ($callbackUrl.Trim().Length -ne 0)) {
         $params['callbackUrl'] = $callbackUrl
       }
       
