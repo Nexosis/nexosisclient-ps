@@ -104,7 +104,7 @@ Describe "Start-NexosisImpactSession" -Tag 'Unit' {
 								   }
 				}
 			}
-			
+			$VerbosePreference = "continue"
 			Start-NexosisImpactSession -name $name -dataSourceName $dataSourceName -eventName $eventName -targetColumn $targetColumn -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval $resultInterval -columnMetadata $columns.columns 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				(
