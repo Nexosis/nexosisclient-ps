@@ -9,32 +9,6 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-$stringOutput = 
-@'
-{
-    "startDate":  "2013-04-08T20:00:00.0000000-04:00",
-    "columns":  {
-                    "sales":  {
-                                  "dataType":  "numeric",
-                                  "role":  "target"
-                              },
-                    "timeStamp":  {
-                                      "dataType":  "date",
-                                      "role":  "timestamp"
-                                  },
-                    "transactions":  {
-                                         "dataType":  "numeric",
-                                         "role":  "none"
-                                     }
-                },
-    "endDate":  "2013-11-08T19:00:00.0000000-05:00",
-    "resultInterval":  "Day",
-    "name":  "forecast session name",
-    "targetColumn":  "sales",
-    "dataSourceName":  "Location-A"
-}
-'@
-
 Describe "Start-ForeacastSession" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
@@ -109,12 +83,47 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 		}
 
 		It "has proper HTTP body" {
-			$requestobj = ($stringOutput | convertFrom-json)
-		
-			Start-NexosisForecastSession -name 'forecast session name' -dataSourceName 'Location-A' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $requestobj.columns 
+			$name = 'forecast session name'
+			$dataSourceName = 'Location-A'
+			$targetColumn = 'sales'
+			$resultInterval = 'Day'
+			$startDateExpected = '2013-04-08T20:00:00.0000000-04:00'
+			$endDateExpected = '2013-11-08T19:00:00.0000000-05:00'
+
+			$columns = @{
+				columns = @{
+					sales = @{
+								dataType =  "numeric"
+								role =  "target"
+							}
+					timeStamp = @{
+									dataType =  "date"
+									role = "timestamp"
+								}
+					transactions = @{
+									dataType =  "numeric"
+									role = "none"
+								   }
+				}
+			}
+
+			Start-NexosisForecastSession -name $name -dataSourceName $dataSourceName -targetColumn $targetColumn -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval $resultInterval -columnMetadata $columns.columns 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$body -eq $stringOutput
-			}			
+				(
+					(($body | ConvertFrom-Json).name -eq $name) -and
+					(($body | ConvertFrom-Json).dataSourceName -eq $dataSourceName) -and
+					(($body | ConvertFrom-Json).targetColumn -eq $targetColumn) -and
+					(($body | ConvertFrom-Json).resultInterval -eq $resultInterval) -and
+					(($body | ConvertFrom-Json).startDate -eq $startDateExpected) -and
+					(($body | ConvertFrom-Json).endDate -eq $endDateExpected) -and
+					(($body | ConvertFrom-Json).columns.timestamp.dataType -eq $columns.columns['timestamp']['dataType']) -and
+					(($body | ConvertFrom-Json).columns.timestamp.role -eq $columns.columns['timestamp']['role']) -and
+					(($body | ConvertFrom-Json).columns.sales.dataType -eq $columns.columns['sales']['dataType']) -and
+					(($body | ConvertFrom-Json).columns.sales.role -eq $columns.columns['sales']['role']) -and
+					(($body | ConvertFrom-Json).columns.transactions.dataType -eq $columns.columns['transactions']['dataType']) -and
+					(($body | ConvertFrom-Json).columns.transactions.role -eq $columns.columns['transactions']['role'])
+				)
+			}		
 		}
     }
 }

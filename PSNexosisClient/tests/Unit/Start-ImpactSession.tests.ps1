@@ -9,33 +9,6 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-$stringOutput = 
-@'
-{
-    "name":  "impact session name",
-    "columns":  {
-                    "sales":  {
-                                  "dataType":  "numeric",
-                                  "role":  "target"
-                              },
-                    "timeStamp":  {
-                                      "dataType":  "date",
-                                      "role":  "timestamp"
-                                  },
-                    "transactions":  {
-                                         "dataType":  "numeric",
-                                         "role":  "none"
-                                     }
-                },
-    "endDate":  "2013-11-08T19:00:00.0000000-05:00",
-    "eventName":  "unitTest",
-    "startDate":  "2013-04-08T20:00:00.0000000-04:00",
-    "targetColumn":  "sales",
-    "dataSourceName":  "Location-A",
-    "resultInterval":  "Day"
-}
-'@
-
 Describe "Start-NexosisImpactSession" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
@@ -107,19 +80,49 @@ Describe "Start-NexosisImpactSession" -Tag 'Unit' {
 		}
 		
 		It "has proper HTTP body" {
-			$requestobj = ($stringOutput | convertFrom-json)
-			
-			Start-NexosisImpactSession -name 'impact session name' -dataSourceName 'Location-A' -eventName 'unitTest' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $requestobj.columns 
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$body -eq $stringOutput
-			}
-		}
+			$name = 'impact session name'
+			$dataSourceName = 'Location-A'
+			$eventName = 'unitTest'
+			$targetColumn = 'sales'
+			$resultInterval = 'Day'
+			$startDateExpected = '2013-04-08T20:00:00.0000000-04:00'
+			$endDateExpected = '2013-11-08T19:00:00.0000000-05:00'
 
-		It "starts an impact session with all parameters" {
-			Start-NexosisImpactSession -dataSourceName 'name' -eventName '50percentoff' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com'
+			$columns = @{
+				columns = @{
+					sales = @{
+								dataType =  "numeric"
+								role =  "target"
+							}
+					timeStamp = @{
+									dataType =  "date"
+									role = "timestamp"
+								}
+					transactions = @{
+									dataType =  "numeric"
+									role = "none"
+								   }
+				}
+			}
+			
+			Start-NexosisImpactSession -name $name -dataSourceName $dataSourceName -eventName $eventName -targetColumn $targetColumn -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval $resultInterval -columnMetadata $columns.columns 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/impact"
-			}	
+				(
+					(($body | ConvertFrom-Json).name -eq $name) -and
+					(($body | ConvertFrom-Json).dataSourceName -eq $dataSourceName) -and
+					(($body | ConvertFrom-Json).eventName -eq $eventName) -and
+					(($body | ConvertFrom-Json).targetColumn -eq $targetColumn) -and
+					(($body | ConvertFrom-Json).resultInterval -eq $resultInterval) -and
+					(($body | ConvertFrom-Json).startDate -eq $startDateExpected) -and
+					(($body | ConvertFrom-Json).endDate -eq $endDateExpected) -and
+					(($body | ConvertFrom-Json).columns.timestamp.dataType -eq $columns.columns['timestamp']['dataType']) -and
+					(($body | ConvertFrom-Json).columns.timestamp.role -eq $columns.columns['timestamp']['role']) -and
+					(($body | ConvertFrom-Json).columns.sales.dataType -eq $columns.columns['sales']['dataType']) -and
+					(($body | ConvertFrom-Json).columns.sales.role -eq $columns.columns['sales']['role']) -and
+					(($body | ConvertFrom-Json).columns.transactions.dataType -eq $columns.columns['transactions']['dataType']) -and
+					(($body | ConvertFrom-Json).columns.transactions.role -eq $columns.columns['transactions']['role'])
+				)
+			}
 		}
 	}
 }
