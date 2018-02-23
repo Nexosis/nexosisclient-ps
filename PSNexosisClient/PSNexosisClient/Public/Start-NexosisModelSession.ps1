@@ -14,6 +14,9 @@ Function Start-NexosisModelSession {
         * classification: Builds a classification model
         * anomalies: Builds an anomaly detection model
 
+     .Parameter name
+      A name for the session, to make it easier to locate
+
      .Parameter dataSourceName
       Name of the dataset or view from which to generate a model
      
@@ -69,6 +72,8 @@ Function Start-NexosisModelSession {
       Start-NexosisModelSession -dataSourceName 'csgo' -targetColumn 'VACBanned' -predictionDomain Classification
     #>[CmdletBinding(SupportsShouldProcess=$true)]
         Param(
+            [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
+            [string]$name,
             [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
             [string]$dataSourceName,
             [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -105,6 +110,10 @@ Function Start-NexosisModelSession {
             $createModelObj = @{
                 dataSourceName = $dataSourceName
                 predictionDomain = $predictionDomain.ToString().ToLower()
+            }
+
+            if (($null -eq $name) -and ($name.Trim().Length -ne 0)) {
+                $createModelObj['name'] = $name
             }
 
             if (($null -ne $columnMetadata) -and ($columnMetadata.ContainsKey("columns"))) {

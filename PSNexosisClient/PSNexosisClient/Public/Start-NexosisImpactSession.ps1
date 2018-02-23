@@ -15,6 +15,9 @@ Function Start-NexosisImpactSession {
   Both the start and end dates for the impact session must always be on or before
   the timeStamp of the last record in your data source.
  
+  .Parameter name
+  A name for the session, to make it easier to locate
+ 
   .Parameter dataSourceName
    Name of the data source (view, dataset, etc) to forecast
 
@@ -47,6 +50,8 @@ Function Start-NexosisImpactSession {
  Start-NexosisImpactSession -dataSourceName 'salesdata' -eventName 'promo-impact' -targetColumn 'sales' -startDate 2013-01-03 -endDate 2013-01-04 -resultInterval Day
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(
+        [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
+        [string]$name,
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
         [string]$dataSourceName,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -65,37 +70,39 @@ Function Start-NexosisImpactSession {
         $columnMetadata=@{}
     )
     process {
-      $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
-
       if ($dataSourceName.Trim().Length -eq 0) { 
         throw "Argument '-DataSourceName' cannot be null or empty."
       }
       
-      $params['dataSourceName'] = $dataSourceName
-
-      if (($null -ne $targetColumn) -and ($targetColumn.Trim().Length -ne 0)) {
-        $params['targetColumn'] = $targetColumn
+      $createModelObj = @{
+          dataSourceName = $dataSourceName
+          startDate = $startDate.ToString("o")
+          endDate = $endDate.ToString("o")
+          resultInterval = $resultInterval.toString()
       }
-
+      
       if (($null -ne $eventName) -and ($eventName.Trim().Length -ne 0)) {
-        $params['eventName'] = $eventName
+         $createModelObj['eventName'] = $eventName
       }
 
-      if ($null -ne $startDate) { 
-        $params['startDate'] = $startDate
+      if (($null -ne $name) -and ($name.Trim().Length -ne 0)) {
+          $createModelObj['name'] = $name
       }
-      if ($null -ne $endDate) {
-        $params['endDate'] = $endDate
-      }
-      
-      if (($null -ne $callBackUrl) -and ($callbackUrl.Trim().Length -ne 0)) {
-        $params['callbackUrl'] = $callbackUrl
+
+      if ($null -ne $columnMetadata) {
+          $createModelObj['columns'] = $columnMetadata
       }
       
-      $params['resultInterval'] = $resultInterval.toString()
-            
+      if (($null -ne $targetColumn) -and ($targetColumn.Trim().Length -ne 0)) {
+          $createModelObj['targetColumn'] = $targetColumn
+      }
+
+      if (($null -ne $callbackUrl) -and ($callbackUrl.Trim().Length -ne 0)) {
+          $createModelObj['callbackUrl'] = $callbackUrl
+      }
+
       if ($pscmdlet.ShouldProcess($dataSourceName)) {       
-          $response = Invoke-Http -method Post -path "sessions/impact" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -ContentType 'application/json' -needHeaders
+          $response = Invoke-Http -method Post -path "sessions/impact" -Body ($createModelObj | ConvertTo-Json -depth 6) -ContentType 'application/json' -needHeaders
           $responseObj = $response.Content | ConvertFrom-Json
           $responseObj
         }

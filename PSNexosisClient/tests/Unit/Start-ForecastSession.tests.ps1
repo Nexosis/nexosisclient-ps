@@ -9,6 +9,32 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
+$stringOutput = 
+@'
+{
+    "startDate":  "2013-04-08T20:00:00.0000000-04:00",
+    "columns":  {
+                    "sales":  {
+                                  "dataType":  "numeric",
+                                  "role":  "target"
+                              },
+                    "timeStamp":  {
+                                      "dataType":  "date",
+                                      "role":  "timestamp"
+                                  },
+                    "transactions":  {
+                                         "dataType":  "numeric",
+                                         "role":  "none"
+                                     }
+                },
+    "endDate":  "2013-11-08T19:00:00.0000000-05:00",
+    "resultInterval":  "Day",
+    "name":  "forecast session name",
+    "targetColumn":  "sales",
+    "dataSourceName":  "Location-A"
+}
+'@
+
 Describe "Start-ForeacastSession" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
@@ -49,12 +75,8 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 		
 		It "calls the correct URI" {		
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&resultInterval=Day"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast"
 			} 		
-		}
-
-		It "throws if columnMetaData paramter is not an array of hashes" {
-			{ Start-NexosisForecastSession -dataSourceName 'notnull' -startDate 01-01-2017 -endDate 01-20-2017 -columnMetaData "string" }  | should Throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."
 		}
 
 		It "throws exception when dataSourceName is null or empty" {
@@ -87,34 +109,12 @@ Describe "Start-ForeacastSession" -Tag 'Unit' {
 		}
 
 		It "has proper HTTP body" {
-			$columns = @{
-				columns = @{
-					timeStamp = @{
-						dataType = "date"
-						role = "timestamp"
-					}
-					sales = @{
-						dataType = "numeric"
-						role = "target"
-					}
-					transactions=  @{
-						dataType = "numeric"
-						role = "none"
-					}
-				}
-			}
-
-			Start-NexosisForecastSession -dataSourceName 'Location-A' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $columns 
+			$requestobj = ($stringOutput | convertFrom-json)
+		
+			Start-NexosisForecastSession -name 'forecast session name' -dataSourceName 'Location-A' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $requestobj.columns 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$body -eq ($columns	| ConvertTo-Json)
+				$body -eq $stringOutput
 			}			
-		}
-
-		It "starts a forecast session with all parameters" {
-			Start-NexosisForecastSession -dataSourceName 'name' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com'
-			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/forecast?dataSourceName=name&targetColumn=sales&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&resultInterval=Day"
-			}	
 		}
     }
 }

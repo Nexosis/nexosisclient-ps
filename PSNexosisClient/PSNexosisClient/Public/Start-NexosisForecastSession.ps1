@@ -15,6 +15,9 @@ Function Start-NexosisForecastSession {
   of the last record in your data set, the Nexosis API will behave as if there is 
   no gap.   
 
+  .Parameter name
+   A name for the session, to make it easier to locate
+
   .Parameter dataSourceName
    Name of the data source (view, dataset, etc) to forecast
 
@@ -44,6 +47,8 @@ Function Start-NexosisForecastSession {
   Start-NexosisForecastSession -dataSourceName 'salesdata' -targetColumn 'sales' -startDate 2013-01-06 -endDate 2013-01-13 -resultInterval Day -columnMetadata $columns
 #>[CmdletBinding(SupportsShouldProcess=$true)]
 	Param(
+        [Parameter(Mandatory=$false, ValueFromPipeline=$True)]
+        [string]$name,
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]
         [string]$dataSourceName,
         [Parameter(Mandatory=$false, ValueFromPipelineByPropertyName=$true)]
@@ -63,36 +68,34 @@ Function Start-NexosisForecastSession {
         if (($dataSourceName -eq $null ) -or ($dataSourceName.Trim().Length -eq 0)) { 
             throw "Argument '-DataSourceName' cannot be null or empty."
         }
-
-        if ($columnMetadata -isnot [Hashtable])
-		{
-			throw "Parameter '-columnMetaData' must be a hashtable of column metadata for the data."	
-        }
-        $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
         
-        $params['dataSourceName'] = $dataSourceName
+        $createModelObj = @{
+            dataSourceName = $dataSourceName
+            startDate = $startDate.ToString("o")
+            endDate = $endDate.ToString("o")
+            resultInterval = $resultInterval.toString()
+        }
+
+        if (($null -ne $name) -and ($name.Trim().Length -ne 0)) {
+            $createModelObj['name'] = $name
+        }
+
+        if ($null -ne $columnMetadata) {
+            $createModelObj['columns'] = $columnMetadata
+        }
         
         if (($null -ne $targetColumn) -and ($targetColumn.Trim().Length -ne 0)) {
-            $params['targetColumn'] = $targetColumn
-        } 
-
-        if ($startDate -ne $null) { 
-            $params['startDate'] = $startDate
-        }
-        if ($endDate -ne $null) {
-            $params['endDate'] = $endDate
+            $createModelObj['targetColumn'] = $targetColumn
         }
 
-        if ($callbackUrl -ne $null){
-            $params['callbackUrl'] = $callbackUrl
+        if (($null -ne $callbackUrl) -and ($callbackUrl.Trim().Length -ne 0)) {
+            $createModelObj['callbackUrl'] = $callbackUrl
         }
-
-        $params['resultInterval'] = $resultInterval.toString()
 
         if ($pscmdlet.ShouldProcess($dataSourceName)) {
 
             if ($pscmdlet.ShouldProcess($dataSourceName)) {       
-                $response = Invoke-Http -method Post -path "sessions/forecast" -Body ($columnMetadata | ConvertTo-Json -depth 6) -params $params -needHeaders
+                $response = Invoke-Http -method Post -path "sessions/forecast" -Body ($createModelObj | ConvertTo-Json -depth 6) -needHeaders
                 $responseObj = $response.Content | ConvertFrom-Json
                 $responseObj
               }

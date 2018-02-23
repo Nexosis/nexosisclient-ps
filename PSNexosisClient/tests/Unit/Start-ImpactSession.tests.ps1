@@ -9,6 +9,33 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
+$stringOutput = 
+@'
+{
+    "name":  "impact session name",
+    "columns":  {
+                    "sales":  {
+                                  "dataType":  "numeric",
+                                  "role":  "target"
+                              },
+                    "timeStamp":  {
+                                      "dataType":  "date",
+                                      "role":  "timestamp"
+                                  },
+                    "transactions":  {
+                                         "dataType":  "numeric",
+                                         "role":  "none"
+                                     }
+                },
+    "endDate":  "2013-11-08T19:00:00.0000000-05:00",
+    "eventName":  "unitTest",
+    "startDate":  "2013-04-08T20:00:00.0000000-04:00",
+    "targetColumn":  "sales",
+    "dataSourceName":  "Location-A",
+    "resultInterval":  "Day"
+}
+'@
+
 Describe "Start-NexosisImpactSession" -Tag 'Unit' {
 	Context "Unit Tests" {
 		Set-StrictMode -Version latest
@@ -46,7 +73,7 @@ Describe "Start-NexosisImpactSession" -Tag 'Unit' {
 
   		It "calls the correct URI" {		
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/impact?dataSourceName=name&targetColumn=sales&eventName=50percentoff&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&resultInterval=Day"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/impact"
 			}		
 		}
 
@@ -80,33 +107,18 @@ Describe "Start-NexosisImpactSession" -Tag 'Unit' {
 		}
 		
 		It "has proper HTTP body" {
-			$columns = @{
-				columns = @{
-					timeStamp = @{
-						dataType = "date"
-						role = "timestamp"
-					}
-					sales = @{
-						dataType = "numeric"
-						role = "target"
-					}
-					transactions=  @{
-						dataType = "numeric"
-						role = "none"
-					}
-				}
-			}
-
-			Start-NexosisImpactSession -dataSourceName 'Location-A' -eventName 'unitTest' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $columns 
+			$requestobj = ($stringOutput | convertFrom-json)
+			
+			Start-NexosisImpactSession -name 'impact session name' -dataSourceName 'Location-A' -eventName 'unitTest' -targetColumn 'sales' -startDate 2013-04-09T00:00:00Z -endDate 2013-11-09T00:00:00Z -resultInterval Day -columnMetadata $requestobj.columns 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$body -eq ($columns	| ConvertTo-Json)
+				$body -eq $stringOutput
 			}
 		}
 
 		It "starts an impact session with all parameters" {
 			Start-NexosisImpactSession -dataSourceName 'name' -eventName '50percentoff' -targetColumn 'sales' -startDate 2017-01-01 -endDate 2017-01-20 -resultInterval Day -callbackUrl 'http://slackme.com'
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/impact?dataSourceName=name&targetColumn=sales&eventName=50percentoff&startDate=01%2f01%2f2017+00%3a00%3a00&endDate=01%2f20%2f2017+00%3a00%3a00&callbackUrl=http%3a%2f%2fslackme.com&resultInterval=Day"
+				$Uri -eq "$($TestVars.ApiEndPoint)/sessions/impact"
 			}	
 		}
 	}

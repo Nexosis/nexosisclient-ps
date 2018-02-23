@@ -62,7 +62,11 @@ function Invoke-Http {
 				# Callers need to handle checking statuscode and handling Headers and Content
 				
 				# Write raw response body to verbose output
-				Write-Verbose $httpResults
+				Write-Verbose "--Raw Response object, response requires headers--"
+				Write-Verbose "Status Code: $($httpResults.StatusCode)"
+				Write-Verbose "Num of Headers: $($httpResults.Headers.Length)"
+				Write-Verbose "Headers: $($httpResults.Headers.GetEnumerator() | % { "$($_.Name)=$($_.Value)" })"
+				Write-Verbose "Raw Body: $($httpResults.Content)"
 				
 				$httpResults
 			} elseif ($acceptHeader -eq 'application/json') {
@@ -72,6 +76,7 @@ function Invoke-Http {
 				# Return HTTP Content from JSON
 				$httpResults.Content | ConvertFrom-Json
 			} else {
+				"--httpResults.Content--"
 				# Write raw response body to verbose output
 				Write-Verbose ($httpResults.Content)
 				

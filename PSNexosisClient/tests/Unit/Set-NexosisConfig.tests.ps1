@@ -30,7 +30,7 @@ Describe "All Session Tests" -Tag 'Unit' {
             ((Get-NexosisConfig).DefaultPageSize) | should be 101
         }
 
-        It "should temporarily change the " {
+        It "should temporarily change the base URL" {
             Set-NexosisConfig -ApiBaseUrl 'https://test.url'
             ((Get-NexosisConfig).ApiBaseUrl) | should be 'https://test.url'
         }
