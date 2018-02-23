@@ -31,7 +31,7 @@ function Invoke-Http {
 	$Request = [System.UriBuilder]$endpoint
 	$Request.Query = $params.ToString()
     $uri = [string]$Request.Uri.AbsoluteUri
-
+	$VerbosePreference = "continue"
 	Try {
 		if ($fileName -ne $null) {
 			# submit request with file
