@@ -67,6 +67,7 @@ Function Get-NexosisSessionResult {
             $params['predictionInterval'] = $predictionInterval
         }
 
-        Invoke-Http -method Get -path "sessions/$SessionId/results" -params $params
+        $encodedSessionId = [uri]::EscapeDataString($SessionId)
+        Invoke-Http -method Get -path "sessions/$encodedSessionId/results" -params $params
     }
 }

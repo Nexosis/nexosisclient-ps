@@ -113,8 +113,8 @@ Function Get-NexosisViewData {
             foreach ($val in  $include) {
                 $params.Add('include', $val)
             }
-                
-            Invoke-Http -method Get -path "views/$viewName" -params $params
+            $encodedViewName = [uri]::EscapeDataString($viewName)
+            Invoke-Http -method Get -path "views/$encodedViewName" -params $params
         }
     }
     

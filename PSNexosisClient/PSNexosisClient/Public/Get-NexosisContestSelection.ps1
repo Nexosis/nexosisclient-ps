@@ -24,6 +24,7 @@ Function Get-NexosisContestSelection {
         [GUID]$SessionId
 	)
     process {
-        Invoke-Http -method Get -path "sessions/$SessionId/contest/selection"
+        $encodedSessionId = [uri]::EscapeDataString($SessionId)
+        Invoke-Http -method Get -path "sessions/$encodedSessionId/contest/selection"
     }
 }

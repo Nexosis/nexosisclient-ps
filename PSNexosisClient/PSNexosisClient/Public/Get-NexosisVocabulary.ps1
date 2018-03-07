@@ -52,7 +52,7 @@ Function Get-NexosisVocabulary {
         if ($type -ne $null) {
             $params['type'] = $type
         }
-
-        Invoke-Http -method Get -path "vocabulary/$VocabularyId" -params $params
+        $encodedVocabularyId = [uri]::EscapeDataString($VocabularyId)
+        Invoke-Http -method Get -path "vocabulary/$encodedVocabularyId" -params $params
     }
 }

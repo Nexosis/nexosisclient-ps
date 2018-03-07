@@ -21,6 +21,7 @@ Function Get-NexosisModelDetail {
         [GUID]$ModelId
 	)
     process {
-        Invoke-Http -method Get -path "models/$ModelId"
+        $encodedModelId = [uri]::EscapeDataString($ModelId)
+        Invoke-Http -method Get -path "models/$encodedModelId"
     }
 }

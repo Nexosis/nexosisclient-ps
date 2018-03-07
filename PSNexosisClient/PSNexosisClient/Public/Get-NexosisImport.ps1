@@ -103,7 +103,8 @@ Function Get-NexosisImport {
             ) {
                 throw "Parameter '-SessionID' is exclusive and cannot be used with any other parameters."
             }
-			Invoke-Http -method Get -path "imports/$importId"
+			$encodedImportId = [uri]::EscapeDataString($importId)
+			Invoke-Http -method Get -path "imports/$encodedImportId"
 		}
 	}
 }

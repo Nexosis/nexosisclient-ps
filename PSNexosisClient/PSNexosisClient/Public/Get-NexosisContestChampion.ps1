@@ -44,7 +44,7 @@ Function Get-NexosisContestChampion {
         if ($null -ne $predictionInterval) {
             $params['predictionInterval'] = $predictionInterval
         }
-
-        Invoke-Http -method Get -path "sessions/$SessionId/contest/champion" -params $params
+        $encodedSessionId = [uri]::EscapeDataString($SessionId)
+        Invoke-Http -method Get -path "sessions/$encodedSessionId/contest/champion" -params $params
     }
 }

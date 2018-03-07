@@ -18,6 +18,7 @@ Function Get-NexosisSessionStatusDetail {
         [GUID]$SessionId
 	)
     process {
-        Invoke-Http -method Get -path "sessions/$SessionId"
+        $encodedSessionId = [uri]::EscapeDataString($SessionId)
+        Invoke-Http -method Get -path "sessions/$encodedSessionId"
     }
 }

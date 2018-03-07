@@ -18,7 +18,8 @@ Function Get-NexosisDataSetStatistics {
         [string]$dataSetName
 	)
     process {
-        $result = Invoke-Http -method Get -path "data/$dataSetName/stats"
+        $encodedDataSetName = [uri]::EscapeDataString($dataSetName)
+        $result = Invoke-Http -method Get -path "data/$encodedDataSetName/stats"
         $statistics = @()
         foreach ($column in $result.columns) {
             $entry = @{}

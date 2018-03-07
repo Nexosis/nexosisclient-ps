@@ -56,6 +56,7 @@ Function Get-NexosisSessionClassScore {
         }  elseif ($script:PSNexosisVars.DefaultPageSize -ne $script:ServerDefaultPageSize) {
             $params['pageSize'] = $script:PSNexosisVars.DefaultPageSize
         }
-        Invoke-Http -method Get -path "sessions/$SessionId/results/classscores" -params $params
+        $encodedSessionId = [uri]::EscapeDataString($SessionId)
+        Invoke-Http -method Get -path "sessions/$encodedSessionId/results/classscores" -params $params
     }
 }

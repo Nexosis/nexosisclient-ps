@@ -27,6 +27,7 @@ Function Get-NexosisSessionConfusionMatrix {
         [GUID]$SessionId
 	)
     process {
-        Invoke-Http -method Get -path "sessions/$SessionId/results/confusionmatrix"
+        $encodedSessionId = [uri]::EscapeDataString($SessionId)
+        Invoke-Http -method Get -path "sessions/$encodedSessionId/results/confusionmatrix"
     }
 }

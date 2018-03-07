@@ -51,7 +51,9 @@ Function Get-NexosisContestant {
                 $params['predictionInterval'] = $predictionInterval
             }
 
-            Invoke-Http -method Get -path "sessions/$SessionId/contest/contestants/$contestantId" -params $params
+            $encodedSessionId = [uri]::EscapeDataString($SessionId)
+            $encodedContestantId = [uri]::EscapeDataString($contestantId)
+            Invoke-Http -method Get -path "sessions/$encodedSessionId/contest/contestants/$encodedContestantId" -params $params
         } else {
              if (
                 ($null -ne $page) -or
@@ -60,8 +62,8 @@ Function Get-NexosisContestant {
             ) {
                 throw "Parameter '-sessionId' cannot be used with 'page', 'pageSize', or 'predictionInterval' unless providing '-contestentId'."
             }
-            
-            $results = Invoke-Http -method Get -path "sessions/$SessionId/contest/contestants"
+            $encodedSessionId = [uri]::EscapeDataString($SessionId)
+            $results = Invoke-Http -method Get -path "sessions/$encodedSessionId/contest/contestants"
             $results.items
         }
     }

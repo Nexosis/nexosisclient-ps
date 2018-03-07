@@ -111,11 +111,11 @@ Function Get-NexosisDataSetData {
 		foreach ($val in  $include) {
 			$params.Add('include', $val)
 		}
-    
+        $encodedDataSetName = [uri]::EscapeDataString($dataSetName)
         if ($ReturnCsv) {
-            Invoke-Http -method Get -path "data/$dataSetName" -params $params -acceptHeader "text/csv"
+            Invoke-Http -method Get -path "data/$encodedDataSetName" -params $params -acceptHeader "text/csv"
         } else {
-            Invoke-Http -method Get -path "data/$dataSetName" -params $params
+            Invoke-Http -method Get -path "data/$encodedDataSetName" -params $params
         }
 	}
 }

@@ -31,7 +31,7 @@ function Invoke-Http {
 	$Request = [System.UriBuilder]$endpoint
 	$Request.Query = $params.ToString()
     $uri = [string]$Request.Uri.AbsoluteUri
-	$VerbosePreference = "continue"
+	
 	Try {
 		if ($fileName -ne $null) {
 			# submit request with file
@@ -63,10 +63,10 @@ function Invoke-Http {
 				
 				# Write raw response body to verbose output
 				Write-Verbose "--Raw Response object, response requires headers--"
-				Write-Verbose "Status Code: $($httpResults.StatusCode)"
-				Write-Verbose "Num of Headers: $($httpResults.Headers.Length)"
-				Write-Verbose "Headers: $($httpResults.Headers.GetEnumerator() | % { "$($_.Name)=$($_.Value)" })"
-				Write-Verbose "Raw Body: $($httpResults.Content)"
+				Write-Verbose "Respons Status Code: $($httpResults.StatusCode)"
+				Write-Verbose "Response Header Count: $($httpResults.Headers.Length)"
+				Write-Verbose "Response Headers: $($httpResults.Headers.GetEnumerator() | % { "$($_.Name)=$($_.Value)" })"
+				Write-Verbose "Response Body (Raw): $($httpResults.Content)"
 				
 				$httpResults
 			} elseif ($acceptHeader -eq 'application/json') {
