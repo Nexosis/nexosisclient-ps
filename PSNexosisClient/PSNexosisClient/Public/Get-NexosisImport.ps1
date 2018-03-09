@@ -69,13 +69,13 @@ Function Get-NexosisImport {
 			
 			$params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
 
-			if ($dataSetName -ne $null) { 
+			if ($null -ne $dataSetName) { 
 				$params['dataSetName'] = $dataSetName
 			}
-			if ($requestedAfterDate -ne $null) { 
+			if ($null -ne $requestedAfterDate) { 
 				$params['requestedAfterDate'] = $requestedAfterDate
 			}
-			if ($requestedBeforeDate -ne $null) {
+			if ($null -ne $requestedBeforeDate) {
 				$params['requestedBeforeDate'] = $requestedBeforeDate
 			}
 			if ($page -ne 0) {

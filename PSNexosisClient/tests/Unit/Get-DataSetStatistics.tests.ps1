@@ -49,7 +49,7 @@ Describe "Get-NexosisDataSetStatistics" -Tag 'Unit' {
 		
 		It "calls with the proper URI" {
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
-				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata/stats"
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata/stats/"
 			} 
 		}
 
@@ -76,6 +76,15 @@ Describe "Get-NexosisDataSetStatistics" -Tag 'Unit' {
 					($Headers.Get_Item("User-Agent") -eq $TestVars.UserAgent)
 				)
 			}
+		}
+
+
+		It "calls with the proper URI with all parameters" {
+			Get-NexosisDataSetStatistics -dataSetName 'salesdata' -column 'columnName' -dataType 'string'
+
+			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
+				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata/stats/columnName?dataType=string"
+			} 
 		}
 	}
 }
