@@ -1,17 +1,17 @@
-Function Get-NexosisAccountQuotas {
+Function Get-NexosisAccountQuota {
 <# 
  .Synopsis
   Retrieves the Account Usage Status of your Nexosis API Account.
 
  .Description
-  Given the current API Key, Get-NexosisAccountQuotas returns the Account Usage Stats tracked for current pricing tier.
+  Given the current API Key, Get-NexosisAccountQuota returns the Account Usage Stats tracked for current pricing tier.
 
  .Link
  http://docs.nexosis.com/clients/powershell
 
  .Example
   # Retrieve current account balance
-  Get-NexosisAccountQuotas
+  Get-NexosisAccountQuota
 #>[CmdletBinding()]
 	Param()
     process {

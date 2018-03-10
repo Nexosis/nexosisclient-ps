@@ -49,7 +49,7 @@ Function Get-NexosisVocabulary {
             }
         }
 
-        if ($type -ne $null) {
+        if ($null -ne $type) {
             $params['type'] = $type
         }
         $encodedVocabularyId = [uri]::EscapeDataString($VocabularyId)

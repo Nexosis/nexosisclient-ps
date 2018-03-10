@@ -17,7 +17,7 @@ List of all commands
 ```powershell
 PS C:\> ((Get-Module PSNexosisClient).ExportedCommands).Keys
 
-Get-NexosisAccountQuotas
+Get-NexosisAccountQuota
 Get-NexosisConfig
 Get-NexosisContest
 Get-NexosisContestant

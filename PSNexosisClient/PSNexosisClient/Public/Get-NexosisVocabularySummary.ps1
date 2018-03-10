@@ -36,11 +36,11 @@ Function Get-NexosisVocabularySummary {
     process {
         $params = [System.Web.HttpUtility]::ParseQueryString([String]::Empty)
         
-        if ($createdFromSession -ne $null) {
+        if ($null -ne $createdFromSession) {
             $params['createdFromSession'] = $createdFromSession
         }
 
-        if ($datasource -ne $null) {
+        if ($null -ne $datasource) {
             $params['datasource'] = $datasource
         }
 

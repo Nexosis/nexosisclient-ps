@@ -24,7 +24,7 @@ Describe "Get-NexosisAccountBalance" -Tag 'Integration' {
         }
 
 		It "gets account quotas" {
-            $stats = Get-NexosisAccountQuotas
+            $stats = Get-NexosisAccountQuota
 			$stats.Count | should match 6
 			$stats.'DataSetCount Current' | should match "^\d+$"
 			$stats.'PredictionCount Allotted' | should match "^\d+$"

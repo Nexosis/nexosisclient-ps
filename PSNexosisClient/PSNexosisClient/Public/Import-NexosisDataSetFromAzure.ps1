@@ -67,7 +67,7 @@ Function Import-NexosisDataSetFromAzure {
         blob = $blob
     }
 
-    if ($contentType -ne $null) {
+    if ($null -ne $contentType) {
         $importAzureData['contentType'] = [string]$contentType
     }
 

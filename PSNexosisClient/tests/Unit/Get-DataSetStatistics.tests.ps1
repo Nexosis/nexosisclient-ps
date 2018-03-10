@@ -9,7 +9,7 @@ Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
 
-Describe "Get-NexosisDataSetStatistics" -Tag 'Unit' {
+Describe "Get-NexosisDataSetStatistic" -Tag 'Unit' {
 	Context "unit tests" {
         Set-StrictMode -Version latest		
 
@@ -39,7 +39,7 @@ Describe "Get-NexosisDataSetStatistics" -Tag 'Unit' {
         } -Verifiable
         
         It "gets dataset statistics by dataset name" {
-            Get-NexosisDataSetStatistics -dataSetName 'salesdata'
+            Get-NexosisDataSetStatistic -dataSetName 'salesdata'
             Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
         }
 
@@ -80,7 +80,7 @@ Describe "Get-NexosisDataSetStatistics" -Tag 'Unit' {
 
 
 		It "calls with the proper URI with all parameters" {
-			Get-NexosisDataSetStatistics -dataSetName 'salesdata' -column 'columnName' -dataType 'string'
+			Get-NexosisDataSetStatistic -dataSetName 'salesdata' -column 'columnName' -dataType 'string'
 
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope Context -ParameterFilter {
 				$Uri -eq "$($TestVars.ApiEndPoint)/data/salesdata/stats/columnName?dataType=string"

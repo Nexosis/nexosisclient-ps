@@ -63,7 +63,7 @@ Function Get-NexosisSessionResult {
             }
         }
 
-        if ($predictionInterval -ne $null) {
+        if ($null -ne $predictionInterval) {
             $params['predictionInterval'] = $predictionInterval
         }
 

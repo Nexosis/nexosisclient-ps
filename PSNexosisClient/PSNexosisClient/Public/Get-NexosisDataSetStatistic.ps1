@@ -1,4 +1,4 @@
-Function Get-NexosisDataSetStatistics {
+Function Get-NexosisDataSetStatistic {
 <# 
  .Synopsis
   Gets the column stats for the given data source.
@@ -17,7 +17,7 @@ Function Get-NexosisDataSetStatistics {
 
  .Example
   # Return the Statistics from the DataSet named salesdata
-  Get-NexosisDataSetStatistics -DataSetName salesdata
+  Get-NexosisDataSetStatistic -DataSetName salesdata
 #>[CmdletBinding()]
 	Param(
         [Parameter(Mandatory=$true, ValueFromPipeline=$True)]

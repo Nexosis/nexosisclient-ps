@@ -8,7 +8,7 @@ Remove-Module PSNexosisClient -ErrorAction SilentlyContinue
 Import-Module "$PSScriptRoot\..\..\PSNexosisClient"
 
 $PSVersion = $PSVersionTable.PSVersion.Major
-Describe "Get-NexosisAccountQuotas" -Tag 'Unit' {
+Describe "Get-NexosisAccountQuota" -Tag 'Unit' {
 	Context "unit tests" {
 		Set-StrictMode -Version latest		
 
@@ -40,7 +40,7 @@ Describe "Get-NexosisAccountQuotas" -Tag 'Unit' {
         } -Verifiable
 	
 		It "gets account quotas" {
-			$value = Get-NexosisAccountQuotas
+			$value = Get-NexosisAccountQuota
 			Assert-MockCalled Invoke-WebRequest -ModuleName PSNexosisClient -Times 1 -Scope It
 			$value.Count | should match 6
 			$value.'DataSetCount Current' | should match "^\d+$"
